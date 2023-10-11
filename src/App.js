@@ -1,6 +1,7 @@
 import '@fontsource/inter';
 import './App.css';
 import {
+    Alert,
     Button, Checkbox,
     FormControl,
     FormHelperText,
@@ -20,13 +21,23 @@ function App() {
     const [reportDate, setReportDate] = useState(new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}))
     const [dateError, setDateError] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [jobSites, setJobSites] = useState(null);
+    const [jobSites, setJobSites] = useState([]);
+    const [error, setError] = useState(false)
+
     useEffect(() => {
+        const handleError = (message) => setError('An error occurred fetching the job sites.\n' + message)
         axios.get(config.listJobSites).then((response) => {
             if (response.status === 200)
-        })
-    })
+                if (response.headers.has('X-Amz-Function-Error')) handleError(response.headers.get('X-Amz-Function-Error'))
+                else {
+                    setError(false)
+                    setJobSites(response.data)
+                }
+        }).catch((error) => handleError(error.message))
+    }, [])
+
     useEffect(() => setDateError(new Date() < new Date(reportDate)), [reportDate])
+
     const submitReport = (data) => {
         axios.post(config.newJobReport, {
             jobID: data.address,
@@ -51,9 +62,13 @@ function App() {
             setLoading(false)
         })
     }
+
   return (
     <div className="App">
         <Sheet variant="soft" sx={{px: 10, py: 5, height: '100%'}}>
+            {error && <Alert color="danger" size="lg" variant="solid">
+                {error}
+            </Alert>}
             <Typography color="primary" level="h2" sx={{my: 3}}>
                 Daily Job Report
             </Typography>
@@ -84,7 +99,7 @@ function App() {
                     <FormControl>
                         <FormLabel>Project Address</FormLabel>
                         <Select required placeholder="Choose one…" name="address">
-                            <Option value="1">....</Option>
+                            {jobSites.map((jobSite) => <Option key={jobSite.id} value={jobSite.id}>{jobSite.address}</Option>)}
                         </Select>
                     </FormControl>
                     <FormControl error={dateError}>
