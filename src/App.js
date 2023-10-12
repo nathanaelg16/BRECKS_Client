@@ -100,7 +100,7 @@ function App() {
                     materials3: formElements.materials3.value,
                     materials4: formElements.materials4.value,
                     subs: formElements.subs.value,
-                    onsite: formElements.onsite.value
+                    onsite: formElements.onsite.checked
                 }
                 submitReport(data)
             }}>
