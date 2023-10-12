@@ -44,6 +44,7 @@ function App() {
         axios.post(config.newJobReport, {
             jobID: selectedJobSite,
             reportDate: data.reportDate,
+            weather: data.weather,
             crewSize: data.crewSize,
             visitors: data.visitors,
             workArea1: data.workArea1,
@@ -88,6 +89,7 @@ function App() {
                 const data = {
                     // address: formElements.address.value,
                     reportDate: formElements.date.value,
+                    weather: formElements.weather.value,
                     crewSize: formElements.crewSize.value,
                     visitors: formElements.visitors.value,
                     workArea1: formElements.workArea1.value,
