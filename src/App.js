@@ -22,6 +22,7 @@ function App() {
     const [dateError, setDateError] = useState(false)
     const [loading, setLoading] = useState(false)
     const [jobSites, setJobSites] = useState([]);
+    const [selectedJobSite, setSelectedJobSite] = useState(0);
     const [error, setError] = useState(false)
 
     useEffect(() => {
@@ -39,8 +40,9 @@ function App() {
     useEffect(() => setDateError(new Date() < new Date(reportDate)), [reportDate])
 
     const submitReport = (data) => {
+        const handleError = (message) => setError('An error occurred submitting the report.\n' + message)
         axios.post(config.newJobReport, {
-            jobID: data.address,
+            jobID: selectedJobSite,
             reportDate: data.reportDate,
             crewSize: data.crewSize,
             visitors: data.visitors,
@@ -57,8 +59,15 @@ function App() {
             onsite: data.onsite
         }).then((response) => {
             setLoading(false)
-            //check headers for error
+            if (response.status === 200)
+                if (response.headers.has('X-Amz-Function-Error')) handleError(response.headers.get('X-Amz-Function-Error'))
+                else {
+                    setError(false)
+                    window.location.href = '/success.html'
+                }
         }).catch((error) => {
+            console.log(error)
+            handleError( error.message)
             setLoading(false)
         })
     }
@@ -77,7 +86,7 @@ function App() {
                 setLoading(true)
                 const formElements = event.currentTarget.elements;
                 const data = {
-                    address: formElements.address.value,
+                    // address: formElements.address.value,
                     reportDate: formElements.date.value,
                     crewSize: formElements.crewSize.value,
                     visitors: formElements.visitors.value,
@@ -98,7 +107,7 @@ function App() {
                 <Stack spacing={2}>
                     <FormControl>
                         <FormLabel>Project Address</FormLabel>
-                        <Select required placeholder="Choose one…" name="address">
+                        <Select required placeholder="Choose one…" value={selectedJobSite} onChange={(event, newValue) => {console.log(newValue); setSelectedJobSite(newValue)}}>
                             {jobSites.map((jobSite) => <Option key={jobSite.id} value={jobSite.id}>{jobSite.address}</Option>)}
                         </Select>
                     </FormControl>
