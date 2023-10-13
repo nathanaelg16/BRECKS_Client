@@ -24,6 +24,8 @@ function App() {
     const [jobSites, setJobSites] = useState([]);
     const [selectedJobSite, setSelectedJobSite] = useState(0);
     const [error, setError] = useState(false)
+    const [isWeatherRequired, setWeatherRequired] = useState(false)
+    const [weather, setWeather] = useState('')
 
     useEffect(() => {
         const handleError = (message) => setError('An error occurred fetching the job sites.\n' + message)
@@ -37,7 +39,10 @@ function App() {
         }).catch((error) => handleError(error.message))
     }, [])
 
-    useEffect(() => setDateError(new Date() < new Date(reportDate)), [reportDate])
+    useEffect(() => {
+        setDateError(new Date() < new Date(reportDate))
+        setWeatherRequired(new Date(new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'})) > new Date(reportDate))
+    }, [reportDate])
 
     const submitReport = (data) => {
         const handleError = (message) => setError('An error occurred submitting the report.\n' + message)
@@ -121,9 +126,10 @@ function App() {
                                name="date"/>
                         {dateError && <FormHelperText>Report date must not be in the future.</FormHelperText>}
                     </FormControl>
-                    <FormControl>
+                    <FormControl error={isWeatherRequired && weather === ''}>
                         <FormLabel>Weather</FormLabel>
-                        <Input placeholder="Optional" name="weather"/>
+                        <Input required={isWeatherRequired} placeholder={isWeatherRequired ? "Required" : "Optional"} name="weather" onChange={(e) => setWeather(e.target.value)}/>
+                        {isWeatherRequired && <FormHelperText color="primary">Weather info is required when submitting past reports.</FormHelperText>}
                     </FormControl>
                     <FormControl>
                         <FormLabel>Crew Size</FormLabel>
