@@ -82,7 +82,7 @@ function App() {
             <Typography color="primary" level="h2" sx={{my: 3}}>
                 Daily Job Report
             </Typography>
-            <form onSubmit={(event) => {
+            <form autoComplete="off" onSubmit={(event) => {
                 event.preventDefault()
                 setLoading(true)
                 const formElements = event.currentTarget.elements;
@@ -171,7 +171,7 @@ function App() {
                         <FormLabel>Subcontractors Present</FormLabel>
                         <Input required name="subs"/>
                     </FormControl>
-                    <Checkbox name="onsite"/>
+                    <Checkbox sx={{textAlign: 'left'}} label="On-site?" name="onsite"/>
                     <Button type="submit" loading={loading}>Submit</Button>
                 </Stack>
             </form>
