@@ -1,6 +1,6 @@
 const config = {
-    newJobReport: 'https://xgtmfzyt77may3ipu4dufelxqe0jmpae.lambda-url.us-east-1.on.aws/',
-    listJobSites: 'https://haiz73724gt54hhg2rdeldwfli0lvpmm.lambda-url.us-east-1.on.aws/'
+    newJobReport: 'https://varu32ia4kfo7biak6v5up5ry40csoki.lambda-url.us-east-1.on.aws/',
+    listJobSites: 'https://xekb3qpuraz4xygxxvyi2fci5q0jaqot.lambda-url.us-east-1.on.aws/'
 };
 
 export default config;
