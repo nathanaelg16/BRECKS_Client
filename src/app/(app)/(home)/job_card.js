@@ -5,6 +5,7 @@ import {postman} from "@/resources/config";
 import {Rubik} from "next/font/google";
 import {ErrorOutline, PriorityHigh, Warning} from "@mui/icons-material";
 import Button from "@mui/joy/Button";
+import {useRouter} from "next/navigation";
 
 const rubik = Rubik({subsets: ['latin']})
 
@@ -58,7 +59,7 @@ export default function JobCard({job}) {
                 <Typography color={'warning'} level='body-sm' sx={{fontWeight: '600'}}>Missing Reports: <Typography sx={{fontWeight: '200'}}>{stats.missingReportDates.length}</Typography></Typography>
             </CardContent>
             <CardActions>
-                <Button sx={{background: '#00A550', "&:hover": {background: '#00612F'}}} onClick={}>
+                <Button sx={{background: '#00A550', "&:hover": {background: '#00612F'}}} onClick={() => router.push(`/report?job=${job.id}`)}>
                     Add Report
                 </Button>
                 <Button sx={{background: '#2072AF', "&:hover":{background: '#11466F'}}}>
