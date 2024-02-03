@@ -2,14 +2,18 @@
 
 import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
-import {FormHelperText, Select, Sheet, Stack, Option} from "@mui/joy";
+import {FormHelperText, Select, Sheet, Stack, Option, Divider} from "@mui/joy";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Button from "@mui/joy/Button";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
+import CrewManager from "@/app/(app)/report/crew_manager";
+import WorkDescriptions from "@/app/(app)/report/work_descriptions";
+
+const {Map, List} = require('immutable')
 
 export default function Report() {
     const [reportDate, setReportDate] = useState(new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}))
@@ -20,7 +24,10 @@ export default function Report() {
     const [error, setError] = useState(false)
     const [isWeatherRequired, setWeatherRequired] = useState(false)
     const [weather, setWeather] = useState('')
+    const [crew, setCrew] = useState(Map())
+    const [workDescriptions, setWorkDescriptions] = useState(List())
     const router = useRouter()
+    const searchParams = useSearchParams()
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
@@ -30,11 +37,32 @@ export default function Report() {
                 Authorization: 'BearerJWT ' + token
             }
         }).then((response) => {
-            if (response.status === 200) setJobSites(response.data)
-            else {
-                console.log(response)
+            if (response.status === 200) {
+                setJobSites(response.data)
+                const params = new URLSearchParams(searchParams)
+                if (params.has('job')) setSelectedJobSite(parseInt(params.get('job')))
             }
         }).catch((error) => handleError(error.message)) //todo implement better error handling
+    }, [searchParams])
+
+    useEffect(() => {
+        const token = sessionStorage.getItem('token')
+        postman.get('/weather', {
+            headers: {
+                Authorization: 'BearerJWT ' + token
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                setWeatherRequired(false)
+                setWeather(response.data.summary)
+            } else {
+                setWeatherRequired(true)
+            }
+        }).catch((error) => {
+            // todo implement error handling
+            console.log(error)
+            setWeatherRequired(true)
+        })
     }, [])
 
     useEffect(() => {
@@ -58,7 +86,6 @@ export default function Report() {
                         setLoading(true)
                         const formElements = event.currentTarget.elements;
                         const data = {
-                            // address: formElements.address.value,
                             reportDate: formElements.date.value,
                             weather: formElements.weather.value,
                             crewSize: formElements.crewSize.value,
@@ -97,39 +124,30 @@ export default function Report() {
                             <FormControl error={isWeatherRequired && weather === ''}>
                                 <FormLabel>Weather</FormLabel>
                                 <Input required={isWeatherRequired}
+                                       value={weather}
                                        placeholder={isWeatherRequired ? "Required" : "Optional"} name="weather"
                                        onChange={(e) => setWeather(e.target.value)}/>
                                 {isWeatherRequired &&
                                     <FormHelperText color="primary">Weather info is required when submitting past
                                         reports.</FormHelperText>}
                             </FormControl>
-                            <FormControl>
-                                <FormLabel>Crew Size</FormLabel>
-                                <Input required name="crewSize"/>
-                            </FormControl>
+
+                            {/* ------------------------------------------------------------------------------------------------- */}
+                            <Divider sx={{'--Divider-thickness': '4px', '--Divider-lineColor': 'var(--joy-palette-primary-200)'}}>
+                                <Typography color='primary'>CREW</Typography>
+                            </Divider>
+                            <CrewManager withCrew={[crew, setCrew]}/>
+                            <Divider sx={{'--Divider-thickness': '4px', '--Divider-lineColor': 'var(--joy-palette-primary-200)'}}/>
+                            {/* ------------------------------------------------------------------------------------------------- */}
+
                             <FormControl>
                                 <FormLabel>Visitors Present</FormLabel>
                                 <Input placeholder="(Client, architect, etc...)" name="visitors"/>
                                 <FormHelperText>If no visitors are present, leave blank.</FormHelperText>
                             </FormControl>
-                            <Typography level="title-md">
-                                Work Taking Place On-site
-                            </Typography>
-                            <FormControl>
-                                <Input required placeholder="Type/Location/Drawing/Facade" name="workArea1"/>
-                            </FormControl>
-                            <FormControl>
-                                <Input placeholder="Optional" name="workArea2"/>
-                            </FormControl>
-                            <FormControl>
-                                <Input placeholder="Optional" name="workArea3"/>
-                            </FormControl>
-                            <FormControl>
-                                <Input placeholder="Optional" name="workArea4"/>
-                            </FormControl>
-                            <FormControl>
-                                <Input placeholder="Optional" name="workArea5"/>
-                            </FormControl>
+
+                            <WorkDescriptions descriptions={[workDescriptions, setWorkDescriptions]} />
+
                             <Typography level="title-md">
                                 Materials Needed for the Week
                             </Typography>

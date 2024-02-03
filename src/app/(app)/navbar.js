@@ -9,10 +9,12 @@ import ModalClose from '@mui/joy/ModalClose';
 import Image from "next/image";
 import {config} from "@/resources/config";
 import JobPicker from "@/app/(app)/job_picker";
+import {useRouter} from "next/navigation";
 
 
 export default function Navbar() {
     const [isDrawerOpen, setDrawerOpen] = useState(false)
+    const router = useRouter()
 
     return <>
         <Drawer open={isDrawerOpen} anchor={'left'} onClose={() => setDrawerOpen(false)}>
@@ -33,7 +35,12 @@ export default function Navbar() {
                        style={{margin: 'auto'}}
                 />
             </Box>
-            <JobPicker sx={{width: '33vw', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1}} />
+            <Box sx={{width: '33vw', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 3}}>
+                <Button onClick={() => router.push('/report')}>
+                    New Report
+                </Button>
+                <JobPicker sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1}} />
+            </Box>
         </Box>
     </>
 }
