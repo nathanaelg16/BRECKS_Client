@@ -27,7 +27,7 @@ export default function Navbar() {
                     <MenuIcon />
                 </Button>
             </Box>
-            <Box component="span" sx={{width: '33vw', display: 'flex'}}>
+            <Box component="span" sx={{width: '33vw', display: 'flex', cursor: 'pointer'}} onClick={() => router.push('/')}>
                 <Image src={config.spaces.concat("/logos/BRECKS-v2@2x.png")}
                        alt="BRECKS"
                        width="177"

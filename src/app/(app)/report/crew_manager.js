@@ -2,7 +2,15 @@ import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
-import {Autocomplete, AutocompleteOption, Chip, ChipDelete, createFilterOptions, ListItemDecorator} from "@mui/joy";
+import {
+    Autocomplete,
+    AutocompleteOption,
+    Chip,
+    ChipDelete,
+    createFilterOptions,
+    ListItemDecorator,
+    Stack
+} from "@mui/joy";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import {useEffect, useState} from "react";
@@ -11,7 +19,6 @@ import AddIcon from '@mui/icons-material/Add';
 import {Add} from "@mui/icons-material";
 
 export default function CrewManager({withCrew}) {
-    const { Map } = require('immutable')
     const [crew, setCrew] = withCrew;
     const [contractors, setContractors] = useState([])
     const [selectedContractor, setSelectedContractor] = useState(null)
@@ -39,7 +46,7 @@ export default function CrewManager({withCrew}) {
         return c.reduce((sum, val) => sum + val, 0)
     }
 
-    return <>
+    return <Stack spacing={2}>
         <Typography><Typography fontWeight='900'>Total Crew Size:</Typography> {calculateCrewSize(crew)}</Typography>
 
         <Box sx={{display: 'flex', gap: 2, flexWrap: 'wrap'}}>
@@ -119,5 +126,5 @@ export default function CrewManager({withCrew}) {
             </FormControl>
             <Button disabled={selectedContractor === null || selectedCrewSize === null} onClick={() => setCrew(crew.set(selectedContractor, selectedCrewSize))}><AddIcon /></Button>
         </Box>
-    </>
+    </Stack>
 }

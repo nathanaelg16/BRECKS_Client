@@ -2,7 +2,7 @@
 
 import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
-import {FormHelperText, Select, Sheet, Stack, Option, Divider} from "@mui/joy";
+import {Chip, FormHelperText, Option, Select, Sheet, Stack} from "@mui/joy";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Button from "@mui/joy/Button";
@@ -11,7 +11,7 @@ import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
 import {useRouter, useSearchParams} from "next/navigation";
 import CrewManager from "@/app/(app)/report/crew_manager";
-import WorkDescriptions from "@/app/(app)/report/work_descriptions";
+import DescriptionFields from "@/app/(app)/report/description_fields";
 
 const {Map, List} = require('immutable')
 
@@ -25,7 +25,8 @@ export default function Report() {
     const [isWeatherRequired, setWeatherRequired] = useState(false)
     const [weather, setWeather] = useState('')
     const [crew, setCrew] = useState(Map())
-    const [workDescriptions, setWorkDescriptions] = useState(List())
+    const [workDescriptions, setWorkDescriptions] = useState(List(['']))
+    const [materialDescriptions, setMaterialDescriptions] = useState(List(['']))
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -89,17 +90,7 @@ export default function Report() {
                             reportDate: formElements.date.value,
                             weather: formElements.weather.value,
                             crewSize: formElements.crewSize.value,
-                            visitors: formElements.visitors.value,
-                            workArea1: formElements.workArea1.value,
-                            workArea2: formElements.workArea2.value,
-                            workArea3: formElements.workArea3.value,
-                            workArea4: formElements.workArea4.value,
-                            workArea5: formElements.workArea5.value,
-                            materials1: formElements.materials1.value,
-                            materials2: formElements.materials2.value,
-                            materials3: formElements.materials3.value,
-                            materials4: formElements.materials4.value,
-                            subs: formElements.subs.value
+                            visitors: formElements.visitors.value
                         }
                         submitReport(data)
                     }}>
@@ -132,41 +123,29 @@ export default function Report() {
                                         reports.</FormHelperText>}
                             </FormControl>
 
-                            {/* ------------------------------------------------------------------------------------------------- */}
-                            <Divider sx={{'--Divider-thickness': '4px', '--Divider-lineColor': 'var(--joy-palette-primary-200)'}}>
-                                <Typography color='primary'>CREW</Typography>
-                            </Divider>
-                            <CrewManager withCrew={[crew, setCrew]}/>
-                            <Divider sx={{'--Divider-thickness': '4px', '--Divider-lineColor': 'var(--joy-palette-primary-200)'}}/>
-                            {/* ------------------------------------------------------------------------------------------------- */}
-
                             <FormControl>
                                 <FormLabel>Visitors Present</FormLabel>
                                 <Input placeholder="(Client, architect, etc...)" name="visitors"/>
                                 <FormHelperText>If no visitors are present, leave blank.</FormHelperText>
                             </FormControl>
 
-                            <WorkDescriptions descriptions={[workDescriptions, setWorkDescriptions]} />
+                            {/* ------------------------------------------------------------------------------------------------- */}
+                            <Box component='div' sx={{border: '2px solid var(--joy-palette-primary-200)', p: 2}}>
+                                <Typography sx={{mt: -1, color: 'var(--joy-palette-primary-700)'}} textAlign='center' fontWeight='900'>CREW</Typography>
+                                <CrewManager withCrew={[crew, setCrew]}/>
+                            </Box>
+                            {/* ------------------------------------------------------------------------------------------------- */}
 
-                            <Typography level="title-md">
-                                Materials Needed for the Week
-                            </Typography>
-                            <FormControl>
-                                <Input placeholder="Optional" name="materials1"/>
-                            </FormControl>
-                            <FormControl>
-                                <Input placeholder="Optional" name="materials2"/>
-                            </FormControl>
-                            <FormControl>
-                                <Input placeholder="Optional" name="materials3"/>
-                            </FormControl>
-                            <FormControl>
-                                <Input placeholder="Optional" name="materials4"/>
-                            </FormControl>
-                            <FormControl>
-                                <FormLabel>Subcontractors Present</FormLabel>
-                                <Input required name="subs"/>
-                            </FormControl>
+                            <DescriptionFields title='Work Taking Place On-site' placeholder='Description of work' descriptions={[workDescriptions, setWorkDescriptions]} required={true}/>
+                            <DescriptionFields title='Materials Needed for the Week' placeholder='Materials needed' descriptions={[materialDescriptions, setMaterialDescriptions]} required={false}/>
+
+                            <Sheet variant='soft' sx={{p: 1, pb: 5, background: '#E2DDDA'}}>
+                                <Typography fontWeight='900' level="title-md" sx={{color: '#382C24'}}>Subcontractors Present</Typography>
+                                <Box sx={{display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2}}>
+                                    {crew.filter((v, k) => k.shortName !== 'PRESERV').keySeq().map((contractor) => <Chip sx={{background: '#1F4461', color: '#ffffff'}} size='lg' key={contractor.shortName}><strong>{contractor.shortName}</strong></Chip>)}
+                                </Box>
+                            </Sheet>
+
                             <Button type="submit" loading={loading}>Submit</Button>
                         </Stack>
                     </form>
@@ -175,3 +154,5 @@ export default function Report() {
         </Box>
     </>
 }
+
+// todo work on reports submission
