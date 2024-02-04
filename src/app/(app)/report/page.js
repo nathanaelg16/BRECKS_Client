@@ -24,6 +24,7 @@ export default function Report() {
     const [error, setError] = useState(false)
     const [isWeatherRequired, setWeatherRequired] = useState(false)
     const [weather, setWeather] = useState('')
+    const [visitors, setVisitors] = useState('')
     const [crew, setCrew] = useState(Map())
     const [workDescriptions, setWorkDescriptions] = useState(List(['']))
     const [materialDescriptions, setMaterialDescriptions] = useState(List(['']))
@@ -70,11 +71,28 @@ export default function Report() {
         setDateError(new Date() < new Date(reportDate))
     }, [reportDate])
 
-    const submitReport = (data) => {
-        setTimeout(() => {
-            setLoading(false)
-            router.push('/report/success')
-        }, 2000)
+    const submitReport = () => {
+        setLoading(true)
+        const token = sessionStorage.getItem('token')
+        const handleError = (message) => setError('An error occurred submitting the report.\n' + message)
+        postman.post('/reports', {
+            jobID: selectedJobSite,
+            reportDate: reportDate,
+            weather: weather,
+            crew: crew.mapKeys((k) => k.shortName),
+            visitors: visitors,
+            workDescriptions: workDescriptions,
+            materials: materialDescriptions
+        }, {
+            headers: {
+                Authorization: 'BearerJWT ' + token
+            }
+        }).then((response) => {
+            if (response.status === 200) router.push('/report/success')
+            else handleError('Server Response: ' + response.statusText)
+        }).catch((error) => {
+            handleError(error.message)
+        }).finally(() => setLoading(false))
     }
 
     return <>
@@ -84,15 +102,7 @@ export default function Report() {
                 <Box sx={{my: 2, mb: 0}}>
                     <form autoComplete="off" onSubmit={(event) => {
                         event.preventDefault()
-                        setLoading(true)
-                        const formElements = event.currentTarget.elements;
-                        const data = {
-                            reportDate: formElements.date.value,
-                            weather: formElements.weather.value,
-                            crewSize: formElements.crewSize.value,
-                            visitors: formElements.visitors.value
-                        }
-                        submitReport(data)
+                        submitReport()
                     }}>
                         <Stack spacing={2}>
                             <FormControl>
@@ -108,8 +118,7 @@ export default function Report() {
                                 <FormLabel>Report Date</FormLabel>
                                 <Input required type="date"
                                        value={reportDate}
-                                       onChange={(e) => setReportDate(e.target.value)}
-                                       name="date"/>
+                                       onChange={(e) => setReportDate(e.target.value)}/>
                                 {dateError && <FormHelperText>Report date must not be in the future.</FormHelperText>}
                             </FormControl>
                             <FormControl error={isWeatherRequired && weather === ''}>
@@ -125,7 +134,7 @@ export default function Report() {
 
                             <FormControl>
                                 <FormLabel>Visitors Present</FormLabel>
-                                <Input placeholder="(Client, architect, etc...)" name="visitors"/>
+                                <Input value={visitors} onChange={(e) => setVisitors(e.target.value)} placeholder="(Client, architect, etc...)" name="visitors"/>
                                 <FormHelperText>If no visitors are present, leave blank.</FormHelperText>
                             </FormControl>
 
