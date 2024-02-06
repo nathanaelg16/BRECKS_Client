@@ -2,7 +2,7 @@
 
 import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
-import {Chip, FormHelperText, Option, Select, Sheet, Stack} from "@mui/joy";
+import {Chip, CircularProgress, FormHelperText, Option, Select, Sheet, Stack} from "@mui/joy";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Button from "@mui/joy/Button";
@@ -24,6 +24,7 @@ export default function Report() {
     const [error, setError] = useState(false)
     const [isWeatherRequired, setWeatherRequired] = useState(false)
     const [weather, setWeather] = useState('')
+    const [weatherLoading, setWeatherLoading] = useState(false)
     const [visitors, setVisitors] = useState('')
     const [crew, setCrew] = useState(Map())
     const [workDescriptions, setWorkDescriptions] = useState(List(['']))
@@ -48,8 +49,19 @@ export default function Report() {
     }, [searchParams])
 
     useEffect(() => {
+        const error = new Date() < new Date(reportDate)
+        setDateError(error)
+
+        if (error) {
+            setWeather('')
+            return
+        }
+
+        setWeatherLoading(true)
+
         const token = sessionStorage.getItem('token')
-        postman.get('/weather', {
+        const params = new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}) === reportDate ? new URLSearchParams() : new URLSearchParams({date: reportDate})
+        postman.get('/weather?' + params, {
             headers: {
                 Authorization: 'BearerJWT ' + token
             }
@@ -64,11 +76,9 @@ export default function Report() {
             // todo implement error handling
             console.log(error)
             setWeatherRequired(true)
+        }).finally(() => {
+            setWeatherLoading(false)
         })
-    }, [])
-
-    useEffect(() => {
-        setDateError(new Date() < new Date(reportDate))
     }, [reportDate])
 
     const submitReport = () => {
@@ -125,8 +135,11 @@ export default function Report() {
                                 <FormLabel>Weather</FormLabel>
                                 <Input required={isWeatherRequired}
                                        value={weather}
-                                       placeholder={isWeatherRequired ? "Required" : "Optional"} name="weather"
-                                       onChange={(e) => setWeather(e.target.value)}/>
+                                       name="weather"
+                                       onChange={(e) => setWeather(e.target.value)}
+                                       disabled={weatherLoading}
+                                       endDecorator={weatherLoading && <CircularProgress size='sm' />}
+                                />
                                 {isWeatherRequired &&
                                     <FormHelperText color="primary">Weather info is required when submitting past
                                         reports.</FormHelperText>}
