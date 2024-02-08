@@ -54,7 +54,7 @@ export default function JobCard({job}) {
 
     return <>
         <Badge {...badgeProps} size='lg'>
-            <Card color='primary'>
+            <Card onClick={() => router.push(`/job/${job.id}`)} color='primary' sx={{cursor: 'pointer', '&:hover': {background: 'var(--joy-palette-neutral-100)'}}}>
                 <Typography level='h4' fontSize='md' textAlign='center'>{job.address}</Typography>
                 <Typography sx={{mt: -1}} level='body-sm' textAlign='center'>{job.identifier && `(${job.identifier})`}</Typography>
                 <CardContent>

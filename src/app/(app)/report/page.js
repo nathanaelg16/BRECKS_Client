@@ -15,6 +15,8 @@ import DescriptionFields from "@/app/(app)/report/description_fields";
 
 const {Map, List} = require('immutable')
 
+// todo implement checking if job active on report date
+
 export default function Report() {
     const [reportDate, setReportDate] = useState(new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}))
     const [dateError, setDateError] = useState('')
@@ -22,7 +24,6 @@ export default function Report() {
     const [jobSites, setJobSites] = useState([]);
     const [selectedJobSite, setSelectedJobSite] = useState(0);
     const [error, setError] = useState(false)
-    const [isWeatherRequired, setWeatherRequired] = useState(false)
     const [weather, setWeather] = useState('')
     const [weatherLoading, setWeatherLoading] = useState(false)
     const [visitors, setVisitors] = useState('')
@@ -67,15 +68,11 @@ export default function Report() {
             }
         }).then((response) => {
             if (response.status === 200) {
-                setWeatherRequired(false)
                 setWeather(response.data.summary)
-            } else {
-                setWeatherRequired(true)
             }
         }).catch((error) => {
             // todo implement error handling
             console.log(error)
-            setWeatherRequired(true)
         }).finally(() => {
             setWeatherLoading(false)
         })
