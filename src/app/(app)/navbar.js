@@ -21,7 +21,7 @@ export default function Navbar() {
             <ModalClose />
             {/* todo Drawer content */}
         </Drawer>
-        <Box component='header' sx={{borderBottom: '1px solid gray', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', width: '100svw'}}>
+        <Box component='header' sx={{borderBottom: '1px solid gray', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row', width: '100svw', flex: '0 1 auto'}}>
             <Box component='span' sx={{width: '33vw'}}>
                 <Button size='md' onClick={() => setDrawerOpen(true)} variant='outline'>
                     <MenuIcon />

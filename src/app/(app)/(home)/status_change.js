@@ -12,7 +12,7 @@ import {postman} from "@/resources/config";
 import {CheckCircleOutline} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
 
-export default function StatusChange({openState, job}) {
+export default function HomeViewStatusChanger({openState, job}) {
     const router = useRouter()
     const [open, setOpen] = openState
     const [selectedStatus, setSelectedStatus] = useState(null)

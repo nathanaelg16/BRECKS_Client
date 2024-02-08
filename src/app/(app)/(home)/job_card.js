@@ -6,7 +6,7 @@ import {Rubik} from "next/font/google";
 import {ErrorOutline} from "@mui/icons-material";
 import Button from "@mui/joy/Button";
 import {useRouter} from "next/navigation";
-import StatusChange from "@/app/(app)/(home)/status_change";
+import HomeViewStatusChanger from "@/app/(app)/(home)/status_change";
 
 const rubik = Rubik({subsets: ['latin']})
 
@@ -73,6 +73,6 @@ export default function JobCard({job}) {
                 </CardActions>
             </Card>
         </Badge>
-        <StatusChange openState={[open, setOpen]} job={job} />
+        <HomeViewStatusChanger openState={[open, setOpen]} job={job} />
     </>
 }

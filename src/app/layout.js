@@ -1,9 +1,8 @@
-import { Inter } from 'next/font/google'
+import {Inter} from 'next/font/google'
 import './globals.css'
 import {theme} from "@/resources/config";
 import {CssVarsProvider} from "@mui/joy/styles";
 import CssBaseline from "@mui/joy/CssBaseline";
-import Footer from "@/app/footer";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,9 +19,8 @@ export default function RootLayout({ children }) {
     <head>
       <link rel='icon' href='/favicon.png' />
     </head>
-      <body className={inter.className}>
+      <body className={inter.className} style={{height: '100svh'}}>
         {children}
-      <Footer/>
       </body>
     </html>
 </CssVarsProvider>

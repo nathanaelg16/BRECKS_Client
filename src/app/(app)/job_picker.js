@@ -4,8 +4,10 @@ import Box from "@mui/joy/Box";
 import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import {UserContext} from "@/app/(app)/user_context";
+import {useRouter} from "next/navigation";
 
 export default function JobPicker(props) {
+    const router = useRouter()
     const [userJobs, setUserJobs] = useState([])
     const [allJobs, setAllJobs] = useState([])
     const user = useContext(UserContext);
@@ -46,7 +48,7 @@ export default function JobPicker(props) {
             <Typography level={'title-md'}>
                 Go to:
             </Typography>
-            <Select sx={{marginRight: 1}} placeholder='Select a jobsite...'>
+            <Select sx={{marginRight: 1}} placeholder='Select a jobsite...' onChange={(ev, nv) => router.push(`/job/${nv}`)}>
                 <Divider>Your Jobs</Divider>
                 {userJobs.length > 0 ? generateOptions(userJobs) : <Option disabled key={-1} value={-1}>No jobs available</Option>}
                 <Divider>All Active</Divider>
