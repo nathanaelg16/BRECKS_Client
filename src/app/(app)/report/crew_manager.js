@@ -33,7 +33,6 @@ export default function CrewManager({withCrew}) {
             }
         }).then((response) => {
             if (response.status === 200) {
-                console.log(response.data)
                 setContractors(response.data.sort((a, b) => a.shortName.localeCompare(b.shortName)))
             }
         }).catch((error) => {

@@ -17,7 +17,7 @@ const {Map, List} = require('immutable')
 
 export default function Report() {
     const [reportDate, setReportDate] = useState(new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}))
-    const [dateError, setDateError] = useState(false)
+    const [dateError, setDateError] = useState('')
     const [loading, setLoading] = useState(false)
     const [jobSites, setJobSites] = useState([]);
     const [selectedJobSite, setSelectedJobSite] = useState(0);
@@ -50,7 +50,7 @@ export default function Report() {
 
     useEffect(() => {
         const error = new Date() < new Date(reportDate)
-        setDateError(error)
+        setDateError(error ? 'Report date must not be in the future.' : '')
 
         if (error || reportDate === '') {
             setWeather('')
@@ -81,8 +81,29 @@ export default function Report() {
         })
     }, [reportDate])
 
+    useEffect(() => {
+        const token = sessionStorage.getItem('token')
+        const params = new URLSearchParams({job: selectedJobSite, date: reportDate})
+
+        postman.get('/reports/exists?' + params, {
+            headers: {
+                Authorization: 'BearerJWT ' + token
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                if (response.data.exists) setDateError('A report has already been submitted for this date.')
+                else setDateError('')
+            } else {
+                // todo implement error handling
+            }
+        }).catch((error) => {
+            // todo implement error handling
+        })
+    }, [reportDate, selectedJobSite]);
+
     const submitReport = () => {
         setLoading(true)
+        let success = false
         const token = sessionStorage.getItem('token')
         const handleError = (message) => setError('An error occurred submitting the report.\n' + message)
         postman.post('/reports', {
@@ -98,11 +119,14 @@ export default function Report() {
                 Authorization: 'BearerJWT ' + token
             }
         }).then((response) => {
-            if (response.status === 200) router.push('/report/success')
-            else handleError('Server Response: ' + response.statusText)
+            success = (response.status === 200)
+            if (!success) handleError('Server Response: ' + response.statusText)
         }).catch((error) => {
             handleError(error.message)
-        }).finally(() => setLoading(false))
+        }).finally(() => setTimeout(() => {
+            setLoading(false)
+            if (success) router.push('/report/success')
+        }, 2000))
     }
 
     return <>
@@ -124,25 +148,22 @@ export default function Report() {
                                     {jobSites.map((jobSite) => <Option key={jobSite.id} value={jobSite.id}>{jobSite.address}</Option>)}
                                 </Select>
                             </FormControl>
-                            <FormControl error={dateError}>
+                            <FormControl error={!!dateError}>
                                 <FormLabel>Report Date</FormLabel>
                                 <Input required type="date"
                                        value={reportDate}
                                        onChange={(e) => setReportDate(e.target.value)}/>
-                                {dateError && <FormHelperText>Report date must not be in the future.</FormHelperText>}
+                                {dateError && <FormHelperText>{dateError}</FormHelperText>}
                             </FormControl>
-                            <FormControl error={isWeatherRequired && weather === ''}>
+                            <FormControl error={false}>
                                 <FormLabel>Weather</FormLabel>
-                                <Input required={isWeatherRequired}
+                                <Input required={false}
                                        value={weather}
                                        name="weather"
                                        onChange={(e) => setWeather(e.target.value)}
                                        disabled={weatherLoading}
                                        endDecorator={weatherLoading && <CircularProgress size='sm' />}
                                 />
-                                {isWeatherRequired &&
-                                    <FormHelperText color="primary">Weather info is required when submitting past
-                                        reports.</FormHelperText>}
                             </FormControl>
 
                             <FormControl>
