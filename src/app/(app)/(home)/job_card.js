@@ -64,10 +64,16 @@ export default function JobCard({job}) {
                     <Typography color={stats.missingReportDates.length > 0 ? 'primary' : ''} level='body-sm' sx={{fontWeight: '600'}}><Skeleton loading={loading} animation='wave'>Missing Reports: <Typography sx={{fontWeight: '200'}}>{stats.missingReportDates.length}</Typography></Skeleton></Typography>
                 </CardContent>
                 <CardActions>
-                    <Button sx={{background: '#00A550', "&:hover": {background: '#00612F'}}} onClick={() => router.push(`/report?job=${job.id}`)}>
+                    <Button sx={{background: '#00A550', "&:hover": {background: '#00612F'}}} onClick={(e) => {
+                        e.stopPropagation()
+                        router.push(`/report?job=${job.id}`)
+                    }}>
                         Add Report
                     </Button>
-                    <Button sx={{background: '#2072AF', "&:hover":{background: '#11466F'}}} onClick={() => setOpen(true)}>
+                    <Button sx={{background: '#2072AF', "&:hover":{background: '#11466F'}}} onClick={(e) => {
+                        e.stopPropagation()
+                        setOpen(true)
+                    }}>
                         Change Status
                     </Button>
                 </CardActions>

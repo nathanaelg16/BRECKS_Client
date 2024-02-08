@@ -11,18 +11,23 @@ export const metadata = {
   description: 'BRECKS.',
 }
 
-export default function RootLayout({ children }) {
+export const viewport = {
+  initialScale: 1,
+  width: 'device-width'
+}
+
+export default function RootLayout({children}) {
   return (
       <CssVarsProvider theme={theme}>
         <CssBaseline/>
-    <html lang="en">
-    <head>
-      <link rel='icon' href='/favicon.png' />
-    </head>
-      <body className={inter.className} style={{height: '100svh'}}>
-        {children}
-      </body>
-    </html>
-</CssVarsProvider>
+          <html lang="en">
+            <head>
+              <link rel='icon' href='/favicon.png'/>
+            </head>
+            <body className={inter.className} style={{height: '100svh'}}>
+              {children}
+            </body>
+          </html>
+      </CssVarsProvider>
   )
 }
