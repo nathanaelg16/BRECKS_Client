@@ -1,4 +1,4 @@
-import {Badge, Card, CardActions, CardContent, Divider, Tooltip} from "@mui/joy";
+import {Badge, Card, CardActions, CardContent, Divider, Skeleton, Tooltip} from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
@@ -13,6 +13,7 @@ const rubik = Rubik({subsets: ['latin']})
 export default function JobCard({job}) {
     const router = useRouter()
     const [open, setOpen] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     const [stats, setStats] = useState({
         totalManDays: -1,
@@ -34,6 +35,7 @@ export default function JobCard({job}) {
         }).then((response) => {
             if (response.status === 200) {
                 setStats(response.data)
+                setLoading(false)
             } else console.log('error')
         }).catch((error) => {
             console.log(error)
@@ -57,9 +59,9 @@ export default function JobCard({job}) {
                 <Typography sx={{mt: -1}} level='body-sm' textAlign='center'>{job.identifier && `(${job.identifier})`}</Typography>
                 <CardContent>
                     <Divider className={rubik.className} sx={{my: 1, mb: 0}}>THIS WEEK</Divider>
-                    <Typography level='body-sm' sx={{fontWeight: '600'}}>Total Man-days: <Typography sx={{fontWeight: '200'}}>{stats.totalManDays}</Typography></Typography>
-                    <Typography level='body-sm' sx={{fontWeight: '600'}}>Avg Manpower: <Typography sx={{fontWeight: '200'}}>{stats.avgDailyManPower}</Typography></Typography>
-                    <Typography color={stats.missingReportDates.length > 0 ? 'primary' : ''} level='body-sm' sx={{fontWeight: '600'}}>Missing Reports: <Typography sx={{fontWeight: '200'}}>{stats.missingReportDates.length}</Typography></Typography>
+                    <Typography level='body-sm' sx={{fontWeight: '600'}}><Skeleton loading={loading} animation='wave'>Total Man-days: <Typography sx={{fontWeight: '200'}}>{stats.totalManDays}</Typography></Skeleton></Typography>
+                    <Typography level='body-sm' sx={{fontWeight: '600'}}><Skeleton loading={loading} animation='wave'>Avg Manpower: <Typography sx={{fontWeight: '200'}}>{+stats.avgDailyManPower.toFixed(2)}</Typography></Skeleton></Typography>
+                    <Typography color={stats.missingReportDates.length > 0 ? 'primary' : ''} level='body-sm' sx={{fontWeight: '600'}}><Skeleton loading={loading} animation='wave'>Missing Reports: <Typography sx={{fontWeight: '200'}}>{stats.missingReportDates.length}</Typography></Skeleton></Typography>
                 </CardContent>
                 <CardActions>
                     <Button sx={{background: '#00A550', "&:hover": {background: '#00612F'}}} onClick={() => router.push(`/report?job=${job.id}`)}>
