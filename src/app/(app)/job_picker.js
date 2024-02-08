@@ -48,7 +48,9 @@ export default function JobPicker(props) {
             <Typography level={'title-md'}>
                 Go to:
             </Typography>
-            <Select sx={{marginRight: 1}} placeholder='Select a jobsite...' onChange={(ev, nv) => router.push(`/job/${nv}`)}>
+            <Select value={''} sx={{marginRight: 1}} placeholder='Select a jobsite...' onChange={(ev, nv) => {
+                if (nv !== null && nv !== '') router.push(`/job/${nv}`)
+            }}>
                 <Divider>Your Jobs</Divider>
                 {userJobs.length > 0 ? generateOptions(userJobs) : <Option disabled key={-1} value={-1}>No jobs available</Option>}
                 <Divider>All Active</Divider>
