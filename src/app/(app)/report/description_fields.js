@@ -39,5 +39,6 @@ export default function DescriptionFields({descriptions, title, placeholder, req
                 <AddCircleOutlineIcon color={addDescriptionDisabled ? 'neutral' : 'success'}/>
             </Button>
         </Divider>
+        {/* todo add images feature */}
     </>
 }
