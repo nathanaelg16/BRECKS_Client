@@ -52,7 +52,7 @@ export default function Report() {
         const error = new Date() < new Date(reportDate)
         setDateError(error)
 
-        if (error) {
+        if (error || reportDate === '') {
             setWeather('')
             return
         }
@@ -176,5 +176,3 @@ export default function Report() {
         </Box>
     </>
 }
-
-// todo work on reports submission
