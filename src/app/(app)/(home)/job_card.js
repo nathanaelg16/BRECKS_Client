@@ -1,4 +1,4 @@
-import {Badge, Card, CardActions, CardContent, Divider, Modal, Tooltip} from "@mui/joy";
+import {Badge, Card, CardActions, CardContent, Divider, Tooltip} from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
@@ -6,6 +6,7 @@ import {Rubik} from "next/font/google";
 import {ErrorOutline} from "@mui/icons-material";
 import Button from "@mui/joy/Button";
 import {useRouter} from "next/navigation";
+import StatusChange from "@/app/(app)/(home)/status_change";
 
 const rubik = Rubik({subsets: ['latin']})
 
@@ -70,8 +71,6 @@ export default function JobCard({job}) {
                 </CardActions>
             </Card>
         </Badge>
-        <Modal open={open}>
-
-        </Modal>
+        <StatusChange openState={[open, setOpen]} job={job} />
     </>
 }

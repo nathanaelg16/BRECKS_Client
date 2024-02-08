@@ -11,3 +11,10 @@ export async function validateToken(token) {
         return false;
     })
 }
+
+export const JOB_STATUS = {
+    NOT_STARTED: "NOT STARTED",
+    ACTIVE: "ACTIVE",
+    ON_HOLD: "ON HOLD",
+    COMPLETED: "COMPLETED"
+}
