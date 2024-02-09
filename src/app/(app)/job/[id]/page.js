@@ -1,13 +1,17 @@
 'use client'
 
-import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Sidebar from "@/app/(app)/job/[id]/(sidebar)/sidebar";
+import {Table} from "@mui/joy";
 
 export default function Job({params}) {
     const [job, setJob] = useState({})
+    const [calendar, setCalendar] = useState({
+        month: new Date().getMonth(),
+        year: new Date().getFullYear()
+    })
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
@@ -27,8 +31,8 @@ export default function Job({params}) {
 
     return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '1svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
         <Box sx={{gridColumn: 1, gridRow: 1}}>
-            <Typography>Side 1</Typography>
+            <Table variant='plain'></Table>
         </Box>
-        <Sidebar sx={{gridColumn: 2, gridRow: 1}} job={job}/>
+        <Sidebar sx={{gridColumn: 2, gridRow: 1}} job={job} calendar={calendar}/>
     </Box>
 }

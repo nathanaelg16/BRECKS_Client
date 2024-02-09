@@ -1,24 +1,91 @@
+'use client'
+
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
-import {Option, Select, Sheet, Stack} from "@mui/joy";
+import {IconButton, Option, Select, Sheet, Stack} from "@mui/joy";
 import {JOB_STATUS} from "@/app/utils";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
+import {CheckCircleOutline, CloseRounded, KeyboardArrowDown} from "@mui/icons-material";
+import {postman} from "@/resources/config";
+import {useRouter} from "next/navigation";
 
-export default function JobViewStatusChanger({sx}) {
+export default function JobViewStatusChanger({sx, job}) {
+    const router = useRouter()
+    const action = useRef(null)
+    const [loading, setLoading] = useState(false)
+    const [successGlyph, setSuccessGlyph] = useState(false)
+
     const [selectedStatus, setSelectedStatus] = useState(null)
+    const [statusError, setStatusError] = useState(false)
     const [dateRange, setDateRange] = useState({
         from: '',
         to: ''
     })
 
-    return <form>
+    const updateStatus = () => {
+        if (selectedStatus === null || JOB_STATUS[selectedStatus] === undefined) setStatusError(true)
+        else setStatusError(false)
+
+        setLoading(true)
+
+        const token = sessionStorage.getItem('token')
+
+        postman.post(`/jobs/${job.id}/status/change`, {
+            status: JOB_STATUS[selectedStatus],
+            startDate: dateRange.from,
+            endDate: dateRange.to
+        }, {
+            headers: {
+                Authorization: 'BearerJWT ' + token
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                setLoading(false)
+                setSuccessGlyph(true)
+                setTimeout(() => {
+                    setSuccessGlyph(false)
+                    router.refresh()
+                }, 1000)
+            } else {
+                // todo perform error handling
+            }
+        }).catch((error) => {
+            // todo error handling
+        }).finally(() => setLoading(false))
+    }
+
+    return <form onSubmit={(e) => {
+        e.preventDefault()
+        updateStatus()
+    }}>
         <Sheet variant='soft' sx={{...sx, p: 1, borderRadius: '15px'}}>
             <Stack spacing={2} sx={{}}>
-                <FormControl>
+                <FormControl error={statusError}>
                     <FormLabel sx={{fontWeight: '600', fontSize: '16px'}}>Update status</FormLabel>
-                    <Select required value={selectedStatus} placeholder='Select...' onChange={(ev, nv) => setSelectedStatus(nv)}>
+                    <Select action={action} required value={selectedStatus} indicator={<KeyboardArrowDown />} placeholder='Select...' onChange={(ev, nv) => setSelectedStatus(nv)} {...(selectedStatus && {
+                        // display the button and remove select indicator
+                        // when user has selected a value
+                        endDecorator: (
+                            <IconButton
+                                size='xs'
+                                variant="plain"
+                                color="neutral"
+                                onMouseDown={(event) => {
+                                    // don't open the popup when clicking on this button
+                                    event.stopPropagation();
+                                }}
+                                onClick={() => {
+                                    setSelectedStatus(null);
+                                    action.current?.focusVisible();
+                                }}
+                            >
+                                <CloseRounded />
+                            </IconButton>
+                        ),
+                        indicator: null,
+                    })}>
                         {Object.entries(JOB_STATUS).map(([k, v], i) => <Option key={i} value={k}>{v}</Option>)}
                     </Select>
                 </FormControl>
@@ -34,7 +101,7 @@ export default function JobViewStatusChanger({sx}) {
                                onChange={(e) => setDateRange({...dateRange, to: e.target.value})}/>
                     </FormControl>
                 </Stack>
-                <Button>Update</Button>
+                <Button loading={loading} type='submit'>{successGlyph ? <CheckCircleOutline /> : 'Update'}</Button>
             </Stack>
         </Sheet>
     </form>

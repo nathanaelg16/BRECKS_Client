@@ -25,7 +25,7 @@ export default function HomeViewStatusChanger({openState, job}) {
         if (selectedStatus === null || JOB_STATUS[selectedStatus] === undefined) setStatusError(true)
         else setStatusError(false)
 
-        setLoading(false)
+        setLoading(true)
 
         const token = sessionStorage.getItem('token')
 
@@ -75,7 +75,7 @@ export default function HomeViewStatusChanger({openState, job}) {
                         <Input required type="date" value={effectiveDate}
                                onChange={(e) => setEffectiveDate(e.target.value)}/>
                     </FormControl>
-                    <Button loading={loading} type='submit'>{successGlyph ? <CheckCircleOutline /> : "Change"}</Button>
+                    <Button loading={loading} type='submit'>{successGlyph ? <CheckCircleOutline /> : 'Change'}</Button>
                 </Stack>
             </form>
         </ModalDialog>
