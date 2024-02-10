@@ -8,14 +8,14 @@ import {Red_Hat_Display} from "next/font/google";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
-export default function ReportStats({sx, ratioMissing}) {
+export default function ReportStats({sx, ratio, loading}) {
     const [level, setLevel] = useState(0)
 
     useEffect(() => {
-        if (ratioMissing === 0.00) setLevel(0)
-        else if (ratioMissing <= 0.30) setLevel(1)
+        if (ratio === 0.00) setLevel(0)
+        else if (ratio <= 0.30) setLevel(1)
         else setLevel(2)
-    }, [ratioMissing])
+    }, [ratio])
 
     const colors = [
         {
@@ -52,12 +52,12 @@ export default function ReportStats({sx, ratioMissing}) {
         }
     ]
 
-    return <Card size='sm' sx={{...sx, background: !ratioMissing ? 'var(--joy-palette-neutral-300)' : colors[level]['background']}} variant="solid">
+    return <Card size='sm' sx={{...sx, background: loading ? 'var(--joy-palette-neutral-300)' : colors[level]['background']}} variant="solid">
         <CardContent orientation="horizontal" sx={{alignItems: 'center'}}>
-            <CircularProgress size="lg" determinate={!!ratioMissing} value={!ratioMissing ? 75 : data[level]['value']} sx={{'--CircularProgress-progressColor': !ratioMissing ? '#555555' : colors[level]['progressColor'], '--CircularProgress-trackColor': !ratioMissing ? '#2A3439' : colors[level]['color']}}>
-                {!!ratioMissing && statusIcon[level]}
+            <CircularProgress size="lg" determinate={!loading} value={loading ? 75 : data[level]['value']} sx={{'--CircularProgress-progressColor': loading ? '#555555' : colors[level]['progressColor'], '--CircularProgress-trackColor': loading ? '#2A3439' : colors[level]['color']}}>
+                {!loading && statusIcon[level]}
             </CircularProgress>
-            <Typography className={RedHatFont.className} sx={{color: colors[level]['color']}} level="h3">{!!ratioMissing && data[level]['message']}</Typography>
+            <Typography className={RedHatFont.className} sx={{color: colors[level]['color']}} level="h3">{!loading && data[level]['message']}</Typography>
         </CardContent>
     </Card>
 }

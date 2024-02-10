@@ -1,7 +1,12 @@
-import {Stack} from "@mui/joy";
+import {Divider, Sheet, Stack} from "@mui/joy";
 import ReportStats from "@/app/(app)/job/[id]/(sidebar)/(stats)/reports";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
+import Typography from "@mui/joy/Typography";
+import {MONTHS} from "@/app/utils";
+import {Red_Hat_Display} from "next/font/google";
+
+const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
 export default function JobStats({sx, job, calendar}) {
     const [stats, setStats] = useState({})
@@ -24,7 +29,23 @@ export default function JobStats({sx, job, calendar}) {
         }).finally(() => setLoading(false))
     }, [job.id, calendar])
 
-    return <Stack sx={{...sx, }} spacing={2}>
-        <ReportStats loading={loading} job={job} ratioMissing={stats.missingReportDates?.length / 20.0} />
-    </Stack>
+    const dataRow = (key, value) => {
+        return <Stack direction='row' spacing={2}>
+            <Typography className={RedHatFont.className} fontWeight='800' sx={{color: 'var(--joy-palette-neutral-900)'}}>{key}:</Typography>
+            <Typography className={RedHatFont.className} fontWeight='600' sx={{color: 'var(--joy-palette-neutral-900)'}}>{value}</Typography>
+        </Stack>
+    }
+
+    return <>
+        <Divider sx={{mt: 3, '--Divider-thickness': '2px', '--Divider-lineColor': 'black'}}><Typography level='title-lg' className={RedHatFont.className} sx={{color: 'black'}}>{`${MONTHS[calendar.month]} ${calendar.year}`}</Typography></Divider>
+        <Stack sx={{...sx, }} spacing={2}>
+            <ReportStats loading={loading} job={job} ratio={stats.missingReportDates?.length / 20.0} />
+            <Sheet sx={{p: 1, borderRadius: '15px'}}>
+                <Stack spacing={2}>
+                    {dataRow('Total Man-days', stats.totalManDays)}
+                    {dataRow('Average Daily Manpower', stats.avgDailyManPower)}
+                </Stack>
+            </Sheet>
+        </Stack>
+    </>
 }
