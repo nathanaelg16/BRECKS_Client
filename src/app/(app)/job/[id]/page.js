@@ -4,7 +4,7 @@ import Box from "@mui/joy/Box";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Sidebar from "@/app/(app)/job/[id]/(sidebar)/sidebar";
-import {Table} from "@mui/joy";
+import Calendar from "@/app/(app)/job/[id]/(calendar)/calendar";
 
 export default function Job({params}) {
     const [job, setJob] = useState({})
@@ -29,10 +29,8 @@ export default function Job({params}) {
         })
     }, [params.id])
 
-    return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '1svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
-        <Box sx={{gridColumn: 1, gridRow: 1}}>
-            <Table variant='plain'></Table>
-        </Box>
+    return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '0svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
+        <Calendar sx={{gridColumn: 1, gridRow: 1}} calendarState={[calendar, setCalendar]} />
         <Sidebar sx={{gridColumn: 2, gridRow: 1}} job={job} calendar={calendar}/>
     </Box>
 }

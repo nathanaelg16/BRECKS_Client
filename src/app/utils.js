@@ -18,3 +18,6 @@ export const JOB_STATUS = {
     ON_HOLD: "ON HOLD",
     COMPLETED: "COMPLETED"
 }
+
+export const MONTHS = ['JANUARY', 'FEBRUARY',
+    'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
