@@ -8,8 +8,8 @@ import {Red_Hat_Display} from "next/font/google";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
-export default function JobStats({sx, job, calendar}) {
-    const [stats, setStats] = useState({})
+export default function JobStats({sx, job, calendar, statsState}) {
+    const [stats, setStats] = statsState
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -27,7 +27,7 @@ export default function JobStats({sx, job, calendar}) {
             console.log(error)
             // todo implement error handling
         }).finally(() => setLoading(false))
-    }, [job.id, calendar])
+    }, [job?.id, calendar, setStats])
 
     const dataRow = (key, value) => {
         return <Stack direction='row' spacing={2}>

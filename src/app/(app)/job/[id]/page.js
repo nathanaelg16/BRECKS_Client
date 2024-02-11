@@ -12,6 +12,25 @@ export default function Job({params}) {
         month: new Date().getMonth(),
         year: new Date().getFullYear()
     })
+    const [stats, setStats] = useState({})
+
+    const updateCalendar = (update) => {
+        let newState = {}
+
+        if (update === -1) {
+            if (calendar.month === 0) {
+                newState['year'] = calendar.year - 1
+                newState['month'] = 11
+            } else newState['month'] = calendar.month - 1
+        } else if (update === 1) {
+            if (calendar.month === 11) {
+                newState['year'] = calendar.year + 1
+                newState['month'] = 0
+            } else newState['month'] = calendar.month + 1
+        }
+
+        setCalendar({...calendar, ...newState})
+    }
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
@@ -30,7 +49,7 @@ export default function Job({params}) {
     }, [params.id])
 
     return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '0svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
-        <Calendar sx={{gridColumn: 1, gridRow: 1}} calendarState={[calendar, setCalendar]} />
-        <Sidebar sx={{gridColumn: 2, gridRow: 1}} job={job} calendar={calendar}/>
+        <Calendar sx={{gridColumn: 1, gridRow: 1}} calendarState={[calendar, updateCalendar]} stats={stats} />
+        <Sidebar sx={{gridColumn: 2, gridRow: 1}} job={job} calendar={calendar} statsState={[stats, setStats]}/>
     </Box>
 }

@@ -52,7 +52,7 @@ export default function ReportStats({sx, ratio, loading}) {
         }
     ]
 
-    return <Card size='sm' sx={{...sx, background: loading ? 'var(--joy-palette-neutral-300)' : colors[level]['background']}} variant="solid">
+    return <Card size='sm' sx={{...sx, background: loading ? 'var(--joy-palette-neutral-300)' : colors[level]['background'], userSelect: 'none', WebKitUserSelect: 'none'}} variant="solid">
         <CardContent orientation="horizontal" sx={{alignItems: 'center'}}>
             <CircularProgress size="lg" determinate={!loading} value={loading ? 75 : data[level]['value']} sx={{'--CircularProgress-progressColor': loading ? '#555555' : colors[level]['progressColor'], '--CircularProgress-trackColor': loading ? '#2A3439' : colors[level]['color']}}>
                 {!loading && statusIcon[level]}

@@ -9,7 +9,7 @@ import JobStats from "@/app/(app)/job/[id]/(sidebar)/(stats)/job_stats";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
-export default function Sidebar({sx, job, calendar}) {
+export default function Sidebar({sx, job, calendar, statsState}) {
     return <Box sx={{...sx, borderLeft: '2px solid gray', px: 2, pt: 2, display: 'flex', flexDirection: 'column', background: 'var(--joy-palette-neutral-50)', overflowY: 'scroll'}}>
         <Box sx={{mx: 'auto', textAlign: 'center'}}>
             <Typography className={RedHatFont.className} level={'h2'}>{job.address}</Typography>
@@ -20,6 +20,6 @@ export default function Sidebar({sx, job, calendar}) {
         </Chip>
         <JobData job={job} sx={{mt: 3}}/>
         <JobViewStatusChanger job={job} sx={{mt: 3}} />
-        <JobStats job={job} calendar={calendar} sx={{mt: 3}} />
+        <JobStats job={job} calendar={calendar} statsState={statsState} sx={{mt: 3}} />
     </Box>
 }
