@@ -27,7 +27,7 @@ export default function JobStats({sx, job, calendar, statsState}) {
             console.log(error)
             // todo implement error handling
         }).finally(() => setLoading(false))
-    }, [job?.id, calendar, setStats])
+    }, [job, calendar, setStats])
 
     const dataRow = (key, value) => {
         return <Stack direction='row' spacing={2}>

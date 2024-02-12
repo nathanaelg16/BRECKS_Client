@@ -11,7 +11,7 @@ import {CheckCircleOutline, CloseRounded, KeyboardArrowDown} from "@mui/icons-ma
 import {postman} from "@/resources/config";
 import {useRouter} from "next/navigation";
 
-export default function JobViewStatusChanger({sx, job}) {
+export default function JobViewStatusChanger({sx, job, triggerUpdate}) {
     const router = useRouter()
     const action = useRef(null)
     const [loading, setLoading] = useState(false)
@@ -46,7 +46,7 @@ export default function JobViewStatusChanger({sx, job}) {
                 setSuccessGlyph(true)
                 setTimeout(() => {
                     setSuccessGlyph(false)
-                    router.refresh()
+                    triggerUpdate(token)
                 }, 1000)
             } else {
                 // todo perform error handling
