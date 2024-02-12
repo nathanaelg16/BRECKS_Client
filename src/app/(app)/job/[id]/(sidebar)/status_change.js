@@ -9,10 +9,8 @@ import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import {CheckCircleOutline, CloseRounded, KeyboardArrowDown} from "@mui/icons-material";
 import {postman} from "@/resources/config";
-import {useRouter} from "next/navigation";
 
 export default function JobViewStatusChanger({sx, job, triggerUpdate}) {
-    const router = useRouter()
     const action = useRef(null)
     const [loading, setLoading] = useState(false)
     const [successGlyph, setSuccessGlyph] = useState(false)
