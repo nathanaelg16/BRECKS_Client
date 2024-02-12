@@ -4,10 +4,7 @@ import {Red_Hat_Display} from "next/font/google";
 import {useEffect, useState} from "react";
 import Typography from "@mui/joy/Typography";
 import {Range} from "immutable"
-import {Stack, Tooltip} from "@mui/joy";
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import CircleIcon from '@mui/icons-material/Circle';
-import {JOB_STATUS, JOB_STATUS_COLORS} from "@/app/utils";
+import CalendarDate from "@/app/(app)/job/[id]/(calendar)/calendar_date";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
@@ -15,6 +12,7 @@ export default function Calendar({sx, calendarState, stats}) {
     const [calendar, updateCalendar] = calendarState
     const [data, setData] = useState([])
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
+    const [lastDateOfMonth, setLastDateOfMonth] = useState(0)
 
     useEffect(() => {
         const firstOfMonth = new Date(calendar.year, calendar.month, 1)
@@ -31,6 +29,7 @@ export default function Calendar({sx, calendarState, stats}) {
         lastOfMonth.setDate(0)
 
         const lastDateOfMonth = lastOfMonth.getUTCDate()
+        setLastDateOfMonth(lastDateOfMonth)
 
         let antefillIns = firstDayOfMonth > 0 ?
             Range(lastDateOfPreviousMonth - firstDayOfMonth + 1, lastDateOfPreviousMonth + 1)
@@ -53,7 +52,13 @@ export default function Calendar({sx, calendarState, stats}) {
         const jobStatusPerDay = Array(lastDateOfMonth + 1)
         if (stats.statusHistory) Object.entries(stats.statusHistory).forEach(([key, value]) => {
             value.forEach((interval) => {
-                Range(new Date(interval.startDate).getUTCDate(), new Date(interval.endDate).getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
+                let startDate = new Date(interval.startDate)
+                let endDate = new Date(interval.endDate)
+
+                if (startDate < firstOfMonth) startDate = firstOfMonth
+                if (endDate > lastOfMonth)  endDate = lastOfMonth
+
+                Range(startDate.getUTCDate(), endDate.getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
             })
         })
 
@@ -111,17 +116,7 @@ export default function Calendar({sx, calendarState, stats}) {
                     }>{day}</Typography>)}
 
             </Box>
-            {Range(0, 6).map((i) => Range(0, 7).map((j) =>
-                <Box key={i*10 + j} onClick={data[i*7 + j]?.onClick}
-                     sx={{cursor: 'pointer', p: 1, gridRow: i+2, gridColumn: j+1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data[i*7 + j]?.sx}}>
-                    <Stack spacing={1} direction='row' justifyContent='space-between' alignItems='center' flexWrap='wrap'>
-                        <Typography level='title-lg' sx={{...data[i*7 + j]?.dateSX}}>{data[i*7 + j]?.date}</Typography>
-                        <Stack spacing={1} direction='row' justifyContent='flex-end' alignItems='center' flexWrap='wrap'>
-                            {data[i*7 + j]?.reportMissing && <Tooltip title='Missing report'><WarningAmberIcon sx={{color: '#FF9C24', fontSize: 28}} /></Tooltip>}
-                            {data[i*7 + j]?.status && <Tooltip title={JOB_STATUS[data[i*7 + j]?.status]}><CircleIcon sx={{fontSize: 18, color: JOB_STATUS_COLORS[data[i*7 + j]?.status]}}></CircleIcon></Tooltip>}
-                        </Stack>
-                    </Stack>
-                </Box>))}
+            {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, firstDayOfMonth: firstDayOfMonth, lastDateOfMonth: lastDateOfMonth}} />))}
         </Box>
     </Box>
 }
