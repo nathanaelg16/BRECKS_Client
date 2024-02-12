@@ -4,8 +4,10 @@ import {Red_Hat_Display} from "next/font/google";
 import {useEffect, useState} from "react";
 import Typography from "@mui/joy/Typography";
 import {Range} from "immutable"
-import {Stack} from "@mui/joy";
-import WarningIcon from '@mui/icons-material/Warning';
+import {Stack, Tooltip} from "@mui/joy";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import CircleIcon from '@mui/icons-material/Circle';
+import {JOB_STATUS, JOB_STATUS_COLORS} from "@/app/utils";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
@@ -48,19 +50,31 @@ export default function Calendar({sx, calendarState, stats}) {
             }
         })
 
-        //const missingReportDates = stats.missingReportDates?.map((date) => new Date(date).getUTCDate())
+        const jobStatusPerDay = Array(lastDateOfMonth + 1)
+        if (stats.statusHistory) Object.entries(stats.statusHistory).forEach(([key, value]) => {
+            value.forEach((interval) => {
+                Range(new Date(interval.startDate).getUTCDate(), new Date(interval.endDate).getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
+            })
+        })
 
+        const missingReportDates = stats.missingReportDates?.map((date) => new Date(date).getUTCDate()).sort((a, b) => a - b)
+
+        let missingReportCounter = 0
         let monthDays = Range(1, lastDateOfMonth + 1).map((v) => {
+            const reportMissing = missingReportDates ? missingReportDates[missingReportCounter] === v : false
+            if (reportMissing) missingReportCounter++
             return {
                 date: v,
-                sx: {},
+                sx: {
+                    background: '#FAF9F9'
+                },
                 dateSX: {
                     color: 'var(--joy-palette-primary-900)'
-                }
+                },
+                reportMissing: reportMissing,
+                status: jobStatusPerDay[v]
             }
-        }).toArray()
-
-        //missingReportDates?.forEach((date) => monthDays.get(date)['reportMissing'] = true)
+        })
 
         let postFillIns = Range(1, 42 - monthDays.size - antefillIns.size + 1).map((v) => {
             return {
@@ -100,9 +114,12 @@ export default function Calendar({sx, calendarState, stats}) {
             {Range(0, 6).map((i) => Range(0, 7).map((j) =>
                 <Box key={i*10 + j} onClick={data[i*7 + j]?.onClick}
                      sx={{cursor: 'pointer', p: 1, gridRow: i+2, gridColumn: j+1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data[i*7 + j]?.sx}}>
-                    <Stack spacing={1} direction='row' justifyContent='space-between'>
+                    <Stack spacing={1} direction='row' justifyContent='space-between' alignItems='center' flexWrap='wrap'>
                         <Typography level='title-lg' sx={{...data[i*7 + j]?.dateSX}}>{data[i*7 + j]?.date}</Typography>
-                        {data[i*7 + j]?.reportMissing && <WarningIcon sx={{color: '#FF9C24'}} />}
+                        <Stack spacing={1} direction='row' justifyContent='flex-end' alignItems='center' flexWrap='wrap'>
+                            {data[i*7 + j]?.reportMissing && <Tooltip title='Missing report'><WarningAmberIcon sx={{color: '#FF9C24', fontSize: 28}} /></Tooltip>}
+                            {data[i*7 + j]?.status && <Tooltip title={JOB_STATUS[data[i*7 + j]?.status]}><CircleIcon sx={{fontSize: 18, color: JOB_STATUS_COLORS[data[i*7 + j]?.status]}}></CircleIcon></Tooltip>}
+                        </Stack>
                     </Stack>
                 </Box>))}
         </Box>

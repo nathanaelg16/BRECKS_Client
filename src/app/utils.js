@@ -19,5 +19,12 @@ export const JOB_STATUS = {
     COMPLETED: "COMPLETED"
 }
 
+export const JOB_STATUS_COLORS = {
+    NOT_STARTED: 'var(--joy-palette-neutral-500)',
+    ACTIVE: '#0070BB',
+    ON_HOLD: '#960018',
+    COMPLETED: '#34C172'
+}
+
 export const MONTHS = ['JANUARY', 'FEBRUARY',
     'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
