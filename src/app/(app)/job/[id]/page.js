@@ -51,7 +51,7 @@ export default function Job({params}) {
     }, [params.id, updateJob])
 
     return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '0svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
-        <Calendar sx={{gridColumn: 1, gridRow: 1}} calendarState={[calendar, updateCalendar]} stats={stats} />
+        <Calendar sx={{gridColumn: 1, gridRow: 1}} job={job} calendarState={[calendar, updateCalendar]} stats={stats} />
         <Sidebar sx={{gridColumn: 2, gridRow: 1}} job={job} calendar={calendar} statsState={[stats, setStats]} triggerUpdate={updateJob}/>
     </Box>
 }

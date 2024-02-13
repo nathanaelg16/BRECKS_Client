@@ -8,7 +8,7 @@ import CalendarDate from "@/app/(app)/job/[id]/(calendar)/calendar_date";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
-export default function Calendar({sx, calendarState, stats}) {
+export default function Calendar({sx, calendarState, stats, job}) {
     const [calendar, updateCalendar] = calendarState
     const [data, setData] = useState([])
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
@@ -30,6 +30,9 @@ export default function Calendar({sx, calendarState, stats}) {
 
         const lastDateOfMonth = lastOfMonth.getUTCDate()
         setLastDateOfMonth(lastDateOfMonth)
+
+        let today = new Date()
+        today = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
         let antefillIns = firstDayOfMonth > 0 ?
             Range(lastDateOfPreviousMonth - firstDayOfMonth + 1, lastDateOfPreviousMonth + 1)
@@ -56,12 +59,14 @@ export default function Calendar({sx, calendarState, stats}) {
                 let endDate = new Date(interval.endDate)
 
                 if (startDate < firstOfMonth) startDate = firstOfMonth
-                if (endDate > lastOfMonth)  endDate = lastOfMonth
+                if (endDate > today)  endDate = today
+                if (startDate > endDate) startDate = endDate
 
                 Range(startDate.getUTCDate(), endDate.getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
             })
         })
 
+        const viewingCurrentMonth = today >= firstOfMonth && today <= lastOfMonth
         const missingReportDates = stats.missingReportDates?.map((date) => new Date(date).getUTCDate()).sort((a, b) => a - b)
 
         let missingReportCounter = 0
@@ -77,7 +82,8 @@ export default function Calendar({sx, calendarState, stats}) {
                     color: 'var(--joy-palette-primary-900)'
                 },
                 reportMissing: reportMissing,
-                status: jobStatusPerDay[v]
+                status: jobStatusPerDay[v],
+                today: viewingCurrentMonth && v === today.getUTCDate()
             }
         })
 
@@ -97,7 +103,7 @@ export default function Calendar({sx, calendarState, stats}) {
         })
 
         setData([...antefillIns, ...monthDays, ...postFillIns])
-    }, [calendar, updateCalendar, stats])
+    }, [calendar, updateCalendar, stats, job])
 
     return <Box sx={{...sx, display: 'flex', flexDirection: 'column', height: '100%', userSelect: 'none', WebkitUserSelect: 'none'}}>
         <CalendarControl sx={{my: 1, flex: '0 1 auto'}} calendarState={calendarState}/>
