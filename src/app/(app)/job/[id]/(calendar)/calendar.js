@@ -1,14 +1,16 @@
 import Box from "@mui/joy/Box";
 import CalendarControl from "@/app/(app)/job/[id]/(calendar)/calendar_control";
 import {Red_Hat_Display} from "next/font/google";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import Typography from "@mui/joy/Typography";
 import {Range} from "immutable"
 import CalendarDate from "@/app/(app)/job/[id]/(calendar)/calendar_date";
+import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
-export default function Calendar({sx, calendarState, stats, job}) {
+export default function Calendar({sx, calendarState, stats}) {
+    let [job, _] = useContext(JobContext)
     const [calendar, updateCalendar] = calendarState
     const [data, setData] = useState([])
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)

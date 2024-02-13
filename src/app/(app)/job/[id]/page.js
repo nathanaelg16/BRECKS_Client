@@ -1,13 +1,13 @@
 'use client'
 
 import Box from "@mui/joy/Box";
-import {useCallback, useEffect, useState} from "react";
-import {postman} from "@/resources/config";
+import {useContext, useEffect, useState} from "react";
 import Sidebar from "@/app/(app)/job/[id]/(sidebar)/sidebar";
 import Calendar from "@/app/(app)/job/[id]/(calendar)/calendar";
+import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
 export default function Job({params}) {
-    const [job, setJob] = useState({})
+    let [_, updateJob] = useContext(JobContext)
     const [calendar, setCalendar] = useState({
         month: new Date().getMonth(),
         year: new Date().getFullYear()
@@ -32,26 +32,12 @@ export default function Job({params}) {
         setCalendar({...calendar, ...newState})
     }
 
-    const updateJob = useCallback((token) => {
-        postman.get(`/jobs/${params.id}`, {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
-            if (response.status === 200) setJob(response.data)
-            else {
-                // todo error handling
-            }
-        }).catch((error) => {
-            // todo implement error handling
-        })}, [params.id, setJob])
-
     useEffect(() => {
         updateJob(sessionStorage.getItem('token'))
     }, [params.id, updateJob])
 
     return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '0svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
-        <Calendar sx={{gridColumn: 1, gridRow: 1}} job={job} calendarState={[calendar, updateCalendar]} stats={stats} />
-        <Sidebar sx={{gridColumn: 2, gridRow: 1}} job={job} calendar={calendar} statsState={[stats, setStats]} triggerUpdate={updateJob}/>
+        <Calendar sx={{gridColumn: 1, gridRow: 1}} calendarState={[calendar, updateCalendar]} stats={stats} />
+        <Sidebar sx={{gridColumn: 2, gridRow: 1}} calendar={calendar} statsState={[stats, setStats]} />
     </Box>
 }

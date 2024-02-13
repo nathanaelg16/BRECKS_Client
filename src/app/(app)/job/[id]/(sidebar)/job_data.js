@@ -3,10 +3,14 @@
 import {Sheet, Stack} from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 import {Red_Hat_Display} from "next/font/google";
+import {useContext} from "react";
+import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
-export default function JobData({sx, job}) {
+export default function JobData({sx}) {
+    let [job, _] = useContext(JobContext)
+
     const dateFormatter = (dateStr) => new Date(dateStr)
         .toLocaleString("en-US", {timeZone: "UTC", month: '2-digit', day: '2-digit', year: 'numeric'})
         .toString()

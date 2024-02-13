@@ -1,14 +1,16 @@
 import {Divider, Sheet, Stack} from "@mui/joy";
 import ReportStats from "@/app/(app)/job/[id]/(sidebar)/(stats)/reports";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Typography from "@mui/joy/Typography";
 import {MONTHS} from "@/app/utils";
 import {Red_Hat_Display} from "next/font/google";
+import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
-export default function JobStats({sx, job, calendar, statsState}) {
+export default function JobStats({sx, calendar, statsState}) {
+    let [job, _] = useContext(JobContext)
     const [stats, setStats] = statsState
     const [loading, setLoading] = useState(true)
 
@@ -39,7 +41,7 @@ export default function JobStats({sx, job, calendar, statsState}) {
     return <>
         <Divider sx={{mt: 3, '--Divider-thickness': '2px', '--Divider-lineColor': 'black'}}><Typography level='title-lg' className={RedHatFont.className} sx={{color: 'black'}}>{`${MONTHS[calendar.month]} ${calendar.year}`}</Typography></Divider>
         <Stack sx={{...sx, }} spacing={2}>
-            <ReportStats loading={loading} job={job} ratio={stats.missingReportDates?.length / 20.0} />
+            <ReportStats loading={loading} ratio={stats.missingReportDates?.length / 20.0} />
             <Sheet sx={{p: 1, borderRadius: '15px'}}>
                 <Stack spacing={2}>
                     {dataRow('Total Man-days', stats.totalManDays)}

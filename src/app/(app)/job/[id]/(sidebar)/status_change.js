@@ -4,13 +4,15 @@ import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import {IconButton, Option, Select, Sheet, Stack} from "@mui/joy";
 import {JOB_STATUS} from "@/app/utils";
-import {useRef, useState} from "react";
+import {useContext, useRef, useState} from "react";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import {CheckCircleOutline, CloseRounded, KeyboardArrowDown} from "@mui/icons-material";
 import {postman} from "@/resources/config";
+import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
-export default function JobViewStatusChanger({sx, job, triggerUpdate}) {
+export default function JobViewStatusChanger({sx}) {
+    const [job, updateJob] = useContext(JobContext)
     const action = useRef(null)
     const [loading, setLoading] = useState(false)
     const [successGlyph, setSuccessGlyph] = useState(false)
@@ -44,7 +46,7 @@ export default function JobViewStatusChanger({sx, job, triggerUpdate}) {
                 setSuccessGlyph(true)
                 setTimeout(() => {
                     setSuccessGlyph(false)
-                    triggerUpdate(token)
+                    updateJob(token)
                 }, 1000)
             } else {
                 // todo perform error handling
