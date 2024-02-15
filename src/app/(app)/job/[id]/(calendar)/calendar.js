@@ -90,7 +90,7 @@ export default function Calendar({sx, calendarState, stats}) {
                     },
                     reportMissing: reportMissing,
                     status: jobStatusPerDay[v],
-                    today: today.getUTCMonth() === calendar.month && v === today.getUTCDate(),
+                    today: today.getUTCMonth() === calendar.month && today.getUTCFullYear() === calendar.year && v === today.getUTCDate(),
                     report: report,
                     currentCalendarMonth: true,
                 }

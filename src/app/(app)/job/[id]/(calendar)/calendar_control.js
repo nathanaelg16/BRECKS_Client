@@ -15,7 +15,13 @@ export default function CalendarControl({sx, calendarState}) {
         <Stack direction='row' columns={3} spacing={2} sx={{mx: 'auto'}} alignItems='center'>
             <KeyboardArrowLeftIcon onClick={() => updateCalendar(-1)} sx={{borderRadius: 15, fontSize: 36, cursor: 'pointer', color: 'var(--joy-palette-neutral-800)', '&:hover': {background: 'var(--joy-palette-neutral-50)'}}}/>
             <Typography className={RedHatFont.className} level='h2' sx={{userSelect: 'none', WebkitUserSelect: 'none'}}>{`${MONTHS[calendar.month]} ${calendar.year}`}</Typography>
-            <KeyboardArrowRightIcon onClick={() => updateCalendar(1)} sx={{borderRadius: 15, fontSize: 36, cursor: 'pointer', color: 'var(--joy-palette-neutral-800)', '&:hover': {background: 'var(--joy-palette-neutral-50)'}}} />
+            <KeyboardArrowRightIcon onClick={() => updateCalendar(1)} sx={() => {
+                let sx = {borderRadius: 15, fontSize: 36, color: 'var(--joy-palette-neutral-800)'}
+                if (!(calendar.today.getMonth() === calendar.month && calendar.today.getFullYear() === calendar.year))
+                    sx = {...sx, '&:hover': {background: 'var(--joy-palette-neutral-50)', cursor: 'pointer'}}
+                else sx.color = '#594A4080'
+                return sx
+            }} />
         </Stack>
     </Box>
 }

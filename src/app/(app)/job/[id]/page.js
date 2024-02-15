@@ -8,10 +8,14 @@ import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
 export default function Job({params}) {
     let [_, updateJob] = useContext(JobContext)
-    const [calendar, setCalendar] = useState({
-        month: new Date().getMonth(),
-        year: new Date().getFullYear()
-    })
+    const [calendar, setCalendar] = useState((() => {
+        const today = new Date()
+        return {
+            today: today,
+            month: today.getMonth(),
+            year: today.getFullYear()
+        }
+    })())
     const [stats, setStats] = useState({})
 
     const updateCalendar = (update) => {
@@ -23,6 +27,7 @@ export default function Job({params}) {
                 newState['month'] = 11
             } else newState['month'] = calendar.month - 1
         } else if (update === 1) {
+            if (calendar.today.getMonth() === calendar.month && calendar.today.getFullYear() === calendar.year) return;
             if (calendar.month === 11) {
                 newState['year'] = calendar.year + 1
                 newState['month'] = 0
