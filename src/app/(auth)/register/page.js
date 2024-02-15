@@ -60,7 +60,7 @@ export default function Register() {
                 }
             }
         })
-    }, [searchParams, accessKey])
+    }, [searchParams, accessKey, router])
 
     const debounce = (callback, delay) => {
         let timeout;

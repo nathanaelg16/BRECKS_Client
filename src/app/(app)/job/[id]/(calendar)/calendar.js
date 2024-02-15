@@ -6,6 +6,7 @@ import Typography from "@mui/joy/Typography";
 import {Range} from "immutable"
 import CalendarDate from "@/app/(app)/job/[id]/(calendar)/calendar_date";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {postman} from "@/resources/config";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
@@ -19,93 +20,127 @@ export default function Calendar({sx, calendarState, stats}) {
     useEffect(() => {
         const firstOfMonth = new Date(calendar.year, calendar.month, 1)
 
-        const firstDayOfMonth = firstOfMonth.getUTCDay()
-        setFirstDayOfMonth(firstDayOfMonth)
-
-        const lastOfPreviousMonth = new Date(firstOfMonth.getTime())
-        lastOfPreviousMonth.setDate(0)
-
-        const lastDateOfPreviousMonth = lastOfPreviousMonth.getUTCDate()
-
         const lastOfMonth = new Date(calendar.year, calendar.month + 1, 1)
         lastOfMonth.setDate(0)
-
-        const lastDateOfMonth = lastOfMonth.getUTCDate()
-        setLastDateOfMonth(lastDateOfMonth)
 
         let today = new Date()
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
-        let antefillIns = firstDayOfMonth > 0 ?
-            Range(lastDateOfPreviousMonth - firstDayOfMonth + 1, lastDateOfPreviousMonth + 1)
-            : Range(0, 0)
-        antefillIns = antefillIns.map((v) => {
-            return {
-                date: v,
-                sx: {
-                    background: 'var(--joy-palette-neutral-200)',
-                    '&:hover': {
-                        background: 'var(--joy-palette-neutral-500)'
+        const prepareData = (reports) => {
+            const firstDayOfMonth = firstOfMonth.getUTCDay()
+            setFirstDayOfMonth(firstDayOfMonth)
+
+            const lastOfPreviousMonth = new Date(firstOfMonth.getTime())
+            lastOfPreviousMonth.setDate(0)
+
+            const lastDateOfPreviousMonth = lastOfPreviousMonth.getUTCDate()
+
+            const lastDateOfMonth = lastOfMonth.getUTCDate()
+            setLastDateOfMonth(lastDateOfMonth)
+
+            let anteFillIns = firstDayOfMonth > 0 ?
+                Range(lastDateOfPreviousMonth - firstDayOfMonth + 1, lastDateOfPreviousMonth + 1)
+                : Range(0, 0)
+            anteFillIns = anteFillIns.map((v) => {
+                return {
+                    date: v,
+                    sx: {
+                        background: 'var(--joy-palette-neutral-200)',
+                        '&:hover': {
+                            background: 'var(--joy-palette-neutral-500)'
+                        }
+                    },
+                    currentCalendarMonth: false,
+                    onClick: () => {
+                        updateCalendar(-1)
                     }
-                },
-                onClick: () => {
-                    updateCalendar(-1)
                 }
-            }
-        })
-
-        const jobStatusPerDay = Array(lastDateOfMonth + 1)
-        if (stats.statusHistory) Object.entries(stats.statusHistory).forEach(([key, value]) => {
-            value.forEach((interval) => {
-                let startDate = new Date(interval.startDate)
-                let endDate = new Date(interval.endDate)
-
-                if (startDate < firstOfMonth) startDate = firstOfMonth
-                if (endDate > today)  endDate = today
-                if (startDate > endDate) startDate = endDate
-
-                Range(startDate.getUTCDate(), endDate.getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
             })
-        })
 
-        const viewingCurrentMonth = today >= firstOfMonth && today <= lastOfMonth
-        const missingReportDates = stats.missingReportDates?.map((date) => new Date(date).getUTCDate()).sort((a, b) => a - b)
+            const jobStatusPerDay = Array(lastDateOfMonth + 1)
+            if (stats.statusHistory) Object.entries(stats.statusHistory).forEach(([key, value]) => {
+                value.forEach((interval) => {
+                    let startDate = new Date(interval.startDate)
+                    let endDate = new Date(interval.endDate)
 
-        let missingReportCounter = 0
-        let monthDays = Range(1, lastDateOfMonth + 1).map((v) => {
-            const reportMissing = missingReportDates ? missingReportDates[missingReportCounter] === v : false
-            if (reportMissing) missingReportCounter++
-            return {
-                date: v,
-                sx: {
-                    background: '#FAF9F9'
-                },
-                dateSX: {
-                    color: 'var(--joy-palette-primary-900)'
-                },
-                reportMissing: reportMissing,
-                status: jobStatusPerDay[v],
-                today: viewingCurrentMonth && v === today.getUTCDate()
-            }
-        })
+                    if (startDate < firstOfMonth) startDate = firstOfMonth
+                    if (endDate > today)  endDate = today
+                    if (startDate > endDate) startDate = endDate
 
-        let postFillIns = Range(1, 42 - monthDays.size - antefillIns.size + 1).map((v) => {
-            return {
-                date: v,
-                sx: {
-                    background: 'var(--joy-palette-neutral-200)',
-                    '&:hover': {
-                        background: 'var(--joy-palette-neutral-500)'
-                    }
-                },
-                onClick: () => {
-                    updateCalendar(1)
+                    Range(startDate.getUTCDate(), endDate.getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
+                })
+            })
+
+            const missingReportDates = stats.missingReportDates?.map((date) => new Date(date).getUTCDate()).sort((a, b) => a - b)
+            const reportDates = reports.map((report) => new Date(report.reportDate).getUTCDate()).sort((a, b) => a - b)
+
+            let missingReportCounter = 0
+            let reportCounter = 0
+            let monthDays = Range(1, lastDateOfMonth + 1).map((v) => {
+                const report = reportDates[reportCounter] === v ? reports[reportCounter++] : null
+                const reportMissing = missingReportDates ? missingReportDates[missingReportCounter] === v : false
+                if (reportMissing) missingReportCounter++
+                return {
+                    date: v,
+                    sx: {
+                        background: '#FAF9F9'
+                    },
+                    dateSX: {
+                        color: 'var(--joy-palette-primary-900)'
+                    },
+                    reportMissing: reportMissing,
+                    status: jobStatusPerDay[v],
+                    today: today.getUTCMonth() === calendar.month && v === today.getUTCDate(),
+                    report: report,
+                    currentCalendarMonth: true,
                 }
+            })
+
+            let postFillIns = Range(1, 42 - monthDays.size - anteFillIns.size + 1).map((v) => {
+                return {
+                    date: v,
+                    sx: {
+                        background: 'var(--joy-palette-neutral-200)',
+                        '&:hover': {
+                            background: 'var(--joy-palette-neutral-500)'
+                        }
+                    },
+                    currentCalendarMonth: false,
+                    onClick: () => {
+                        updateCalendar(1)
+                    }
+                }
+            })
+
+            return [...anteFillIns, ...monthDays, ...postFillIns]
+        }
+
+        const formatDate = (date) => {
+            return date.toLocaleString("en-CA", {timeZone: "UTC", month: '2-digit', day: '2-digit', year: 'numeric'})
+        }
+
+        const token = sessionStorage.getItem('token')
+
+        postman.get('/reports?' + new URLSearchParams({job: job.id, startDate: formatDate(firstOfMonth), endDate: formatDate(today)}), {
+            headers: {
+                Authorization: 'BearerJWT ' + token
             }
+        }).then((response) => {
+            if (response.status === 200) {
+                setData(prepareData(response.data))
+            } else {
+                console.log(response)
+                // todo implement error handling
+            }
+        }).catch((error) => {
+            console.log(error)
+            // todo implement error handling
         })
 
-        setData([...antefillIns, ...monthDays, ...postFillIns])
     }, [calendar, updateCalendar, stats, job])
+
+    const today = new Date()
+    const todayIndex = today.getMonth() === calendar.month ? today.getDate() + firstDayOfMonth - 1 : null
 
     return <Box sx={{...sx, display: 'flex', flexDirection: 'column', height: '100%', userSelect: 'none', WebkitUserSelect: 'none'}}>
         <CalendarControl sx={{my: 1, flex: '0 1 auto'}} calendarState={calendarState}/>
@@ -124,7 +159,7 @@ export default function Calendar({sx, calendarState, stats}) {
                     }>{day}</Typography>)}
 
             </Box>
-            {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, firstDayOfMonth: firstDayOfMonth, lastDateOfMonth: lastDateOfMonth}} />))}
+            {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, firstDayOfMonth: firstDayOfMonth, lastDateOfMonth: lastDateOfMonth, todayIndex: todayIndex}} />))}
         </Box>
     </Box>
 }

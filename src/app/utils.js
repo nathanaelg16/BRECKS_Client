@@ -20,8 +20,8 @@ export const JOB_STATUS = {
 }
 
 export const JOB_STATUS_COLORS = {
-    NOT_STARTED: 'var(--joy-palette-neutral-500)',
-    ACTIVE: '#0070BB',
+    NOT_STARTED: '#45362C', // var(--joy-palette-neutral-900)
+    ACTIVE: '#00416A',
     ON_HOLD: '#960018',
     COMPLETED: '#34C172'
 }
