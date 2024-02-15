@@ -38,19 +38,22 @@ export default function HomeViewStatusChanger({openState, job}) {
             }
         }).then((response) => {
             if (response.status === 200) {
-                setLoading(false)
-                setSuccessGlyph(true)
                 setTimeout(() => {
-                    setSuccessGlyph(false)
-                    setOpen(false)
-                    router.refresh()
-                }, 1000)
+                    setLoading(false)
+                    setSuccessGlyph(true)
+                    setTimeout(() => {
+                        setSuccessGlyph(false)
+                        setOpen(false)
+                        router.refresh()
+                    }, 1000)
+                }, 1500)
             } else {
                 // todo perform error handling
             }
         }).catch((error) => {
             // todo error handling
-        }).finally(() => setLoading(false))
+            setLoading(false)
+        })
     }
 
     return <Modal open={open} onClose={() => setOpen(false)}>

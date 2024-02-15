@@ -64,7 +64,7 @@ export default function Calendar({sx, calendarState, stats}) {
                     let endDate = new Date(interval.endDate)
 
                     if (startDate < firstOfMonth) startDate = firstOfMonth
-                    if (endDate > today)  endDate = today
+                    if (endDate > today)  endDate = lastOfMonth
                     if (startDate > endDate) startDate = endDate
 
                     Range(startDate.getUTCDate(), endDate.getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)

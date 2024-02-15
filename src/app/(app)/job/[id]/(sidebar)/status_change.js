@@ -42,18 +42,21 @@ export default function JobViewStatusChanger({sx}) {
             }
         }).then((response) => {
             if (response.status === 200) {
-                setLoading(false)
-                setSuccessGlyph(true)
                 setTimeout(() => {
-                    setSuccessGlyph(false)
-                    updateJob(token)
-                }, 1000)
+                    setLoading(false)
+                    setSuccessGlyph(true)
+                    setTimeout(() => {
+                        setSuccessGlyph(false)
+                        updateJob(token)
+                    }, 1000)
+                }, 1500)
             } else {
                 // todo perform error handling
             }
         }).catch((error) => {
             // todo error handling
-        }).finally(() => setLoading(false))
+            setLoading(false)
+        })
     }
 
     return <form onSubmit={(e) => {
