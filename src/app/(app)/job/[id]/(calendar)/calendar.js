@@ -7,15 +7,22 @@ import {Range} from "immutable"
 import CalendarDate from "@/app/(app)/job/[id]/(calendar)/calendar_date";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
 import {postman} from "@/resources/config";
+import {useRouter} from "next/navigation";
+import {ButtonGroup, Modal, ModalDialog, Stack, Table} from "@mui/joy";
+import ModalClose from "@mui/joy/ModalClose";
+import Button from "@mui/joy/Button";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
 export default function Calendar({sx, calendarState, stats}) {
     let [job, _] = useContext(JobContext)
+    const router = useRouter()
     const [calendar, updateCalendar] = calendarState
     const [data, setData] = useState([])
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
     const [lastDateOfMonth, setLastDateOfMonth] = useState(0)
+    const [activeReport, setActiveReport] = useState({})
+    const [showReport, setShowReport] = useState(false)
 
     useEffect(() => {
         const firstOfMonth = new Date(calendar.year, calendar.month, 1)
@@ -74,6 +81,15 @@ export default function Calendar({sx, calendarState, stats}) {
             const missingReportDates = stats.missingReportDates?.map((date) => new Date(date).getUTCDate()).sort((a, b) => a - b)
             const reportDates = reports.map((report) => new Date(report.reportDate).getUTCDate()).sort((a, b) => a - b)
 
+            const missingReportOnClick = (date) => {
+                router.push('/report?' + new URLSearchParams({job: job.id, date: `${calendar.year.toString()}-${(calendar.month + 1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`}))
+            }
+
+            const reportOnClick = (report) => {
+                setActiveReport(report)
+                setShowReport(true)
+            }
+
             let missingReportCounter = 0
             let reportCounter = 0
             let monthDays = Range(1, lastDateOfMonth + 1).map((v) => {
@@ -93,6 +109,7 @@ export default function Calendar({sx, calendarState, stats}) {
                     today: today.getUTCMonth() === calendar.month && today.getUTCFullYear() === calendar.year && v === today.getUTCDate(),
                     report: report,
                     currentCalendarMonth: true,
+                    onClick: reportMissing || (jobStatusPerDay[v] === 'ACTIVE' && !report)? () => missingReportOnClick(v) : () => reportOnClick(report)
                 }
             })
 
@@ -137,7 +154,7 @@ export default function Calendar({sx, calendarState, stats}) {
             // todo implement error handling
         })
 
-    }, [calendar, updateCalendar, stats, job])
+    }, [calendar, updateCalendar, stats, job, router])
 
     const today = new Date()
     const todayIndex = today.getMonth() === calendar.month ? today.getDate() + firstDayOfMonth - 1 : null
@@ -161,5 +178,81 @@ export default function Calendar({sx, calendarState, stats}) {
             </Box>
             {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, firstDayOfMonth: firstDayOfMonth, lastDateOfMonth: lastDateOfMonth, todayIndex: todayIndex}} />))}
         </Box>
+        <Modal open={showReport} onClose={() => setShowReport(false)}>
+            <ModalDialog>
+                <ModalClose />
+                <Box className='print' sx={{display: 'flex', flexDirection: 'column', overflowY: 'scroll'}}>
+                    <Table color='neutral' className={`${RedHatFont.className}`} size='lg' variant='soft' sx={{width: 0.5, mx: 'auto', '--Table-headerUnderlineThickness': '15px'}} borderAxis='both'>
+                        <thead>
+                        <tr>
+                            <th style={{border: '1px solid var(--joy-palette-neutral-100)'}} colSpan='2'>
+                                <Typography className={RedHatFont.className} level='h1' textAlign='center'>{job.address}</Typography>
+                                <Typography className={RedHatFont.className} level='h3' textAlign='center'>Job Report</Typography>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope='row'><Typography textAlign='right' fontWeight='700'>Report Date:</Typography>
+                            </th>
+                            <td><Typography fontWeight='500' textAlign='center'>{activeReport.reportDate}</Typography>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope='row'><Typography textAlign='right' fontWeight='700'>Submitted by:</Typography></th>
+                            <td><Typography fontWeight='500' textAlign='center'>{activeReport.reportBy?.fullName}</Typography></td>
+                        </tr>
+                        <tr>
+                            <th scope='row'><Typography textAlign='right' fontWeight='700'>Visitors:</Typography></th>
+                            <td><Typography fontWeight='500' textAlign='center'>{activeReport.visitors ? activeReport.visitors : ''}</Typography></td>
+                        </tr>
+                        {activeReport.crew && <>
+                            <tr>
+                                <th scope='row' rowSpan={Object.keys(activeReport.crew).length + 1}><Typography
+                                    textAlign='right' fontWeight='700'>Crew:</Typography></th>
+                            </tr>
+                                {Object.entries(activeReport.crew).map(([contractor, size], index) => <tr key={index} >
+                                    <td style={{display: 'flex'}}>
+                                        <Stack sx={{m: 'auto'}} direction='row' spacing={2}>
+                                            <Typography fontWeight='700'>{contractor} </Typography>
+                                            <Typography fontWeight='500'>{size}</Typography>
+                                        </Stack>
+                                    </td>
+                                </tr>)}
+                            </>
+                        }
+                        {activeReport.crew && Object.keys(activeReport.crew).length > 1 && <tr>
+                            <th scope='row'><Typography textAlign='right' fontWeight='700'>Total Crew Size:</Typography>
+                            </th>
+                            <td><Typography fontWeight='700' textAlign='center'>{activeReport.crewSize}</Typography>
+                            </td>
+                        </tr>}
+                        {activeReport.workDescriptions && <>
+                        <tr>
+                            <th scope='row' rowSpan={Object.keys(activeReport.workDescriptions).length + 1}><Typography textAlign='right' fontWeight='700'>Work Description:</Typography></th>
+                        </tr>
+                        {activeReport.workDescriptions.map((description, index) => <tr key={index}><td>
+                            <Typography textAlign='center' fontWeight='500'>{description}</Typography>
+                        </td></tr>)}
+                        </>}
+                        {activeReport.materials && <>
+                            <tr>
+                                <th scope='row' rowSpan={Object.keys(activeReport.materials).length + 1}><Typography textAlign='right' fontWeight='700'>Materials needed:</Typography></th>
+                            </tr>
+                            {activeReport.materials.map((material, index) => <tr key={index}><td>
+                                <Typography textAlign='center' fontWeight='500'>{material}</Typography>
+                            </td></tr>)}
+                        </>
+                        }
+                        </tbody>
+                    </Table>
+                    <ButtonGroup variant='solid' buttonFlex={1} sx={{mx: 'auto', width: 0.5, my: 1}}>
+                        <Button sx={{background: 'var(--joy-palette-warning-600)'}}>Modify</Button>
+                        <Button sx={{background: 'var(--joy-palette-danger-500)'}}>Delete</Button>
+                        <Button sx={{background: 'var(--joy-palette-success-500)'}} onClick={() => setShowReport(false)}>Close</Button>
+                    </ButtonGroup>
+                </Box>
+            </ModalDialog>
+        </Modal>
     </Box>
 }

@@ -45,6 +45,7 @@ export default function Report() {
                 setJobSites(response.data)
                 const params = new URLSearchParams(searchParams)
                 if (params.has('job')) setSelectedJobSite(parseInt(params.get('job')))
+                if (params.has('date')) setReportDate(new Date(params.get('date')).toLocaleString("en-CA", {timeZone: "UTC", month: '2-digit', day: '2-digit', year: 'numeric'}))
             }
         }).catch((error) => handleError(error.message)) //todo implement better error handling
     }, [searchParams])

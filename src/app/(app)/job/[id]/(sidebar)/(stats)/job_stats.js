@@ -16,7 +16,7 @@ export default function JobStats({sx, calendar, statsState}) {
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
-        postman.get(`/jobs/${job?.id}/stats?` + new URLSearchParams({basis: 'month', value: `${calendar.year.toString().padStart(2, '0')}-${(calendar.month + 1).toString().padStart(2, '0')}-01`}), {
+        postman.get(`/jobs/${job?.id}/stats?` + new URLSearchParams({basis: 'month', value: `${calendar.year.toString()}-${(calendar.month + 1).toString().padStart(2, '0')}-01`}), {
             headers: {
                 Authorization: 'BearerJWT ' + token
             }
