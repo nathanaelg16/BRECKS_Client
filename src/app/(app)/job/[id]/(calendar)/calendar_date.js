@@ -54,7 +54,7 @@ export default function CalendarDate({data, metadata, sx}) {
     }
 
     return <Box onClick={data?.onClick}
-                sx={{...sx, cursor: 'pointer', p: 1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data?.sx}}>
+                sx={{...sx, p: 1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data?.sx}}>
         <Stack spacing={1} direction='row' justifyContent='space-between' alignItems='center' flexWrap='wrap'>
             <Typography level='title-lg' sx={{...data?.dateSX}}>{data?.date}</Typography>
             {data?.today && <Chip sx={{background: '#705241'}}><Typography className={RedHatFont.className} sx={{color: 'white', textTransform: 'uppercase'}}>Today</Typography></Chip>}

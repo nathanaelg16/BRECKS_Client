@@ -45,25 +45,6 @@ export default function Calendar({sx, calendarState, stats}) {
             const lastDateOfMonth = lastOfMonth.getUTCDate()
             setLastDateOfMonth(lastDateOfMonth)
 
-            let anteFillIns = firstDayOfMonth > 0 ?
-                Range(lastDateOfPreviousMonth - firstDayOfMonth + 1, lastDateOfPreviousMonth + 1)
-                : Range(0, 0)
-            anteFillIns = anteFillIns.map((v) => {
-                return {
-                    date: v,
-                    sx: {
-                        background: 'var(--joy-palette-neutral-200)',
-                        '&:hover': {
-                            background: 'var(--joy-palette-neutral-500)'
-                        }
-                    },
-                    currentCalendarMonth: false,
-                    onClick: () => {
-                        updateCalendar(-1)
-                    }
-                }
-            })
-
             const jobStatusPerDay = Array(lastDateOfMonth + 1)
             if (stats.statusHistory) Object.entries(stats.statusHistory).forEach(([key, value]) => {
                 value.forEach((interval) => {
@@ -97,10 +78,12 @@ export default function Calendar({sx, calendarState, stats}) {
                 const report = reportDates[reportCounter] === v ? reports[reportCounter++] : null
                 const reportMissing = missingReportDates ? missingReportDates[missingReportCounter] === v : false
                 if (reportMissing) missingReportCounter++
+                const cursor = reportMissing || !!report ? {cursor: 'pointer'} : {}
                 return {
                     date: v,
                     sx: {
-                        background: '#FAF9F9'
+                        background: '#FAF9F9',
+                        ...cursor,
                     },
                     dateSX: {
                         color: 'var(--joy-palette-primary-900)'
@@ -114,21 +97,28 @@ export default function Calendar({sx, calendarState, stats}) {
                 }
             })
 
-            let postFillIns = Range(1, 42 - monthDays.size - anteFillIns.size + 1).map((v) => {
-                return {
-                    date: v,
-                    sx: {
-                        background: 'var(--joy-palette-neutral-200)',
-                        '&:hover': {
-                            background: 'var(--joy-palette-neutral-500)'
-                        }
-                    },
-                    currentCalendarMonth: false,
-                    onClick: () => {
-                        updateCalendar(1)
+            const createFillIns = (start, end, update) => {
+                return Range(start, end + 1).map((v) => {
+                    return {
+                        date: v,
+                        sx: {
+                            background: 'var(--joy-palette-neutral-200)',
+                            '&:hover': {
+                                background: 'var(--joy-palette-neutral-500)'
+                            },
+                            cursor: 'pointer'
+                        },
+                        currentCalendarMonth: false,
+                        onClick: () => updateCalendar(update)
                     }
-                }
-            })
+                });
+            }
+
+            const anteFillIns = firstDayOfMonth > 0 ?
+                createFillIns(lastDateOfPreviousMonth - firstDayOfMonth + 1, lastDateOfPreviousMonth, -1)
+                : createFillIns(0, 0, -1);
+
+            const postFillIns = createFillIns(1, 42 - monthDays.size - anteFillIns.size, 1);
 
             return [...anteFillIns, ...monthDays, ...postFillIns]
         }
