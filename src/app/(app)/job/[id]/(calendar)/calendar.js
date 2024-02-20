@@ -86,6 +86,7 @@ export default function Calendar({sx, calendarState, stats}) {
             }
 
             const reportOnClick = (report) => {
+                if (report == null) return;
                 setActiveReport(report)
                 setShowReport(true)
             }
@@ -109,7 +110,7 @@ export default function Calendar({sx, calendarState, stats}) {
                     today: today.getUTCMonth() === calendar.month && today.getUTCFullYear() === calendar.year && v === today.getUTCDate(),
                     report: report,
                     currentCalendarMonth: true,
-                    onClick: reportMissing || (jobStatusPerDay[v] === 'ACTIVE' && !report)? () => missingReportOnClick(v) : () => reportOnClick(report)
+                    onClick: reportMissing && !report ? () => missingReportOnClick(v) : () => reportOnClick(report)
                 }
             })
 
