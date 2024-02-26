@@ -1,0 +1,7 @@
+#toolbar .tool {
+    opacity: 0.5
+}
+
+#toolbar .tool:hover {
+    opacity: 1
+}

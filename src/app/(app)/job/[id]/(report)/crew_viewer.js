@@ -9,10 +9,11 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import Input from "@mui/joy/Input";
 import {ClickAwayListener, Popper} from "@mui/base";
+import Typography from "@mui/joy/Typography";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['500', '800']})
 
-export default function CrewViewer({withCrew}) {
+export default function CrewViewer({withCrew, editing}) {
     const [crew, setCrew] = withCrew
     const [contractors, setContractors] = useState([])
     const [popperOpen, setPopperOpen] = useState(null)
@@ -34,17 +35,19 @@ export default function CrewViewer({withCrew}) {
         })
     }, [])
 
-    const contractorChip = (contractor, crewSize) => <ClickAwayListener onClickAway={() => setAnchor(null)}>
+    const contractorChip = (contractor, crewSize) => <ClickAwayListener key={contractor} onClickAway={() => setAnchor(null)}>
         <Box key={contractor} sx={{display: 'contents'}}>
             <Chip sx={{cursor: 'pointer'}}
-                  size='md'
-                  endDecorator={<ChipDelete sx={{'&:hover': {background: 'var(--joy-palette-danger-200)'}}} onDelete={() => setCrew(crew.delete(contractor))} />}
+                  size='lg'
+                  endDecorator={editing && <ChipDelete sx={{'&:hover': {background: 'var(--joy-palette-danger-200)'}}} onDelete={() => setCrew(crew.delete(contractor))} />}
                   onClick={(e) => {
-                      setAnchor(e.currentTarget)
-                      setPopperOpen(contractor)
+                      if (editing) {
+                          setAnchor(e.currentTarget)
+                          setPopperOpen(contractor)
+                      }
                   }}
             >
-                <strong>{contractor}:</strong> {crewSize}
+                <Typography className={RedHatFont.className} fontWeight='800'>{contractor}: <Typography className={RedHatFont.className} fontWeight='500'>{crewSize}</Typography></Typography>
             </Chip>
             <Popper open={!!anchor && !!popperOpen && popperOpen === contractor} anchorEl={anchor}>
                 <Stack direction='row' spacing={1}>
@@ -66,8 +69,8 @@ export default function CrewViewer({withCrew}) {
         </Box>
     </ClickAwayListener>
 
-    return <Stack spacing={2} sx={{p: 1}}>
-        <Stack spacing={1} direction='row' flexWrap='wrap' useFlexGap justifyContent='center' alignItems='center'>
+    return <Stack spacing={2} sx={{p: 1, userSelect: 'none'}}>
+        <Stack spacing={1} direction='row' flexWrap='wrap' useFlexGap justifyContent='flex-start' alignItems='center'>
             {crew.entrySeq().map(([contractor, crewSize]) => contractorChip(contractor, crewSize))}
         </Stack>
     </Stack>
