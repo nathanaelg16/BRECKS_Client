@@ -1,13 +1,13 @@
 'use client'
 
 import Box from "@mui/joy/Box";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import Sidebar from "@/app/(app)/job/[id]/(sidebar)/sidebar";
 import Calendar from "@/app/(app)/job/[id]/(calendar)/calendar";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
-export default function Job({params}) {
-    let [_, updateJob] = useContext(JobContext)
+export default function Job() {
+    let [job, updateJob] = useContext(JobContext)
     const [calendar, setCalendar] = useState((() => {
         const today = new Date()
         return {
@@ -36,10 +36,6 @@ export default function Job({params}) {
 
         setCalendar({...calendar, ...newState})
     }
-
-    useEffect(() => {
-        updateJob(sessionStorage.getItem('token'))
-    }, [params.id, updateJob])
 
     return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '0svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
         <Calendar sx={{gridColumn: 1, gridRow: 1}} calendarState={[calendar, updateCalendar]} stats={stats} />

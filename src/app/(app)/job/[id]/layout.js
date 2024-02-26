@@ -1,7 +1,7 @@
 'use client'
 
 import {JobContext} from "@/app/(app)/job/[id]/job_context"
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 
 export default function JobLayout({params, children}) {
@@ -20,6 +20,11 @@ export default function JobLayout({params, children}) {
         }).catch((error) => {
             // todo implement error handling
         })}, [params.id, setJob])
+
+    useEffect(() => {
+        const token = sessionStorage.getItem('token')
+        updateJob(token)
+    }, [updateJob, params.id])
 
     return <JobContext.Provider value={[job, updateJob]}>
         {children}

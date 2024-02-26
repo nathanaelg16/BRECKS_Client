@@ -8,7 +8,6 @@ import CalendarDate from "@/app/(app)/job/[id]/(calendar)/calendar_date";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
 import {postman} from "@/resources/config";
 import {useRouter} from "next/navigation";
-import ReportViewer from "@/app/(app)/job/[id]/(calendar)/report_viewer";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 
@@ -19,8 +18,6 @@ export default function Calendar({sx, calendarState, stats}) {
     const [data, setData] = useState([])
     const [firstDayOfMonth, setFirstDayOfMonth] = useState(0)
     const [lastDateOfMonth, setLastDateOfMonth] = useState(0)
-    const [activeReport, setActiveReport] = useState({})
-    const [showReport, setShowReport] = useState(false)
 
     useEffect(() => {
         const firstOfMonth = new Date(calendar.year, calendar.month, 1)
@@ -58,16 +55,15 @@ export default function Calendar({sx, calendarState, stats}) {
             })
 
             const missingReportDates = stats.missingReportDates?.map((date) => new Date(date).getUTCDate()).sort((a, b) => a - b)
-            const reportDates = reports.map((report) => new Date(report.reportDate).getUTCDate()).sort((a, b) => a - b)
+            const reportDates = reports.map((report) => new Date(report.date).getUTCDate()).sort((a, b) => a - b)
 
             const missingReportOnClick = (date) => {
                 router.push('/report?' + new URLSearchParams({job: job.id, date: `${calendar.year.toString()}-${(calendar.month + 1).toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`}))
             }
 
             const reportOnClick = (report) => {
-                if (report == null) return;
-                setActiveReport(report)
-                setShowReport(true)
+
+                router.push(`/job/${job.id}/report/${report.date}`)
             }
 
             let missingReportCounter = 0
@@ -127,7 +123,7 @@ export default function Calendar({sx, calendarState, stats}) {
 
         const token = sessionStorage.getItem('token')
 
-        postman.get('/reports?' + new URLSearchParams({job: job.id, startDate: formatDate(firstOfMonth), endDate: formatDate(today)}), {
+        postman.get('/reports/summarized?' + new URLSearchParams({job: job.id, startDate: formatDate(firstOfMonth), endDate: formatDate(today)}), {
             headers: {
                 Authorization: 'BearerJWT ' + token
             }
@@ -167,7 +163,6 @@ export default function Calendar({sx, calendarState, stats}) {
             </Box>
             {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, firstDayOfMonth: firstDayOfMonth, lastDateOfMonth: lastDateOfMonth, todayIndex: todayIndex}} />))}
         </Box>
-        <ReportViewer showReportState={[showReport, setShowReport]} activeReport={activeReport}/>
         {/*<Modal open={showReport} onClose={() => setShowReport(false)}>*/}
         {/*    <ModalDialog>*/}
         {/*        <ModalClose />*/}
