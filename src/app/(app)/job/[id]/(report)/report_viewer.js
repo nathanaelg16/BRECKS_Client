@@ -34,6 +34,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
     const [workDescriptions, setWorkDescriptions] = useState(List(['']))
     const [materials, setMaterials] = useState(List(['']))
     const [reportBy, setReportBy] = useState('')
+    const [editedFieldsCount, setEditedFieldsCount] = useState(0)
 
     const setData = useCallback((report) => {
         setWeather(report.weather)
@@ -41,7 +42,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         setCrew(Map(report.crew))
         setWorkDescriptions(List(report.workDescriptions))
         setMaterials(List(report.materials))
-        setReportBy(report.reportBy.fullName)
+        setReportBy(report.reportBy?.fullName)
     }, [setWeather, setVisitors, setCrew, setWorkDescriptions, setMaterials, setReportBy])
 
     const fetchReportData = useCallback((token) => {
@@ -70,6 +71,10 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         const token = sessionStorage.getItem('token')
         fetchReportData(token)
     }, [fetchReportData])
+
+    useEffect(() => {
+        setEditedFieldsCount(document.getElementsByClassName('edited').length)
+    }, [setEditedFieldsCount, weather, visitors, crew, workDescriptions, materials])
 
     const cancelEdits = () => {
         setEditing(false)
@@ -118,12 +123,15 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         const renderComponent = (props) => <Textarea placeholder='N/A' minRows={1} sx={{color: 'black', '.Mui-disabled': {color: 'black'}, ...inputSX}} size='lg' className={RedHatFont.className} {...props} />
         return createDatum(key, <EditableComponent editing={editing} value={value} onEdit={setValue} renderComponent={renderComponent} />, sx)
     }
+
     const createInputListDatum = (key, [value, setValue], inputSX = {}, listSX = {}, sx = {}) => {
+        const renderComponent = (props) => <Textarea minRows={1} sx={{width: 1, color: 'black', '.Mui-disabled': {color: 'black'}, ...inputSX}} className={RedHatFont.className} size='lg' {...props} />
+
         const createRow = (val, id = null) => <Stack direction='row' justifyContent='flex-start' alignItems='center' spacing={1} useFlexGap key={id} sx={{width: 1, px: 2}}>
             <CircleIcon sx={{color: 'var(--joy-palette-primary-800)', fontSize: '12px'}} />
             <EditableComponent renderComponent={renderComponent} editing={editing} value={val} onEdit={(newValue) => setValue(value.set(id, newValue))} />
         </Stack>
-        const renderComponent = (props) => <Textarea minRows={1} sx={{width: 1, color: 'black', '.Mui-disabled': {color: 'black'}, ...inputSX}} className={RedHatFont.className} size='lg' {...props} />
+
         return createDatum(key, <Stack spacing={editing ? 1 : 0} sx={{width: 1, ...listSX}}>
             {value.map((val, id) => createRow(val, id))}
         </Stack>, {...sx, stack: {alignItems: 'flex-start', flexDirection: 'column', width: 1}})
@@ -147,7 +155,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                     <Tool name='Delete' icon={<DeleteForeverIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#CF4646F8'}}} onClick={() => {}} />
                     {editing ? <>
                         <Tool name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
-                        <Tool name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={() => {}} />
+                        <Tool disabled={editedFieldsCount === 0} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={() => {}} />
                     </> : <>
                         <Tool name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
                         <Tool name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
