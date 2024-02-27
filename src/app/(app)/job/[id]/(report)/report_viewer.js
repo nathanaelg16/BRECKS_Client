@@ -16,9 +16,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
-import Tool from "@/app/(app)/job/[id]/(report)/tool";
-import EditableComponent from "@/app/(app)/job/[id]/(report)/(components)/editable_component";
+import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
+import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 import "./report_viewer.css"
+import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
 
 const {Map, List} = require('immutable')
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
@@ -142,7 +143,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
     }} sx={{}} >
         <DialogContent sx={{userSelect: 'none'}} onScroll={(e) => handleToolbarOnScroll(e)} id='reportViewer'>
             <Box sx={{position: 'relative'}}>
-                <Stack id='toolbar' direction='row' justifyContent='flex-end' alignItems='center' spacing={1} sx={{pr: 1, py: 1, width: 1, zIndex: 1, position: 'absolute', bottom: 0}}>
+                <Toolbar editing={editing} sx={{zIndex: 1, position: 'absolute', bottom: 0}}>
                     <Tool name='Delete' icon={<DeleteForeverIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#CF4646F8'}}} onClick={() => {}} />
                     {editing ? <>
                         <Tool name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
@@ -152,7 +153,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                         <Tool name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
                     </>}
                     <Tool name='Close' icon={<CloseIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#efa5a5'}}} onClick={handleClose} />
-                </Stack>
+                </Toolbar>
                 <Box id='header' className={'print'} sx={{py: 2, width: 1, zIndex: 0, position: 'relative', borderBottom: '2px solid #000000', background: 'var(--joy-palette-primary-300)'}}>
                     <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h1'>{job.address}</Typography>
                     <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h3'>Job Report</Typography>
