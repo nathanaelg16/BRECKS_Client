@@ -18,10 +18,6 @@ export default function CalendarDate({data, metadata, sx}) {
                                 color='primary' textTransform='uppercase' sx={{m: 'auto', }}>
                         {isBeforeToday ? 'missing report' : 'pending submission'}
                     </Typography>
-                    {/*{<Typography fontWeight='400' fontSize='sm' className={RedHatFont.className} textAlign='center'*/}
-                    {/*             textTransform='lowercase' sx={{m: 'auto', color: '#00000080'}}>*/}
-                    {/*    (click to submit)*/}
-                    {/*</Typography>}*/}
                 </Box>
             )
             else {
@@ -45,16 +41,14 @@ export default function CalendarDate({data, metadata, sx}) {
                     sx.color = JOB_STATUS_COLORS[data.status] + '60'
                 }
 
-                return (<Typography fontWeight='700' fontSize='xl' className={RedHatFont.className} textAlign='center'
-                                    sx={{m: 'auto', ...sx}}>
+                return (<Typography fontWeight='700' fontSize='xl' className={RedHatFont.className} textAlign='center' sx={{m: 'auto', ...sx}}>
                     {content}
                 </Typography>)
             }
         }
     }
 
-    return <Box onClick={data?.onClick}
-                sx={{...sx, p: 1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data?.sx}}>
+    return <Box onClick={data?.onClick} sx={{...sx, p: 1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data?.sx}}>
         <Stack spacing={1} direction='row' justifyContent='space-between' alignItems='center' flexWrap='wrap'>
             <Typography level='title-lg' sx={{...data?.dateSX}}>{data?.date}</Typography>
             {data?.today && <Chip sx={{background: '#705241'}}><Typography className={RedHatFont.className} sx={{color: 'white', textTransform: 'uppercase'}}>Today</Typography></Chip>}

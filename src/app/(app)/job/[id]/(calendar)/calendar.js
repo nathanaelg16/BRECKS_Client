@@ -124,7 +124,7 @@ export default function Calendar({sx, calendarState, stats}) {
 
         const token = sessionStorage.getItem('token')
 
-        postman.get('/reports/summarized?' + new URLSearchParams({job: job.id, startDate: formatDate(firstOfMonth), endDate: formatDate(today)}), {
+        postman.get('/reports/summarized?' + new URLSearchParams({job: job.id, startDate: formatDate(firstOfMonth), endDate: formatDate(lastOfMonth > today ? today : lastOfMonth)}), {
             headers: {
                 Authorization: 'BearerJWT ' + token
             }
