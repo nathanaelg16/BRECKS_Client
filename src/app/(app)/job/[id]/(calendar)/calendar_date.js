@@ -48,10 +48,22 @@ export default function CalendarDate({data, metadata, sx}) {
         }
     }
 
+    const renderMarkerChips = () => {
+        if (metadata.index === metadata.todayIndex || metadata.index === metadata.startDateIndex) {
+            const title = metadata.todayIndex ? 'Today' : 'Start'
+            const background = metadata.todayIndex ? '#705241' : '#34C172'
+            const color = metadata.todayIndex ? '#FFFFFF' : '#000000'
+
+            return <Chip sx={{background: background}}>
+                <Typography className={RedHatFont.className} sx={{color: color, textTransform: 'uppercase'}}>{title}</Typography>
+            </Chip>
+        } else return null
+    }
+
     return <Box onClick={data?.onClick} sx={{...sx, p: 1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data?.sx}}>
         <Stack spacing={1} direction='row' justifyContent='space-between' alignItems='center' flexWrap='wrap'>
             <Typography level='title-lg' sx={{...data?.dateSX}}>{data?.date}</Typography>
-            {data?.today && <Chip sx={{background: '#705241'}}><Typography className={RedHatFont.className} sx={{color: 'white', textTransform: 'uppercase'}}>Today</Typography></Chip>}
+            {renderMarkerChips()}
             <Stack spacing={1} direction='row' justifyContent='flex-end' alignItems='center' flexWrap='wrap'>
                 {data?.reportMissing && (!metadata.todayIndex || metadata.index < metadata.todayIndex) && <WarningAmberIcon sx={{color: '#FF9C24', fontSize: 28}} />}
             </Stack>

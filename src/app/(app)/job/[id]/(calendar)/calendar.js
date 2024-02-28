@@ -21,6 +21,8 @@ export default function Calendar({sx, calendarState, stats}) {
     const [lastDateOfMonth, setLastDateOfMonth] = useState(0)
     const [showReportViewer, setShowReportViewer] = useState(false)
 
+    const normalize = (UTCDate) => new Date(UTCDate.getUTCFullYear(), UTCDate.getUTCMonth(), UTCDate.getUTCDate())
+
     useEffect(() => {
         const firstOfMonth = new Date(calendar.year, calendar.month, 1)
 
@@ -31,28 +33,28 @@ export default function Calendar({sx, calendarState, stats}) {
         today = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
         const prepareData = (reports) => {
-            const firstDayOfMonth = firstOfMonth.getUTCDay()
+            const firstDayOfMonth = firstOfMonth.getDay()
             setFirstDayOfMonth(firstDayOfMonth)
 
-            const lastOfPreviousMonth = new Date(firstOfMonth.getTime())
+            const lastOfPreviousMonth = new Date(firstOfMonth)
             lastOfPreviousMonth.setDate(0)
 
-            const lastDateOfPreviousMonth = lastOfPreviousMonth.getUTCDate()
+            const lastDateOfPreviousMonth = lastOfPreviousMonth.getDate()
 
-            const lastDateOfMonth = lastOfMonth.getUTCDate()
+            const lastDateOfMonth = lastOfMonth.getDate()
             setLastDateOfMonth(lastDateOfMonth)
 
             const jobStatusPerDay = Array(lastDateOfMonth + 1)
             if (stats.statusHistory) Object.entries(stats.statusHistory).forEach(([key, value]) => {
                 value.forEach((interval) => {
-                    let startDate = new Date(interval.startDate)
-                    let endDate = new Date(interval.endDate)
+                    let startDate = normalize(new Date(interval.startDate))
+                    let endDate = normalize(new Date(interval.endDate))
 
                     if (startDate < firstOfMonth) startDate = firstOfMonth
-                    if (endDate > today)  endDate = lastOfMonth
+                    if (endDate > lastOfMonth)  endDate = lastOfMonth
                     if (startDate > endDate) startDate = endDate
 
-                    Range(startDate.getUTCDate(), endDate.getUTCDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
+                    Range(startDate.getDate(), endDate.getDate() + 1).forEach((day) => jobStatusPerDay[day] = key)
                 })
             })
 
@@ -85,7 +87,6 @@ export default function Calendar({sx, calendarState, stats}) {
                     },
                     reportMissing: reportMissing,
                     status: jobStatusPerDay[v],
-                    today: today.getUTCMonth() === calendar.month && today.getUTCFullYear() === calendar.year && v === today.getUTCDate(),
                     report: report,
                     currentCalendarMonth: true,
                     onClick: reportMissing && !report ? () => missingReportOnClick(v) : () => reportOnClick(report)
@@ -111,7 +112,7 @@ export default function Calendar({sx, calendarState, stats}) {
 
             const anteFillIns = firstDayOfMonth > 0 ?
                 createFillIns(lastDateOfPreviousMonth - firstDayOfMonth + 1, lastDateOfPreviousMonth, -1)
-                : createFillIns(0, 0, -1);
+                : createFillIns(0, -1, -1);
 
             const postFillIns = createFillIns(1, 42 - monthDays.size - anteFillIns.size, 1);
 
@@ -142,8 +143,10 @@ export default function Calendar({sx, calendarState, stats}) {
 
     }, [calendar, updateCalendar, stats, job, router])
 
-    const today = new Date()
-    const todayIndex = today.getMonth() === calendar.month ? today.getDate() + firstDayOfMonth - 1 : null
+    const findDateIndex = (date) => date.getMonth() === calendar.month && date.getFullYear() === calendar.year ? date.getDate() + firstDayOfMonth - 1 : null
+
+    const todayIndex = findDateIndex(new Date())
+    const startDateIndex = findDateIndex(normalize(new Date(job.startDate)))
 
     return <Box sx={{...sx, display: 'flex', flexDirection: 'column', height: '100%', userSelect: 'none', WebkitUserSelect: 'none'}}>
         <CalendarControl sx={{my: 1, flex: '0 1 auto'}} calendarState={calendarState}/>
@@ -162,7 +165,7 @@ export default function Calendar({sx, calendarState, stats}) {
                     }>{day}</Typography>)}
 
             </Box>
-            {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, firstDayOfMonth: firstDayOfMonth, lastDateOfMonth: lastDateOfMonth, todayIndex: todayIndex}} />))}
+            {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, todayIndex: todayIndex, startDateIndex: startDateIndex}} />))}
         </Box>
         <ReportViewer anchor='right' open={!!showReportViewer} onClose={() => setShowReportViewer(false)} date={showReportViewer} />
     </Box>
