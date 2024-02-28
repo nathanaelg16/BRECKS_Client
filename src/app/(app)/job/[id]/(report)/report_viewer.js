@@ -1,11 +1,10 @@
 'use client'
 
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
+import {Red_Hat_Display} from "next/font/google";
 import {DialogContent, Drawer, Grid, Stack, Textarea} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
-import {Red_Hat_Display} from "next/font/google";
-import {useCallback, useContext, useEffect, useRef, useState} from "react";
-import CrewViewer from "@/app/(app)/job/[id]/(report)/crew_viewer";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
 import {postman} from "@/resources/config";
 import {DAYS, MONTHS} from "@/app/utils";
@@ -18,8 +17,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
 import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
-import "./report_viewer.css"
 import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
+import CrewViewer from "@/app/(app)/job/[id]/(report)/crew_viewer";
+import "./report_viewer.css"
 
 const {Map, List} = require('immutable')
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
@@ -172,7 +172,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                     {createTextDatum('Report Date', toFullDate(date), {color: 'black'}, {stack: { py: 1}, key: {}, value: {color: 'black'}, grid: {}})}
                     {createInputDatum('Weather', [weather, setWeather])}
                     {createInputDatum('Visitors', [visitors, setVisitors])}
-                    {createDatum('Crew', <CrewViewer withCrew={[crew, setCrew]} />, {stack: {alignItems: 'flex-start'}, key: {pt: 1}})}
+                    {createDatum('Crew', <EditableComponent editing={editing} value={crew} onEdit={setCrew} renderComponent={(props) => <CrewViewer {...props}/>} />, {stack: {alignItems: 'flex-start'}, key: {pt: 1}})}
                     {createTextDatum('Total Crew Size', calculateCrewSize(crew))}
                     {createInputListDatum('Work Description', [workDescriptions, setWorkDescriptions])}
                     {createInputListDatum('Materials', [materials, setMaterials])}
