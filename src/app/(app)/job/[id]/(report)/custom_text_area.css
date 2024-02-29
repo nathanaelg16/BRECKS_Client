@@ -1,0 +1,8 @@
+.customTextArea.disabled {
+    border: none;
+    color: black;
+}
+
+.customTextArea:focus-within {
+    outline: 1px solid var(--joy-palette-primary-500);
+}

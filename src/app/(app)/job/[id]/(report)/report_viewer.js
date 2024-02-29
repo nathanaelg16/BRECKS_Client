@@ -2,7 +2,7 @@
 
 import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Red_Hat_Display} from "next/font/google";
-import {DialogContent, Drawer, Grid, Stack, Textarea} from "@mui/joy";
+import {DialogContent, Drawer, Grid, Stack} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
@@ -19,6 +19,7 @@ import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
 import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
 import CrewViewer from "@/app/(app)/job/[id]/(report)/crew_viewer";
+import {CustomTextArea as Textarea} from "@/app/(app)/job/[id]/(report)/custom_text_area"
 import "./report_viewer.css"
 
 const {Map, List} = require('immutable')
@@ -124,17 +125,42 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         return createDatum(key, <EditableComponent editing={editing} value={value} onEdit={setValue} renderComponent={renderComponent} />, sx)
     }
 
-    const createInputListDatum = (key, [value, setValue], inputSX = {}, listSX = {}, sx = {}) => {
-        const renderComponent = (props) => <Textarea minRows={1} sx={{width: 1, color: 'black', '.Mui-disabled': {color: 'black'}, ...inputSX}} className={RedHatFont.className} size='lg' {...props} />
+    const createInputListDatum = (key, [value, setValue], listSX = {}, sx = {}) => {
+        const renderInputComponent = (props) => <Textarea minRows={1}
+              className={RedHatFont.className} size='lg'
+              {...props}
+              endDecorator={<Stack sx={{ml: 'auto'}} direction='row' useFlexGap justifyContent='flex-end' alignItems='center'>
+                  {props.endDecorator}
+                  {!props.disabled &&
+                      <Tool name='Remove' icon={<CloseIcon />} onClick={props.onDelete}
+                            props={{variant: 'plain'}}
+                            sx={{
+                                '--IconButton-size': '28px',
+                                background: 'transparent',
+                                '&:hover': {
+                                    background: 'transparent',
+                                    color: 'var(--joy-palette-danger-500)'
+                                }
+                      }} />}
+              </Stack>}
+        />
 
         const createRow = (val, id = null) => <Stack direction='row' justifyContent='flex-start' alignItems='center' spacing={1} useFlexGap key={id} sx={{width: 1, px: 2}}>
             <CircleIcon sx={{color: 'var(--joy-palette-primary-800)', fontSize: '12px'}} />
-            <EditableComponent renderComponent={renderComponent} editing={editing} value={val} onEdit={(newValue) => setValue(value.set(id, newValue))} />
+            <EditableComponent renderComponent={renderInputComponent} editing={editing} value={val} onEdit={(newValue) => setValue(value.set(id, newValue))} onDelete={() => setValue(value.remove(id))} />
         </Stack>
 
-        return createDatum(key, <Stack spacing={editing ? 1 : 0} sx={{width: 1, ...listSX}}>
-            {value.map((val, id) => createRow(val, id))}
-        </Stack>, {...sx, stack: {alignItems: 'flex-start', flexDirection: 'column', width: 1}})
+        const renderOuterComponent = (props) => {
+            const editingSX = editing ? {py: 2, pl: 2} : {}
+            return <Stack spacing={editing ? 1 : 0} sx={{width: 1, ...listSX, ...editingSX}} className={`${props.className} editableComponentContainer`}>
+                {props.value.map((val, id) => createRow(val, id))}
+                <Stack direction='row' justifyContent='flex-end' alignItems='center'>
+                    {props.endDecorator}
+                </Stack>
+            </Stack>
+        }
+
+        return createDatum(key, <EditableComponent value={value} onEdit={(newValue) => setValue(newValue)} renderComponent={renderOuterComponent} editing={editing} /> , {...sx, stack: {alignItems: 'flex-start', flexDirection: 'column', width: 1}})
     }
     const createTextDatum = (key, value, textSX = {}, sx = {}) => createDatum(key, <Typography sx={{color: 'black', ...textSX}} className={RedHatFont.className} textAlign='center' level='body-lg'>{value}</Typography>, sx)
 

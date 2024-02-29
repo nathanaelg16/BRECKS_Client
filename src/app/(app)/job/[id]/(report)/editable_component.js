@@ -6,15 +6,17 @@ import {Red_Hat_Display} from "next/font/google";
 import {Stack} from "@mui/joy";
 import RestoreIcon from "@mui/icons-material/Restore";
 import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
+import {Collection as ImmutableCollection} from "immutable";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['400']})
+const isEqual = require('lodash.isequal')
 
 export default function EditableComponent({value, onEdit, editing, renderComponent, onDelete = () => {}}) {
     const initialValueRef = useRef(value)
     const editingRef = useRef(editing)
 
     const variant = editing ? 'outlined' : 'plain'
-    const edited = editing && value !== initialValueRef.current
+    const edited = editing && (value instanceof ImmutableCollection ? !value.equals(initialValueRef.current) : !isEqual(value, initialValueRef.current))
     const className = `${RedHatFont.className} ${edited ? 'edited' : ''}`
 
     if (editing && !editingRef.current) {
