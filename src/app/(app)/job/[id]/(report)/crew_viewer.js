@@ -1,20 +1,18 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import Box from "@mui/joy/Box";
-import {Chip, ChipDelete, Stack} from "@mui/joy";
+import {Stack} from "@mui/joy";
 import {postman} from "@/resources/config";
 import {Red_Hat_Display} from "next/font/google";
 import Typography from "@mui/joy/Typography";
+import Input from "@mui/joy/Input";
+import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['500', '800']})
 
-export default function CrewViewer({value, onChange, disabled, className}) {
-    const crew = value
+export default function CrewViewer({withCrew, editing}) {
+    const [crew, setCrew] = withCrew
     const [contractors, setContractors] = useState([])
-    const editing = !disabled
-
-    const setCrew = (value) => onChange({target: {value: value}})
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
@@ -32,18 +30,19 @@ export default function CrewViewer({value, onChange, disabled, className}) {
         })
     }, [])
 
-    const contractorChip = (contractor, crewSize) => <Box key={contractor} sx={{display: 'contents'}}>
-        <Chip sx={{cursor: editing ? 'pointer' : 'auto'}}
-              size='lg'
-              endDecorator={editing && <ChipDelete sx={{'&:hover': {background: 'var(--joy-palette-danger-200)'}}} onDelete={() => setCrew(crew.delete(contractor))} />}
-        >
-            <Typography className={RedHatFont.className} fontWeight='800'>{contractor}: <Typography className={RedHatFont.className} fontWeight='500'>{crewSize}</Typography></Typography>
-        </Chip>
-    </Box>
+    const renderComponentFn = (contractor) => function renderComponent(props) {
+        return <Input className={RedHatFont.className}
+                      startDecorator={<Typography sx={{color: '#333333'}} className={RedHatFont.className} fontWeight='800'>{contractor}:</Typography>}
+                      variant='plain'
+                      sx={{borderRadius: '20px', '.Mui-disabled': {color: 'black'}, color: 'black'}}
+                      {...props}
+        />
+    }
 
-    return <Stack className={`${className}`} spacing={2} sx={{p: 1, userSelect: 'none'}}>
-        <Stack spacing={1} direction='row' flexWrap='wrap' useFlexGap justifyContent='flex-start' alignItems='center'>
-            {crew.entrySeq().map(([contractor, crewSize]) => contractorChip(contractor, crewSize))}
-        </Stack>
+    return <Stack spacing={editing ? 1 : 0} sx={{width: 1}}>
+        {crew.entrySeq().map(([contractor, crewSize], index) => <EditableComponent key={contractor} renderComponent={renderComponentFn(contractor)} value={crewSize} editing={editing} onEdit={(newValue) => {
+            let newValueInt = newValue ? parseInt(newValue) : 0
+            if (!isNaN(newValueInt)) setCrew(crew.set(contractor, newValueInt))
+        }} />)}
     </Stack>
 }

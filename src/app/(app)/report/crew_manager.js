@@ -119,8 +119,8 @@ export default function CrewManager({withCrew}) {
             <FormControl sx={{maxWidth: '80px'}}>
                 <FormLabel>Crew Size</FormLabel>
                 <Input placeholder={'0'} value={selectedCrewSize} onChange={(e) => {
-                    let val = parseInt(e.target.value)
-                    setSelectedCrewSize(isNaN(val) ? 0 : val)
+                    let val = e.target.value ? parseInt(e.target.value) : 0
+                    if (!isNaN(val)) setSelectedCrewSize(val)
                 }}/>
             </FormControl>
             <Button disabled={selectedContractor === null || selectedCrewSize === null} onClick={() => setCrew(crew.set(selectedContractor, selectedCrewSize))}><AddIcon /></Button>
