@@ -2,7 +2,7 @@
 
 import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Red_Hat_Display} from "next/font/google";
-import {DialogContent, Drawer, Grid, Stack} from "@mui/joy";
+import {DialogContent, Divider, Drawer, Grid, Stack} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
@@ -15,6 +15,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
+import AddIcon from '@mui/icons-material/Add';
 import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
 import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
@@ -154,6 +155,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
             const editingSX = editing ? {py: 2, pl: 2} : {}
             return <Stack spacing={editing ? 1 : 0} sx={{width: 1, ...listSX, ...editingSX}} className={`${props.className} editableComponentContainer`}>
                 {props.value.map((val, id) => createRow(val, id))}
+                {editing && <Divider sx={{pt: 1}}><Tool onClick={() => setValue(value.push(''))} props={{variant: 'outlined'}} name='Add' icon={<AddIcon />} sx={{background: 'transparent', '&:hover': {background: 'var(--joy-palette-primary-100)', color: 'black'}}}></Tool></Divider>}
                 <Stack direction='row' justifyContent='flex-end' alignItems='center'>
                     {props.endDecorator}
                 </Stack>

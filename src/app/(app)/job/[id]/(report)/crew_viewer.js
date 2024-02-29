@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import {Stack} from "@mui/joy";
+import {Divider, Dropdown, IconButton, Menu, MenuButton, MenuItem, Stack} from "@mui/joy";
 import {postman} from "@/resources/config";
 import {Red_Hat_Display} from "next/font/google";
 import Typography from "@mui/joy/Typography";
@@ -9,6 +9,7 @@ import Input from "@mui/joy/Input";
 import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 import CloseIcon from "@mui/icons-material/Close";
 import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
+import AddIcon from "@mui/icons-material/Add";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['500', '800']})
 
@@ -46,11 +47,23 @@ export default function CrewViewer({withCrew, editing}) {
     }
 
     const renderOuterComponent = (props) => {
+        const tool = <Tool name='Add'>
+            <Dropdown>
+                <MenuButton slots={{root: IconButton}} slotProps={{root: {variant: 'outlined'}}}>
+                    <AddIcon />
+                </MenuButton>
+                <Menu>
+                    <MenuItem><Typography>Test</Typography></MenuItem>
+                </Menu>
+            </Dropdown>
+        </Tool>
+
         return <Stack spacing={editing ? 1 : 0} sx={{width: 1, padding: 1}} className={`${props.className} editableComponentContainer`}>
             {props.value?.entrySeq().map(([contractor, crewSize], index) => <EditableComponent key={contractor} renderComponent={renderInputComponents(contractor)} value={crewSize} editing={editing} onEdit={(newValue) => {
                 let newValueInt = newValue ? parseInt(newValue) : 0
                 if (!isNaN(newValueInt)) setCrew(crew.set(contractor, newValueInt))
             }} onDelete={() => setCrew(crew.remove(contractor))} />)}
+            {editing && <Divider sx={{pt: 1}}>{tool}</Divider>}
             <Stack direction='row' justifyContent='flex-end' alignItems='center'>
                 {props.endDecorator}
             </Stack>
