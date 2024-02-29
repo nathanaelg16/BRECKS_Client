@@ -9,7 +9,7 @@ import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['400']})
 
-export default function EditableComponent({value, onEdit, editing, renderComponent}) {
+export default function EditableComponent({value, onEdit, editing, renderComponent, onDelete = () => {}}) {
     const initialValueRef = useRef(value)
     const editingRef = useRef(editing)
 
@@ -32,5 +32,5 @@ export default function EditableComponent({value, onEdit, editing, renderCompone
         <Tool name='Revert' icon={<RestoreIcon />} onClick={() => onEdit(initialValueRef.current)} sx={{'--IconButton-size': '28px', background: 'transparent', '&:hover': {background: 'transparent'}}} props={{variant: 'plain'}}  />
     </Stack> : null
 
-    return renderComponent({disabled: !editing, variant, endDecorator, onChange: (e) => onEdit(e.target.value), value, className})
+    return renderComponent({disabled: !editing, variant, endDecorator, onChange: (e) => onEdit(e.target.value), value, className, onDelete})
 }

@@ -5,3 +5,8 @@
 #toolbar .tool:hover {
     opacity: 1
 }
+
+.editableComponentContainer.edited {
+    border: 1px solid var(--joy-palette-neutral-300);
+    border-radius: 20px;
+}

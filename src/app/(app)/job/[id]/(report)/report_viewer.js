@@ -172,7 +172,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                     {createTextDatum('Report Date', toFullDate(date), {color: 'black'}, {stack: { py: 1}, key: {}, value: {color: 'black'}, grid: {}})}
                     {createInputDatum('Weather', [weather, setWeather])}
                     {createInputDatum('Visitors', [visitors, setVisitors])}
-                    {createDatum('Crew', <CrewViewer editing={editing} withCrew={[crew, setCrew]}/>, {stack: {alignItems: 'flex-start'}, key: {pt: 0.5}})}
+                    {createDatum('Crew', <CrewViewer editing={editing} withCrew={[crew, setCrew]}/>, {stack: {alignItems: 'flex-start'}, key: {pt: 1}})}
                     {createTextDatum('Total Crew Size', calculateCrewSize(crew))}
                     {createInputListDatum('Work Description', [workDescriptions, setWorkDescriptions])}
                     {createInputListDatum('Materials', [materials, setMaterials])}
