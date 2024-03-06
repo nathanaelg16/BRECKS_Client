@@ -3,7 +3,7 @@ import Typography from "@mui/joy/Typography";
 import Button from "@mui/joy/Button";
 import Input from "@mui/joy/Input";
 import AddIcon from "@mui/icons-material/Add";
-import Popper from "@/app/(components)/popper";
+import Popper from "@/app/(components)/(popper)/popper";
 import {useCallback, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import {Red_Hat_Display} from "next/font/google";

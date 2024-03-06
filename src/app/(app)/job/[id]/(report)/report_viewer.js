@@ -2,7 +2,7 @@
 
 import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Red_Hat_Display} from "next/font/google";
-import {DialogContent, Divider, Drawer, Grid, Stack} from "@mui/joy";
+import {DialogContent, Divider, Drawer, Grid, LinearProgress, Stack} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
@@ -37,6 +37,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
     const [materials, setMaterials] = useState(List(['']))
     const [reportBy, setReportBy] = useState('')
     const [editedFieldsCount, setEditedFieldsCount] = useState(0)
+    const [showProgressBar, setShowProgressBar] = useState(false)
 
     const setData = useCallback((report) => {
         setWeather(report.weather)
@@ -99,6 +100,28 @@ export default function ReportViewer({open, onClose, date, anchor}) {
             toolbar.style.position = 'absolute'
             toolbar.style.bottom = '0'
         }
+    }
+
+    const saveChanges = () => {
+        setEditing(false)
+        // disable toolbar
+        setShowProgressBar(true)
+
+        const report = {
+            reportDate: date,
+            jobID: job.id,
+            weather: weather,
+            crew: crew,
+            visitors: visitors,
+            workDescriptions: workDescriptions,
+            materials: materials
+        }
+
+
+        setTimeout(() => {
+            setShowProgressBar(false)
+            //enable toolbar
+        }, 3000)
     }
 
     const toFullDate = (dateStr) => {
@@ -183,7 +206,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                     <Tool name='Delete' icon={<DeleteForeverIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#CF4646F8'}}} onClick={() => {}} />
                     {editing ? <>
                         <Tool name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
-                        <Tool disabled={editedFieldsCount === 0} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={() => {}} />
+                        <Tool disabled={editedFieldsCount === 0} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={saveChanges} />
                     </> : <>
                         <Tool name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
                         <Tool name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
