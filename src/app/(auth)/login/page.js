@@ -16,28 +16,18 @@ import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import {Alert} from "@mui/joy";
 import {config, postman} from "@/resources/config";
-import {validateToken} from "@/app/utils";
 
 export default function SignIn() {
     const router = useRouter()
     const [username, setUsername] = useState('')
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
-    const [alert, setAlert] = useState(false)
+    const [signedOut, setSignedOut] = useState(false)
 
     useEffect(() => {
-        const storedUsername = localStorage.getItem('username');
-        if (storedUsername !== null && storedUsername.length !== 0) {
-            setUsername(storedUsername);
-        }
-
-        const token = sessionStorage.getItem('token')
-        if (token !== null && token.length > 0) {
-            const checkToken = async (tkn) => {
-                await validateToken(tkn) ? router.push('/') : setAlert(true)
-            }
-
-            checkToken(token)
+        if (sessionStorage.getItem('signedOut')) {
+            setSignedOut(true)
+            sessionStorage.removeItem('signedOut')
         }
     }, [router])
 
@@ -115,7 +105,7 @@ export default function SignIn() {
                         />
                     </Box>
                 </Box>
-                {alert && <Alert sx={{zIndex: 2, justifyContent: 'center', position: 'relative'}} color="danger" size="md">Please sign in to complete this action.</Alert>}
+                {signedOut && <Alert sx={{zIndex: 2, justifyContent: 'center', position: 'relative'}} color="danger" size="md">You have been signed out due to inactivity. Please sign in again.</Alert>}
                 <Box
                     component="main"
                     sx={{
