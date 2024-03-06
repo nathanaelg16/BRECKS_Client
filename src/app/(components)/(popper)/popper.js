@@ -16,7 +16,7 @@ export default function Popper({open, anchor, sx = {}, children, onClose = () =>
         if (!popperRoot) {
             popperRoot = document.createElement('div')
             popperRoot.id = 'popperRoot'
-            popperRoot.style.zIndex = '-9999'
+            popperRoot.style.zIndex = '-9000'
             document.body.insertAdjacentElement('beforeend', popperRoot)
         }
 
@@ -47,7 +47,7 @@ export default function Popper({open, anchor, sx = {}, children, onClose = () =>
 
     useEffect(() => {
         const popperRoot = document.getElementById('popperRoot')
-        popperRoot.style.zIndex = open ? '9999' : '-9999'
+        popperRoot.style.zIndex = open ? '9000' : '-9000'
     }, [open])
 
     const popperRoot = document.getElementById('popperRoot')

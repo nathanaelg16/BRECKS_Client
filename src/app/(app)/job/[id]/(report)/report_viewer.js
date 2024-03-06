@@ -2,7 +2,7 @@
 
 import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Red_Hat_Display} from "next/font/google";
-import {DialogContent, Divider, Drawer, Grid, LinearProgress, Stack} from "@mui/joy";
+import {Alert, DialogContent, Divider, Drawer, Grid, IconButton, LinearProgress, Stack} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
@@ -16,6 +16,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import AddIcon from '@mui/icons-material/Add';
+import ReportIcon from '@mui/icons-material/Report'
 import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
 import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
@@ -38,6 +39,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
     const [reportBy, setReportBy] = useState('')
     const [editedFieldsCount, setEditedFieldsCount] = useState(0)
     const [showProgressBar, setShowProgressBar] = useState(false)
+    const [alert, setAlert] = useState('')
 
     const setData = useCallback((report) => {
         setWeather(report.weather)
@@ -48,13 +50,10 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         setReportBy(report.reportBy?.fullName)
     }, [setWeather, setVisitors, setCrew, setWorkDescriptions, setMaterials, setReportBy])
 
-    const fetchReportData = useCallback((token) => {
+    const fetchReportData = useCallback((callback_fn = () => {}) => {
         if (date) {
-            postman.get('/reports?' + new URLSearchParams({job: job.id, startDate: date, endDate: date}), {
-                headers: {
-                    Authorization: 'BearerJWT ' + token
-                }
-            }).then((response) => {
+            postman.get('/reports?' + new URLSearchParams({job: job.id, startDate: date, endDate: date}))
+                .then((response) => {
                 if (response.status === 200) {
                     const report = response.data[0]
                     reportRef.current = report
@@ -66,13 +65,14 @@ export default function ReportViewer({open, onClose, date, anchor}) {
             }).catch((error) => {
                 //console.log(error)
                 // todo implement error handling
+            }).finally(() => {
+                callback_fn()
             })
         }
     }, [job, date, setData])
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
-        fetchReportData(token)
+        fetchReportData()
     }, [fetchReportData])
 
     useEffect(() => {
@@ -104,10 +104,10 @@ export default function ReportViewer({open, onClose, date, anchor}) {
 
     const saveChanges = () => {
         setEditing(false)
-        // disable toolbar
         setShowProgressBar(true)
 
         const report = {
+            id: reportRef.current.id,
             reportDate: date,
             jobID: job.id,
             weather: weather,
@@ -117,11 +117,13 @@ export default function ReportViewer({open, onClose, date, anchor}) {
             materials: materials
         }
 
-
-        setTimeout(() => {
+        postman.put('/reports', report).then((response) => {
+            fetchReportData(() => setShowProgressBar(false))
+        }).catch((error) => {
+            setAlert('An error occurred saving the report. Please try again.')
             setShowProgressBar(false)
-            //enable toolbar
-        }, 3000)
+            cancelEdits()
+        })
     }
 
     const toFullDate = (dateStr) => {
@@ -203,23 +205,34 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         <DialogContent sx={{userSelect: 'none'}} onScroll={(e) => handleToolbarOnScroll(e)} id='reportViewer'>
             <Box sx={{position: 'relative'}}>
                 <Toolbar editing={editing} sx={{zIndex: 1, position: 'absolute', bottom: 0}}>
-                    <Tool name='Delete' icon={<DeleteForeverIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#CF4646F8'}}} onClick={() => {}} />
+                    <Tool disabled={showProgressBar} name='Delete' icon={<DeleteForeverIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#CF4646F8'}}} onClick={() => {}} />
                     {editing ? <>
-                        <Tool name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
-                        <Tool disabled={editedFieldsCount === 0} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={saveChanges} />
+                        <Tool disabled={showProgressBar} name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
+                        <Tool disabled={showProgressBar || editedFieldsCount === 0} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={saveChanges} />
                     </> : <>
-                        <Tool name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
-                        <Tool name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
+                        <Tool disabled={showProgressBar} name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
+                        <Tool disabled={showProgressBar} name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
                     </>}
-                    <Tool name='Close' icon={<CloseIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#efa5a5'}}} onClick={handleClose} />
+                    <Tool disabled={showProgressBar} name='Close' icon={<CloseIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#efa5a5'}}} onClick={handleClose} />
                 </Toolbar>
                 <Box id='header' className={'print'} sx={{py: 2, width: 1, zIndex: 0, position: 'relative', borderBottom: '2px solid #000000', background: 'var(--joy-palette-primary-300)'}}>
                     <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h1'>{job.address}</Typography>
                     <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h3'>Job Report</Typography>
                 </Box>
             </Box>
-            <Box className={'print'} sx={{px: 1, width: 1, zIndex: 0, position: 'relative'}}>
-                <Grid container spacing={2} sx={{ flexGrow: 1, mx: 'auto', width: 1}} alignItems='center'>
+            <Box className={'print'} sx={{px: 1, width: 1, position: 'relative'}}>
+                <Stack alignItems='center' sx={{zIndex: 9999, position: 'absolute', top: 2, left: 0, width: 1}}>
+                    {alert && <Alert variant='solid' sx={{ width: 0.80}} color='danger' startDecorator={<ReportIcon sx={{color: 'white'}} />} endDecorator={<IconButton sx={{background: 'transparent', '&:hover': {background: 'transparent', border: '1px solid white'}}} onClick={() => setAlert('')}><CloseIcon sx={{color: 'white'}} /></IconButton>}>
+                        <Stack>
+                            <Typography fontWeight='700' className={RedHatFont.className} sx={{color: 'white'}}>Error</Typography>
+                            <Typography fontWeight='400' className={RedHatFont.className} sx={{color: 'white'}}>{alert}</Typography>
+                        </Stack>
+                    </Alert>}
+                </Stack>
+                <Box className={'noprint'} sx={{position: 'absolute', zIndex: 1, top: 2, width: 1, left: 0, px: 1}}>
+                    {showProgressBar && <LinearProgress variant='plain' sx={{color: 'var(--joy-palette-success-400)'}} />}
+                </Box>
+                <Grid container spacing={2} sx={{flexGrow: 1, mx: 'auto', width: 1, position: 'relative', zIndex: 0}} alignItems='center'>
                     {createTextDatum('Report Date', toFullDate(date), {color: 'black'}, {stack: { py: 1}, key: {}, value: {color: 'black'}, grid: {}})}
                     {createInputDatum('Weather', [weather, setWeather])}
                     {createInputDatum('Visitors', [visitors, setVisitors])}
