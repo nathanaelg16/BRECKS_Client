@@ -13,30 +13,23 @@ export default function JobPicker(props) {
     const user = useContext(UserContext);
 
     useEffect(() => {
-        const token = sessionStorage.getItem("token")
-        postman.get('/jobs?' + new URLSearchParams({status: 'ACTIVE'}), {
-            headers: {
-                'Authorization': 'BearerJWT ' + token
-            }
-        }).then((response) => {
-            if (response.status === 200) setAllJobs(response.data)
-            else console.log('hmmm')
-        }).catch((error) => {
-            console.log(error)
-            //todo implement error handling
-        })
+        postman.get('/jobs?' + new URLSearchParams({status: 'ACTIVE'}))
+            .then((response) => {
+                if (response.status === 200) setAllJobs(response.data)
+                else console.log('hmmm')
+            }).catch((error) => {
+                console.log(error)
+                //todo implement error handling
+            })
 
-        postman.get('/jobs?' + new URLSearchParams({status: 'ACTIVE', teamID: user.teamID}), {
-            headers: {
-                'Authorization': 'BearerJWT ' + token
-            }
-        }).then((response) => {
-            if (response.status === 200) setUserJobs(response.data)
-            else console.log('hmmm')
-        }).catch((error) => {
-            console.log(error)
-            //todo implement error handling
-        })
+        postman.get('/jobs?' + new URLSearchParams({status: 'ACTIVE', teamID: user.teamID}))
+            .then((response) => {
+                if (response.status === 200) setUserJobs(response.data)
+                else console.log('hmmm')
+            }).catch((error) => {
+                console.log(error)
+                //todo implement error handling
+            })
     }, [user])
 
     const generateOptions = (jobs) => {

@@ -6,7 +6,7 @@ import axios from "axios";
 export const config = {
     spaces: process.env.NEXT_PUBLIC_SPACES,
     server: process.env.NEXT_PUBLIC_SERVER
-};
+}
 
 export const postman = axios.create({
     baseURL: config.server,
@@ -14,6 +14,33 @@ export const postman = axios.create({
     headers: {
         'Content-Type': 'application/json'
     }
+})
+
+postman.interceptors.request.use((config) => {
+    const controller = new AbortController()
+    const token = sessionStorage.getItem('token')
+
+    if (token === null) {
+        if (config.url !== '/login') {
+            controller.abort()
+            window.location.href = '/login'
+        }
+    } else if (!config.headers.has('Authorization')) {
+        config.headers.set('Authorization', `BearerJWT ${token}`)
+    }
+
+    return {...config, signal: controller.signal}
+})
+
+postman.interceptors.response.use((response) => {
+    if (response.headers.has('X-Token-Renewal')) sessionStorage.setItem('token', response.headers.get('X-Token-Renewal'))
+    return response
+}, (error) => {
+    if (error.response?.status === 401) {
+        sessionStorage.setItem('signedOut', 'true')
+        window.location.href = '/login'
+    }
+    return Promise.reject(error)
 })
 
 export const theme = extendTheme({

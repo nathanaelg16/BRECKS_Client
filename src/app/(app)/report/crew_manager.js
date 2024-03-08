@@ -26,12 +26,7 @@ export default function CrewManager({withCrew}) {
     const filter = createFilterOptions();
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
-        postman.get('/contractors', {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
+        postman.get('/contractors').then((response) => {
             if (response.status === 200) {
                 setContractors(response.data.sort((a, b) => a.shortName.localeCompare(b.shortName)))
             }

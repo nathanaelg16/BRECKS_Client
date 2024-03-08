@@ -123,13 +123,11 @@ export default function Calendar({sx, calendarState, stats}) {
             return date.toLocaleString("en-CA", {timeZone: "UTC", month: '2-digit', day: '2-digit', year: 'numeric'})
         }
 
-        const token = sessionStorage.getItem('token')
-
-        postman.get('/reports/summarized?' + new URLSearchParams({job: job.id, startDate: formatDate(firstOfMonth), endDate: formatDate(lastOfMonth > today ? today : lastOfMonth)}), {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
+        postman.get('/reports/summarized?' + new URLSearchParams({
+            job: job.id,
+            startDate: formatDate(firstOfMonth),
+            endDate: formatDate(lastOfMonth > today ? today : lastOfMonth)
+        })).then((response) => {
             if (response.status === 200) {
                 setData(prepareData(response.data))
             } else {

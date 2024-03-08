@@ -3,7 +3,7 @@ import Typography from "@mui/joy/Typography";
 import Button from "@mui/joy/Button";
 import Input from "@mui/joy/Input";
 import AddIcon from "@mui/icons-material/Add";
-import Popper from "@/app/(components)/popper";
+import Popper from "@/app/(components)/(popper)/popper";
 import {useCallback, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import {Red_Hat_Display} from "next/font/google";
@@ -19,12 +19,7 @@ export default function ContractorSelector({onSelect, sx, anchor, onClose, crew}
     }, [onClose])
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
-        postman.get('/contractors', {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
+        postman.get('/contractors').then((response) => {
             if (response.status === 200) {
                 setContractors(response.data.sort((a, b) => a.shortName.localeCompare(b.shortName)))
             }

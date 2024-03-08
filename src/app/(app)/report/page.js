@@ -34,13 +34,8 @@ export default function Report() {
     const searchParams = useSearchParams()
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
         const handleError = (message) => setError('An error occurred fetching the job sites.\n' + message)
-        postman.get('/jobs', {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
+        postman.get('/jobs').then((response) => {
             if (response.status === 200) {
                 setJobSites(response.data)
                 const params = new URLSearchParams(searchParams)
@@ -61,13 +56,8 @@ export default function Report() {
 
         setWeatherLoading(true)
 
-        const token = sessionStorage.getItem('token')
         const params = new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}) === reportDate ? new URLSearchParams() : new URLSearchParams({date: reportDate})
-        postman.get('/weather?' + params, {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
+        postman.get('/weather?' + params).then((response) => {
             if (response.status === 200) {
                 setWeather(response.data.summary)
             }
@@ -80,14 +70,9 @@ export default function Report() {
     }, [reportDate])
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
         const params = new URLSearchParams({job: selectedJobSite, date: reportDate})
 
-        postman.get('/reports/exists?' + params, {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
+        postman.get('/reports/exists?' + params).then((response) => {
             if (response.status === 200) {
                 if (response.data.exists) setDateError('A report has already been submitted for this date.')
                 else setDateError('')
@@ -102,7 +87,6 @@ export default function Report() {
     const submitReport = () => {
         setLoading(true)
         let success = false
-        const token = sessionStorage.getItem('token')
         const handleError = (message) => setError('An error occurred submitting the report.\n' + message)
         postman.post('/reports', {
             jobID: selectedJobSite,
@@ -112,10 +96,6 @@ export default function Report() {
             visitors: visitors,
             workDescriptions: workDescriptions,
             materials: materialDescriptions
-        }, {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
         }).then((response) => {
             success = (response.status === 200)
             if (!success) handleError('Server Response: ' + response.statusText)
