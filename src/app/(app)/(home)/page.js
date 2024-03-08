@@ -1,16 +1,12 @@
 'use client'
 
 import Typography from "@mui/joy/Typography";
-import {Accordion, AccordionDetails, AccordionGroup, AccordionSummary, Sheet} from "@mui/joy";
-import {Rubik, Rubik_Dirt} from "next/font/google";
+import {Sheet} from "@mui/joy";
 import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import {UserContext} from "@/app/(app)/user_context";
 import JobAccordion from "@/app/(app)/(home)/job_accordion";
 import Box from "@mui/joy/Box";
-
-const rubik_dirt = Rubik_Dirt({ weight: '400', subsets: ['latin'] })
-const rubik = Rubik({subsets: ['latin']})
 
 export default function Home() {
   const [userJobs, setUserJobs] = useState({})
@@ -27,12 +23,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token")
-    postman.get('/jobs?' + new URLSearchParams({teamID: user.teamID}), {
-      headers: {
-        'Authorization': 'BearerJWT ' + token
-      }
-    }).then((response) => {
+    postman.get('/jobs?' + new URLSearchParams({teamID: user.teamID})).then((response) => {
       if (response.status === 200) setUserJobs(categorize(response.data.sort((a, b) => a.address.localeCompare(b.address))))
       else console.log('hmmm')
     }).catch((error) => {
@@ -40,11 +31,7 @@ export default function Home() {
       //todo implement error handling
     })
 
-    postman.get('/jobs', {
-      headers: {
-        'Authorization': 'BearerJWT ' + token
-      }
-    }).then((response) => {
+    postman.get('/jobs').then((response) => {
       if (response.status === 200) setAllJobs(categorize(response.data))
       else console.log('hmmm')
     }).catch((error) => {

@@ -7,23 +7,20 @@ import {postman} from "@/resources/config";
 export default function JobLayout({params, children}) {
     const [job, setJob] = useState({})
 
-    const updateJob = useCallback((token) => {
-        postman.get(`/jobs/${params.id}`, {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
-            if (response.status === 200) setJob(response.data)
-            else {
-                // todo error handling
-            }
-        }).catch((error) => {
+    const updateJob = useCallback(() => {
+        postman.get(`/jobs/${params.id}`)
+            .then((response) => {
+                if (response.status === 200) setJob(response.data)
+                else {
+                    // todo error handling
+                }
+            }).catch((error) => {
             // todo implement error handling
-        })}, [params.id, setJob])
+        })
+    }, [params.id, setJob])
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
-        updateJob(token)
+        updateJob()
     }, [updateJob, params.id])
 
     return <JobContext.Provider value={[job, updateJob]}>

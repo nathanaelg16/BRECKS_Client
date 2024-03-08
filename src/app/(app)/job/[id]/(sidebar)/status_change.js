@@ -30,16 +30,10 @@ export default function JobViewStatusChanger({sx}) {
 
         setLoading(true)
 
-        const token = sessionStorage.getItem('token')
-
         postman.post(`/jobs/${job.id}/status/change`, {
             status: JOB_STATUS[selectedStatus],
             startDate: dateRange.from,
             endDate: dateRange.to
-        }, {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
         }).then((response) => {
             if (response.status === 200) {
                 setTimeout(() => {
@@ -47,7 +41,7 @@ export default function JobViewStatusChanger({sx}) {
                     setSuccessGlyph(true)
                     setTimeout(() => {
                         setSuccessGlyph(false)
-                        updateJob(token)
+                        updateJob()
                     }, 1000)
                 }, 1500)
             } else {

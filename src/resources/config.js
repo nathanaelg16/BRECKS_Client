@@ -17,8 +17,19 @@ export const postman = axios.create({
 })
 
 postman.interceptors.request.use((config) => {
-    if (!config.headers.has('Authorization')) config.headers.set('Authorization', `BearerJWT ${sessionStorage.getItem('token')}`)
-    return config
+    const controller = new AbortController()
+    const token = sessionStorage.getItem('token')
+
+    if (token === null) {
+        if (config.url !== '/login') {
+            controller.abort()
+            window.location.href = '/login'
+        }
+    } else if (!config.headers.has('Authorization')) {
+        config.headers.set('Authorization', `BearerJWT ${token}`)
+    }
+
+    return {...config, signal: controller.signal}
 })
 
 postman.interceptors.response.use((response) => {

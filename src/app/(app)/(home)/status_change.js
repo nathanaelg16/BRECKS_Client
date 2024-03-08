@@ -27,15 +27,9 @@ export default function HomeViewStatusChanger({openState, job}) {
 
         setLoading(true)
 
-        const token = sessionStorage.getItem('token')
-
         postman.post(`/jobs/${job.id}/status/change`, {
             status: JOB_STATUS[selectedStatus],
             startDate: effectiveDate
-        }, {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
         }).then((response) => {
             if (response.status === 200) {
                 setTimeout(() => {

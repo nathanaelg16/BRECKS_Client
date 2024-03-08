@@ -27,17 +27,13 @@ export default function JobCard({job}) {
     })
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
-        postman.get(`/jobs/${job.id}/stats?` + new URLSearchParams({basis: 'week'}), {
-            headers: {
-                Authorization: 'BearerJWT ' + token
-            }
-        }).then((response) => {
-            if (response.status === 200) {
-                setStats(response.data)
-                setLoading(false)
-            } else console.log('error')
-        }).catch((error) => {
+        postman.get(`/jobs/${job.id}/stats?` + new URLSearchParams({basis: 'week'}))
+            .then((response) => {
+                if (response.status === 200) {
+                    setStats(response.data)
+                    setLoading(false)
+                } else console.log('error')
+            }).catch((error) => {
             console.log(error)
             // todo implement error handling
         })
