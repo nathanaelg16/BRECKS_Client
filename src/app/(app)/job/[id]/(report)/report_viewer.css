@@ -10,3 +10,11 @@
     border: 1px solid var(--joy-palette-neutral-300);
     border-radius: 20px;
 }
+
+#header.historical {
+    background: var(--joy-palette-primary-700);
+}
+
+#header.historical .MuiTypography-root {
+    color: var(--joy-palette-neutral-100);
+}

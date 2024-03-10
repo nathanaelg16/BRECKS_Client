@@ -17,11 +17,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import AddIcon from '@mui/icons-material/Add';
 import ReportIcon from '@mui/icons-material/Report'
+import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
 import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
 import CrewViewer from "@/app/(app)/job/[id]/(report)/crew_viewer";
 import {CustomTextArea as Textarea} from "@/app/(app)/job/[id]/(report)/custom_text_area"
+import HistoryPopper from "@/app/(app)/job/[id]/(report)/(tools)/history_popper";
 import "./report_viewer.css"
 
 const {Map, List} = require('immutable')
@@ -40,6 +42,8 @@ export default function ReportViewer({open, onClose, date, anchor}) {
     const [editedFieldsCount, setEditedFieldsCount] = useState(0)
     const [showProgressBar, setShowProgressBar] = useState(false)
     const [alert, setAlert] = useState('')
+    const [historyPopperAnchor, setHistoryPopperAnchor] = useState(null)
+    const [historical, setHistorical] = useState(false)
 
     const setData = useCallback((report) => {
         setWeather(report.weather)
@@ -71,6 +75,22 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         }
     }, [job, date, setData])
 
+    const fetchHistoricalReport = useCallback((id, callback_fn = () => {}) => {
+        if (date) {
+            postman.get('/reports/history?' + new URLSearchParams({job: job.id, date: date, id: id}))
+                .then((response) => {
+                    if (response.status === 200) {
+                        reportRef.current = response.data
+                        setData(response.data)
+                    } else setAlert('An error occurred retrieving the requested report.')
+                }).catch((error) => {
+                    setAlert('An error occurred retrieving the requested report.')
+            }).finally(() => {
+                callback_fn()
+            })
+        }
+    }, [job, date, setData])
+
     useEffect(() => {
         fetchReportData()
     }, [fetchReportData])
@@ -87,19 +107,6 @@ export default function ReportViewer({open, onClose, date, anchor}) {
     const handleClose = () => {
         cancelEdits()
         onClose()
-    }
-
-    const handleToolbarOnScroll = (event) => {
-        const toolbar = document.getElementById('toolbar')
-        const headerRect = document.getElementById('header').getBoundingClientRect()
-
-        if (window.scrollY >= headerRect.bottom) {
-            toolbar.style.position = 'fixed'
-            toolbar.style.bottom = 'auto'
-        } else {
-            toolbar.style.position = 'absolute'
-            toolbar.style.bottom = '0'
-        }
     }
 
     const saveChanges = () => {
@@ -126,6 +133,17 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         })
     }
 
+    const handleHistoricalReportSelection = (id, current) => {
+        setShowProgressBar(true)
+        const callback = () => {
+            setShowProgressBar(false)
+            setHistorical(!current)
+        }
+
+        if (current) setTimeout(() => fetchReportData(callback), 2000)
+        else setTimeout(() => fetchHistoricalReport(id, callback), 2000)
+    }
+
     const toFullDate = (dateStr) => {
         const date = new Date(dateStr)
         return `${DAYS[date.getUTCDay()]}, ${MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`
@@ -137,7 +155,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
 
     const createDatum = (key, value, sx = {}) => <Grid sx={{my: 1, ...sx.grid}} xs={12}>
         <Stack sx={{px: 1, ...sx.stack}} direction='row' spacing={2} justifyContent='flex-start' alignItems='center' useFlexGap>
-            <Typography className={RedHatFont.className} sx={{color: 'black', ...sx.key}} textAlign='right' level='title-lg'>
+            <Typography className={RedHatFont.className} sx={{color: 'black', ...sx.key}} textAlign='left' level='title-lg'>
                 {key}
             </Typography>
             <Box className={RedHatFont.className} sx={{display: 'contents',...sx.value}}>
@@ -189,7 +207,9 @@ export default function ReportViewer({open, onClose, date, anchor}) {
 
         return createDatum(key, <EditableComponent value={value} onEdit={(newValue) => setValue(newValue)} renderComponent={renderOuterComponent} editing={editing} /> , {...sx, stack: {alignItems: 'flex-start', flexDirection: 'column', width: 1}})
     }
-    const createTextDatum = (key, value, textSX = {}, sx = {}) => createDatum(key, <Typography sx={{color: 'black', ...textSX}} className={RedHatFont.className} textAlign='center' level='body-lg'>{value}</Typography>, sx)
+    const createTextDatum = (key, value, textSX = {}, sx = {}) => createDatum(key, <Typography sx={{color: 'black', ...textSX}} className={RedHatFont.className} textAlign='left' level='body-lg'>{value}</Typography>, sx)
+
+    const historyToolAddlSX = Boolean(historyPopperAnchor) ? {background: 'rgba(0,0,0)', color: '#FFFFFF', opacity: 1} : {}
 
     return <Drawer anchor={anchor} size='md' variant='plain' open={open} onClose={handleClose} slotProps={{
         content: {
@@ -202,25 +222,26 @@ export default function ReportViewer({open, onClose, date, anchor}) {
             },
         },
     }} sx={{}} >
-        <DialogContent sx={{userSelect: 'none'}} onScroll={(e) => handleToolbarOnScroll(e)} id='reportViewer'>
+        <DialogContent sx={{userSelect: 'none'}} id='reportViewer'>
             <Box sx={{position: 'relative'}}>
-                <Toolbar editing={editing} sx={{zIndex: 1, position: 'absolute', bottom: 0}}>
+                <Box id='header' className={`print ${historical ? 'historical' : ''}`} sx={{py: 2, width: 1, zIndex: 0, position: 'relative', borderBottom: '2px solid #000000', background: 'var(--joy-palette-primary-300)'}}>
+                    <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h1'>{job.address}</Typography>
+                    <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h3'>Job Report{historical && ' (Archived)'}</Typography>
+                </Box>
+            </Box>
+            <Box className={'print'} sx={{px: 1, width: 1, position: 'relative'}}>
+                <Toolbar editing={editing} sx={{zIndex: 1, position: 'sticky', top: 0}}>
                     <Tool disabled={showProgressBar} name='Delete' icon={<DeleteForeverIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#CF4646F8'}}} onClick={() => {}} />
                     {editing ? <>
                         <Tool disabled={showProgressBar} name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
                         <Tool disabled={showProgressBar || editedFieldsCount === 0} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={saveChanges} />
                     </> : <>
                         <Tool disabled={showProgressBar} name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
+                        <Tool disabled={showProgressBar} name='History' icon={<HistoryToggleOffIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}, ...historyToolAddlSX}} onClick={(e) => setHistoryPopperAnchor(historyPopperAnchor ? null : e.currentTarget)} />
                         <Tool disabled={showProgressBar} name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
                     </>}
                     <Tool disabled={showProgressBar} name='Close' icon={<CloseIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#efa5a5'}}} onClick={handleClose} />
                 </Toolbar>
-                <Box id='header' className={'print'} sx={{py: 2, width: 1, zIndex: 0, position: 'relative', borderBottom: '2px solid #000000', background: 'var(--joy-palette-primary-300)'}}>
-                    <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h1'>{job.address}</Typography>
-                    <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h3'>Job Report</Typography>
-                </Box>
-            </Box>
-            <Box className={'print'} sx={{px: 1, width: 1, position: 'relative'}}>
                 <Stack alignItems='center' sx={{zIndex: 9999, position: 'absolute', top: 2, left: 0, width: 1}}>
                     {alert && <Alert variant='solid' sx={{ width: 0.80}} color='danger' startDecorator={<ReportIcon sx={{color: 'white'}} />} endDecorator={<IconButton sx={{background: 'transparent', '&:hover': {background: 'transparent', border: '1px solid white'}}} onClick={() => setAlert('')}><CloseIcon sx={{color: 'white'}} /></IconButton>}>
                         <Stack>
@@ -232,7 +253,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                 <Box className={'noprint'} sx={{position: 'absolute', zIndex: 1, top: 2, width: 1, left: 0, px: 1}}>
                     {showProgressBar && <LinearProgress variant='plain' sx={{color: 'var(--joy-palette-success-400)'}} />}
                 </Box>
-                <Grid container spacing={2} sx={{flexGrow: 1, mx: 'auto', width: 1, position: 'relative', zIndex: 0}} alignItems='center'>
+                <Grid className={`${historical ? 'historical' : ''} report-container`} container spacing={2} sx={{flexGrow: 1, mx: 'auto', width: 1, position: 'relative', zIndex: 0}} alignItems='center'>
                     {createTextDatum('Report Date', toFullDate(date), {color: 'black'}, {stack: { py: 1}, key: {}, value: {color: 'black'}, grid: {}})}
                     {createInputDatum('Weather', [weather, setWeather])}
                     {createInputDatum('Visitors', [visitors, setVisitors])}
@@ -243,6 +264,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                     {createTextDatum('Submitted by', reportBy)}
                 </Grid>
             </Box>
+            <HistoryPopper onSelection={(id, current) => handleHistoricalReportSelection(id, current)} withAlert={[alert, setAlert]} date={date} anchor={historyPopperAnchor} onClose={() => setHistoryPopperAnchor(null)} />
         </DialogContent>
     </Drawer>
 }
