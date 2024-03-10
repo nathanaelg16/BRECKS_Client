@@ -36,7 +36,7 @@ postman.interceptors.response.use((response) => {
     if (response.headers.has('X-Token-Renewal')) sessionStorage.setItem('token', response.headers.get('X-Token-Renewal'))
     return response
 }, (error) => {
-    if (error.response?.status === 401) {
+    if (error.config.url !== '/login' && error.response?.status === 401) {
         sessionStorage.setItem('signedOut', 'true')
         window.location.href = '/login'
     }
