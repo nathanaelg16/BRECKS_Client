@@ -12,18 +12,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import PrintIcon from '@mui/icons-material/Print';
 import CircleIcon from '@mui/icons-material/Circle';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import SaveIcon from '@mui/icons-material/Save';
 import RestoreIcon from '@mui/icons-material/Restore';
 import AddIcon from '@mui/icons-material/Add';
 import ReportIcon from '@mui/icons-material/Report'
 import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
 import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
 import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
 import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
 import CrewViewer from "@/app/(app)/job/[id]/(report)/crew_viewer";
 import {CustomTextArea as Textarea} from "@/app/(app)/job/[id]/(report)/custom_text_area"
 import HistoryPopper from "@/app/(app)/job/[id]/(report)/(tools)/history_popper";
+import {DateTime} from "luxon";
 import "./report_viewer.css"
 
 const {Map, List} = require('immutable')
@@ -39,11 +41,13 @@ export default function ReportViewer({open, onClose, date, anchor}) {
     const [workDescriptions, setWorkDescriptions] = useState(List(['']))
     const [materials, setMaterials] = useState(List(['']))
     const [reportBy, setReportBy] = useState('')
+    const [timestamp, setTimestamp] = useState(0)
     const [editedFieldsCount, setEditedFieldsCount] = useState(0)
     const [showProgressBar, setShowProgressBar] = useState(false)
     const [alert, setAlert] = useState('')
     const [historyPopperAnchor, setHistoryPopperAnchor] = useState(null)
     const [historical, setHistorical] = useState(false)
+    const [reportError, setReportError] = useState(false)
 
     const setData = useCallback((report) => {
         setWeather(report.weather)
@@ -52,7 +56,8 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         setWorkDescriptions(List(report.workDescriptions))
         setMaterials(List(report.materials))
         setReportBy(report.reportBy?.fullName)
-    }, [setWeather, setVisitors, setCrew, setWorkDescriptions, setMaterials, setReportBy])
+        setTimestamp(isNaN(report.timestamp) ? 0 : Number(report.timestamp))
+    }, [setWeather, setVisitors, setCrew, setWorkDescriptions, setMaterials, setReportBy, setTimestamp])
 
     const fetchReportData = useCallback((callback_fn = () => {}) => {
         if (date) {
@@ -62,13 +67,14 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                     const report = response.data[0]
                     reportRef.current = report
                     setData(report)
-                } else {
-                    //console.log(response)
-                    // todo implement error handling
-                }
+                    setReportError(false)
+                } else throw new Error(`Response status code: ${response.status}`)
             }).catch((error) => {
-                //console.log(error)
-                // todo implement error handling
+                const report = {}
+                reportRef.current = report
+                setData(report)
+                setAlert('An error occurred fetching report details.')
+                setReportError(true)
             }).finally(() => {
                 callback_fn()
             })
@@ -153,6 +159,22 @@ export default function ReportViewer({open, onClose, date, anchor}) {
         return c.reduce((sum, val) => sum + val, 0)
     }
 
+    const setToBlank = () => {
+        if (editing) setData({})
+    }
+
+    const unarchiveReport = () => {
+        if (historical) {
+            setShowProgressBar(true)
+            postman.post('/reports/restore?' + new URLSearchParams({job: job.id, date: date, id: reportRef.current.id}))
+                .then((response) => {
+                    if (response.status === 200) setTimeout(() => fetchReportData(() => setHistorical(false)), 1000)
+                    else throw new Error(`Response status code: ${response.status}`)
+                }).catch((error) => setAlert('An error occurred performing the requested action.'))
+                .finally(() => setShowProgressBar(false))
+        }
+    }
+
     const createDatum = (key, value, sx = {}) => <Grid sx={{my: 1, ...sx.grid}} xs={12}>
         <Stack sx={{px: 1, ...sx.stack}} direction='row' spacing={2} justifyContent='flex-start' alignItems='center' useFlexGap>
             <Typography className={RedHatFont.className} sx={{color: 'black', ...sx.key}} textAlign='left' level='title-lg'>
@@ -231,16 +253,17 @@ export default function ReportViewer({open, onClose, date, anchor}) {
             </Box>
             <Box className={'print'} sx={{px: 1, width: 1, position: 'relative'}}>
                 <Toolbar editing={editing} sx={{zIndex: 1, position: 'sticky', top: 0}}>
-                    <Tool disabled={showProgressBar} name='Delete' icon={<DeleteForeverIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#CF4646F8'}}} onClick={() => {}} />
+                    {historical && <Tool disabled={showProgressBar || reportError} name='Unarchive' icon={<UnarchiveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#EFDECD'}}} onClick={unarchiveReport} />}
                     {editing ? <>
-                        <Tool disabled={showProgressBar} name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
-                        <Tool disabled={showProgressBar || editedFieldsCount === 0} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={saveChanges} />
+                        <Tool disabled={showProgressBar || reportError} name='Reset' icon={<ClearAllIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#B284BE'}}} onClick={setToBlank} />
+                        <Tool disabled={showProgressBar  || reportError} name='Revert' icon={<RestoreIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={cancelEdits} />
+                        <Tool disabled={showProgressBar || editedFieldsCount === 0 || reportError} name='Save' icon={<SaveIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: 'var(--joy-palette-success-400)'}}} onClick={saveChanges} />
                     </> : <>
-                        <Tool disabled={showProgressBar} name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
-                        <Tool disabled={showProgressBar} name='History' icon={<HistoryToggleOffIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}, ...historyToolAddlSX}} onClick={(e) => setHistoryPopperAnchor(historyPopperAnchor ? null : e.currentTarget)} />
-                        <Tool disabled={showProgressBar} name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
+                        <Tool disabled={showProgressBar || reportError} name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
+                        <Tool disabled={showProgressBar || reportError} name='History' icon={<HistoryToggleOffIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}, ...historyToolAddlSX}} onClick={(e) => setHistoryPopperAnchor(historyPopperAnchor ? null : e.currentTarget)} />
+                        <Tool disabled={showProgressBar || reportError} name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
                     </>}
-                    <Tool disabled={showProgressBar} name='Close' icon={<CloseIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#efa5a5'}}} onClick={handleClose} />
+                    <Tool disabled={showProgressBar || reportError} name='Close' icon={<CloseIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#efa5a5'}}} onClick={handleClose} />
                 </Toolbar>
                 <Stack alignItems='center' sx={{zIndex: 9999, position: 'absolute', top: 2, left: 0, width: 1}}>
                     {alert && <Alert variant='solid' sx={{ width: 0.80}} color='danger' startDecorator={<ReportIcon sx={{color: 'white'}} />} endDecorator={<IconButton sx={{background: 'transparent', '&:hover': {background: 'transparent', border: '1px solid white'}}} onClick={() => setAlert('')}><CloseIcon sx={{color: 'white'}} /></IconButton>}>
@@ -262,6 +285,7 @@ export default function ReportViewer({open, onClose, date, anchor}) {
                     {createInputListDatum('Work Description', [workDescriptions, setWorkDescriptions])}
                     {createInputListDatum('Materials', [materials, setMaterials])}
                     {createTextDatum('Submitted by', reportBy)}
+                    {createTextDatum('Timestamp', DateTime.fromSeconds(timestamp).toFormat("MM/dd/yy hh:mm:ss a"))}
                 </Grid>
             </Box>
             <HistoryPopper onSelection={(id, current) => handleHistoricalReportSelection(id, current)} withAlert={[alert, setAlert]} date={date} anchor={historyPopperAnchor} onClose={() => setHistoryPopperAnchor(null)} />

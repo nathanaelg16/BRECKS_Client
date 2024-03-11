@@ -49,7 +49,7 @@ export default function HistoryPopper({withAlert, date, anchor, onClose, onSelec
 
     const reportItem = (report, index) => <ListItem sx={{width: 1, color: 'white'}} variant='outlined' key={report.id} onClick={() => handleClick(report.id, index === 0)}>
         <ListItemButton>
-            <Typography sx={{color: 'white'}} fontWeight='700' className={RedHatFont.className}>
+            <Typography textAlign='center' sx={{color: 'white', width: 1}} fontWeight='700' className={RedHatFont.className}>
                 {DateTime.fromSeconds(report.timestamp).toFormat("MM/dd/yy hh:mm:ss a")}
             </Typography>
         </ListItemButton>
