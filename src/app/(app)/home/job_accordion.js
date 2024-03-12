@@ -1,6 +1,6 @@
 import {Accordion, AccordionDetails, AccordionGroup, AccordionSummary} from "@mui/joy";
 import {useState} from "react";
-import JobScrollView from "@/app/(app)/(home)/job_scroll_view";
+import JobScrollView from "@/app/(app)/home/job_scroll_view";
 
 export default function JobAccordion({jobs}) {
     const [expansionState, setExpansionState] = useState({

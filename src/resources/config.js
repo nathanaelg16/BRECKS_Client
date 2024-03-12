@@ -23,7 +23,7 @@ postman.interceptors.request.use((config) => {
     if (token === null) {
         if (config.url !== '/login') {
             controller.abort()
-            window.location.href = '/login'
+            window.location.href = '/'
         }
     } else if (!config.headers.has('Authorization')) {
         config.headers.set('Authorization', `BearerJWT ${token}`)
@@ -38,7 +38,7 @@ postman.interceptors.response.use((response) => {
 }, (error) => {
     if (error.config.url !== '/login' && error.response?.status === 401) {
         sessionStorage.setItem('signedOut', 'true')
-        window.location.href = '/login'
+        window.location.href = '/'
     }
     return Promise.reject(error)
 })
