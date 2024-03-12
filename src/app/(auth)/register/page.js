@@ -18,7 +18,6 @@ export default function Register() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [error, setError] = useState(false)
-    const [block, setBlock] = useState(false)
     const [accessKey, setAccessKey] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConf, setPasswordConf] = useState('')
@@ -37,30 +36,27 @@ export default function Register() {
         role: ''
     })
 
+    const initialAccessKey = searchParams.get('q')
+
     useEffect(() => {
-        const initialAccessKey = searchParams.get('q')
-
-        if (initialAccessKey === null) {
-            setBlock(true)
-            return;
-        }
-
-        setAccessKey(initialAccessKey)
-        postman.get('/registration/details', {
-            headers: {
-                'Authorization': 'BearerAccessKey ' + initialAccessKey
-            }
-        }).then(response => {
-            setUserDetails(response.data)
-        }).catch(error => {
-            // todo implement more error handling
-            if (error.response) {
-                if (error.response.status === 401) {
-                    router.push('/register')
+        if (initialAccessKey !== null) {
+            setAccessKey(initialAccessKey)
+            postman.get('/registration/details', {
+                headers: {
+                    'Authorization': 'BearerAccessKey ' + initialAccessKey
                 }
-            }
-        })
-    }, [searchParams, accessKey, router])
+            }).then(response => {
+                setUserDetails(response.data)
+            }).catch(error => {
+                // todo implement more error handling
+                if (error.response) {
+                    if (error.response.status === 401) {
+                        router.push('/register')
+                    }
+                }
+            })
+        }
+    }, [router, initialAccessKey])
 
     const debounce = (callback, delay) => {
         let timeout;
@@ -97,7 +93,7 @@ export default function Register() {
         }
     }
 
-    const debouncedCheckUsernameValidity = useCallback(debounce(checkUsernameValidity, 1000), [accessKey])
+    const debouncedCheckUsernameValidity = useCallback(debounce(checkUsernameValidity, 1000), [accessKey, setUsernameError, setLoading])
 
     useEffect(() => {
         if (passwordConf !== null && passwordConf !== '') {
@@ -117,7 +113,7 @@ export default function Register() {
         }).then(response => {
             if (response.status === 200) {
                 sessionStorage.setItem('token', response.data.token)
-                router.push('/')
+                router.push('/home')
             } else {
                 setError(response.data.message)
             }
@@ -148,7 +144,7 @@ export default function Register() {
 
     const registrationView = <>
         <Box sx={{display: 'flex', flexDirection: 'column'}}>
-            <Box onClick={() => router.push('/')} sx={{my: 2, mb: 1, mx: 'auto', cursor: 'pointer'}}>
+            <Box sx={{my: 2, mb: 1, mx: 'auto', cursor: 'pointer'}}>
                 <Image style={{margin: '0 auto'}} alt='BRECKS' src={config.spaces.concat('/logos/BRECKS-v2@2x.png')} width={400} height={133}/>
             </Box>
             <Sheet sx={{width: '60vw', m: '0 auto', p: 3, borderRadius: '10px'}}>
@@ -230,6 +226,6 @@ export default function Register() {
     </>
 
     return <>
-        {block ? blockedView : registrationView}
+        {initialAccessKey === null ? blockedView : registrationView}
     </>
 }

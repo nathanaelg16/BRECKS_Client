@@ -42,7 +42,7 @@ export default function SignIn() {
             const redirect = sessionStorage.getItem('redirect')
             sessionStorage.removeItem('redirect')
             if (redirect !== null) router.replace(redirect)
-            else router.replace('/')
+            else router.replace('/home')
         }).catch((err) => {
             if (err.response) {
                 if (err.response.status === 401) setError("Incorrect username or password. Please try again.");
@@ -162,7 +162,7 @@ export default function SignIn() {
                             }}
                         >
                             <Checkbox size="sm" label="Remember me" name="persistent"/>
-                            <Link fontSize="sm" href="/login" fontWeight="lg">
+                            <Link fontSize="sm" href="/" fontWeight="lg">
                                 Forgot your password?
                             </Link>
                         </Box>

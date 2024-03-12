@@ -5,7 +5,7 @@ import {Sheet} from "@mui/joy";
 import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import {UserContext} from "@/app/(app)/user_context";
-import JobAccordion from "@/app/(app)/(home)/job_accordion";
+import JobAccordion from "@/app/(app)/home/job_accordion";
 import Box from "@mui/joy/Box";
 
 export default function Home() {

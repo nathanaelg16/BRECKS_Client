@@ -10,7 +10,7 @@ const nunitoSans = Nunito_Sans({weight: ['400', '700', '900'], style: ['normal',
 export default function Success() {
     const router = useRouter()
 
-    setTimeout(() => router.push('/'), 5000)
+    setTimeout(() => router.push('/home'), 5000)
 
     return <Box sx={{textAlign: 'center', p: '40px 0', background: '#EBF0F5'}}>
         <Box className={nunitoSans.className} sx={{background: 'white', p: '60px', borderRadius: '4px', boxShadow: '0 2px 3px #C8D0D8', display: 'inline-block', m: '0 auto'}}>
