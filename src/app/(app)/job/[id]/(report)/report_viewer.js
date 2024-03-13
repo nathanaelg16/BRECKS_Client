@@ -50,6 +50,7 @@ export default function ReportViewer({open, onClose, date}) {
     const [historyPopperAnchor, setHistoryPopperAnchor] = useState(null)
     const [historical, setHistorical] = useState(false)
     const [reportError, setReportError] = useState(false)
+    const [print, setPrint] = useState(false)
 
     const setData = useCallback((report) => {
         setWeather(report.weather)
@@ -98,6 +99,19 @@ export default function ReportViewer({open, onClose, date}) {
             })
         }
     }, [job, date, setData])
+
+    useEffect(() => {
+        if (open) {
+            const updateOnMatch = (e) => flushSync(() => setPrint(e.matches))
+
+            const mediaMatcher = window.matchMedia('print')
+            mediaMatcher.addEventListener('change', updateOnMatch)
+
+            return () => {
+                mediaMatcher.removeEventListener('change', updateOnMatch)
+            }
+        }
+    }, [setPrint, open])
 
     useEffect(() => {
         fetchReportData()
@@ -237,6 +251,7 @@ export default function ReportViewer({open, onClose, date}) {
 
     return <Modal size='md' variant='soft' open={open} onClose={handleClose} >
         <ModalDialog sx={{userSelect: 'none', p: 0, border: '2px solid black', borderRadius: 15, overflow: 'hidden', overflowY: 'scroll'}} id='reportViewer'>
+            <Printer print={print}>
             <Box id='header' className={`${historical ? 'historical' : ''}`} sx={{py: 2, width: 1, zIndex: 0, position: 'relative', borderBottom: '2px solid #000000', background: 'var(--joy-palette-primary-300)'}}>
                 <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h1'>{job.address}</Typography>
                 <Typography sx={{color: 'black'}} className={RedHatFont.className} textAlign='center' level='h3'>Job Report{historical && ' (Archived)'}</Typography>
@@ -251,7 +266,7 @@ export default function ReportViewer({open, onClose, date}) {
                     </> : <>
                         <Tool disabled={showProgressBar || reportError} name='Edit' icon={<EditIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}}} onClick={() => setEditing(true)} />
                         <Tool disabled={showProgressBar || reportError} name='History' icon={<HistoryToggleOffIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#E0D2A4'}, ...historyToolAddlSX}} onClick={(e) => setHistoryPopperAnchor(historyPopperAnchor ? null : e.currentTarget)} />
-                        <Tool disabled={showProgressBar || reportError} name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => {}} />
+                        <Tool disabled={showProgressBar || reportError} name='Print' icon={<PrintIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#AF6E4D'}}} onClick={() => window.print()} />
                     </>}
                     <Tool disabled={showProgressBar || reportError} name='Close' icon={<CloseIcon />} sx={{'&:hover': {background: 'rgba(0,0,0,0.80)', color: '#efa5a5'}}} onClick={handleClose} />
                 </Toolbar>
@@ -278,9 +293,8 @@ export default function ReportViewer({open, onClose, date}) {
                     {createTextDatum('Timestamp', DateTime.fromSeconds(timestamp).toFormat("MM/dd/yy hh:mm:ss a"))}
                 </Grid>
             </Box>
+            </Printer>
             <HistoryPopper onSelection={(id, current) => handleHistoricalReportSelection(id, current)} withAlert={[alert, setAlert]} date={date} anchor={historyPopperAnchor} onClose={() => setHistoryPopperAnchor(null)} />
         </ModalDialog>
     </Modal>
 }
-
-// todo program print button
