@@ -43,7 +43,7 @@ export default function CrewViewer({withCrew, editing}) {
 
         const tool = <Tool props={{variant: 'outlined'}} name='Add' icon={<AddIcon />} onClick={handleClick} sx={{background: 'transparent', '&:hover': {background: 'var(--joy-palette-primary-100)', color: 'black'}}}/>
 
-        return <Stack spacing={editing ? 1 : 0} sx={{width: 1, padding: 1}} className={`${props.className} editableComponentContainer`}>
+        return <Stack spacing={editing ? 1 : 0} sx={{width: 1, padding: 1}} className={`${props.className} editableComponentContainer crewStack`}>
             {props.value?.entrySeq().map(([contractor, crewSize], index) => <EditableComponent key={contractor} renderComponent={renderInputComponents(contractor)} value={crewSize} editing={editing} onEdit={(newValue) => {
                 let newValueInt = newValue ? parseInt(newValue) : 0
                 if (!isNaN(newValueInt)) setCrew(crew.set(contractor, newValueInt))

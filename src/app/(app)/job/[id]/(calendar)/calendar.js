@@ -165,6 +165,6 @@ export default function Calendar({sx, calendarState, stats}) {
             </Box>
             {Range(0, 6).map((i) => Range(0, 7).map((j) => <CalendarDate key={i*10 + j} sx={{gridRow: i+2, gridColumn: j+1}} data={data[i*7 + j]} metadata={{index: i*7 + j, todayIndex: todayIndex, startDateIndex: startDateIndex}} />))}
         </Box>
-        <ReportViewer anchor='right' open={!!showReportViewer} onClose={() => setShowReportViewer(false)} date={showReportViewer} />
+        <ReportViewer open={!!showReportViewer} onClose={() => setShowReportViewer(false)} date={showReportViewer} />
     </Box>
 }

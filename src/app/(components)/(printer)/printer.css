@@ -1,0 +1,30 @@
+.printer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9800;
+    visibility: hidden;
+}
+
+@media print {
+    :not(.printer) {
+        visibility: hidden;
+    }
+
+    .printer {
+        overflow-y: scroll;
+        height: 100%
+    }
+
+    .printer * {
+        visibility: visible;
+    }
+
+    .noprint, .noprint * {
+        visibility: hidden;
+    }
+
+    .crewStack .MuiInput-root {
+        background: none;
+    }
+}

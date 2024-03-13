@@ -1,3 +1,5 @@
+'use client'
+
 import Typography from "@mui/joy/Typography";
 import FormControl from "@mui/joy/FormControl";
 import Input from "@mui/joy/Input";
