@@ -2,7 +2,7 @@
 
 import {useRouter, useSearchParams} from "next/navigation";
 import {useCallback, useEffect, useState} from "react";
-import {config, postman} from "@/resources/config";
+import {config} from "@/resources/config";
 import {CircularProgress, FormHelperText, Sheet, Stack} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Image from 'next/image'
@@ -13,6 +13,15 @@ import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import axios from "axios";
+
+const postman = axios.create({
+    baseURL: config.server,
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
 
 export default function Register() {
     const router = useRouter()
