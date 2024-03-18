@@ -1,17 +1,18 @@
 'use client'
 
 import Typography from "@mui/joy/Typography";
-import {Sheet} from "@mui/joy";
+import {Sheet, Stack} from "@mui/joy";
 import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import {UserContext} from "@/app/(app)/user_context";
 import JobAccordion from "@/app/(app)/home/job_accordion";
-import Box from "@mui/joy/Box";
+import SentimentVeryDissatisfiedSharpIcon from '@mui/icons-material/SentimentVeryDissatisfiedSharp';
 
 export default function Home() {
+  const user = useContext(UserContext)
   const [userJobs, setUserJobs] = useState({})
   const [allJobs, setAllJobs] = useState({})
-  const user = useContext(UserContext)
+  const [error, setError] = useState(false)
 
   const categorize = (jobs) => {
     return {
@@ -25,32 +26,35 @@ export default function Home() {
   useEffect(() => {
     postman.get('/jobs?' + new URLSearchParams({teamID: user.teamID})).then((response) => {
       if (response.status === 200) setUserJobs(categorize(response.data.sort((a, b) => a.address.localeCompare(b.address))))
-      else console.log('hmmm')
-    }).catch((error) => {
-      console.log(error)
-      //todo implement error handling
-    })
+      else throw new Error()
+    }).catch(() => setError(true))
 
     postman.get('/jobs').then((response) => {
       if (response.status === 200) setAllJobs(categorize(response.data))
-      else console.log('hmmm')
-    }).catch((error) => {
-      console.log(error)
-      //todo implement error handling
-    })
+      else throw new Error()
+    }).catch(() => setError(true))
   }, [user])
 
-  return <>
-    <Typography level={'h1'} sx={{m: 2}}>Dashboard</Typography>
-    <Box sx={{my: 3, mb: 0}}>
-      <Sheet id={'user_jobs'} sx={{mx: 4, p: 1, mb: 2}}>
-        <Typography level={'h2'}>Your Jobs</Typography>
-        <JobAccordion jobs={userJobs} />
-      </Sheet>
-      <Sheet id={'all_jobs'} sx={{mx: 4, p: 1, mt: 4, mb: 2}}>
-        <Typography level={'h2'}>All Jobs</Typography>
-        <JobAccordion jobs={allJobs} />
-      </Sheet>
-    </Box>
-  </>
+  const onError = <Stack justifyContent='center' alignItems='center' spacing={2} sx={{height: 1}}>
+    <SentimentVeryDissatisfiedSharpIcon color='primary' sx={{fontSize: 48}} />
+    <Typography level='h3' color='primary' textAlign='center'>An error occurred accessing the application. Please try again later.</Typography>
+  </Stack>
+
+  const home = <Stack spacing={4} sx={{mb: 3}} useFlexGap>
+    <Sheet id={'user_jobs'} sx={{p: 2}}>
+      <Typography level={'h2'} sx={{mb: 1}}>Your Jobs</Typography>
+      <JobAccordion jobs={userJobs} />
+    </Sheet>
+    <Sheet id={'all_jobs'} sx={{p: 2}}>
+      <Typography level={'h2'} sx={{mb: 1}}>All Jobs</Typography>
+      <JobAccordion jobs={allJobs} />
+    </Sheet>
+  </Stack>
+
+  return <Stack sx={{width: 1, height: 1}}>
+    <Stack direction='row' justifyContent='space-between'>
+      <Typography level={'h1'} sx={{m: 2, color: 'var(--joy-palette-primary-800)'}}>Dashboard</Typography>
+    </Stack>
+    {error ? onError : home}
+  </Stack>
 }
