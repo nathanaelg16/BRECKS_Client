@@ -3,7 +3,7 @@ import {Divider, Option, Select} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
-import {UserContext} from "@/app/(app)/user_context";
+import {UserContext} from "@/app/(app)/context";
 import {useRouter} from "next/navigation";
 
 export default function JobPicker(props) {

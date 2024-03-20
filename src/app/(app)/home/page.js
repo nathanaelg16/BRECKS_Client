@@ -4,7 +4,7 @@ import Typography from "@mui/joy/Typography";
 import {Sheet, Stack} from "@mui/joy";
 import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
-import {UserContext} from "@/app/(app)/user_context";
+import {UserContext} from "@/app/(app)/context";
 import JobAccordion from "@/app/(app)/home/job_accordion";
 import SentimentVeryDissatisfiedSharpIcon from '@mui/icons-material/SentimentVeryDissatisfiedSharp';
 
