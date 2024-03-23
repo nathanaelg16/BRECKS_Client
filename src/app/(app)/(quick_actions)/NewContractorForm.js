@@ -18,15 +18,14 @@ export default function NewContractorForm({onClose}) {
             setLoading(true)
             const formData = new FormData(event.currentTarget)
             const formJson = Object.fromEntries((formData).entries())
-            postman.post('/jobs/new', formJson)
+            postman.post('/contractors', formJson)
                 .then(response => {
                     if (response.status === 200) {
-                        setSnackbar('success')
-                        router.push(`/job/${response.data}`)
+                        setSnackbar('success', {text: 'Contractor added successfully!'})
                     } else throw new Error(`Response status code: ${response.status}`)
                 }).catch((error) => {
-                console.log(error)
-                setSnackbar('error')
+                    if (error?.response?.status === 409) setSnackbar('error', {text: error.response.data.message})
+                    else setSnackbar('error')
             }).finally(() => {
                 setLoading(false)
                 onClose()
