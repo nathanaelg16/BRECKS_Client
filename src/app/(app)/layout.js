@@ -1,7 +1,7 @@
 'use client'
 
 import Navbar from "@/app/(app)/navbar";
-import {SnackbarContext, UserContext} from "@/app/(app)/context";
+import {SnackbarContext} from "@/app/(app)/context";
 import Footer from "@/app/footer";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
@@ -24,8 +24,6 @@ export default function AppLayout({children}) {
         autoHideDuration: 5000,
         variant: 'soft'
     })
-
-    const user = {teamID: 1} //todo implement fetching user
 
     const updateSnackbar = (type, options) => {
         let update = {
@@ -57,16 +55,14 @@ export default function AppLayout({children}) {
 
     return <Box sx={{display: 'flex', flexDirection: 'column', height: '100%'}}>
         <SnackbarContext.Provider value={updateSnackbar}>
-            <UserContext.Provider value={user}>
-                <Navbar />
-                <main style={{flex: '1 1 auto'}}>
-                    {children}
-                </main>
-                <Footer/>
-                <Snackbar autoHideDuration={snackbar.autoHideDuration} variant={snackbar.variant} color={snackbar.color} open={snackbar.open} onClose={() => setSnackbar({...snackbar, open: false})} anchorOrigin={{vertical: snackbar.vertical, horizontal: snackbar.horizontal}} key='nav-snackbar' sx={{...snackbar.sx}}>
-                    <Typography startDecorator={snackbar.icon} sx={{color: 'black', ...snackbar.textSX}} level='body-lg' fontWeight='500'>{snackbar.text}</Typography>
-                </Snackbar>
-            </UserContext.Provider>
+            <Navbar />
+            <main style={{flex: '1 1 auto'}}>
+                {children}
+            </main>
+            <Footer/>
+            <Snackbar autoHideDuration={snackbar.autoHideDuration} variant={snackbar.variant} color={snackbar.color} open={snackbar.open} onClose={() => setSnackbar({...snackbar, open: false})} anchorOrigin={{vertical: snackbar.vertical, horizontal: snackbar.horizontal}} key='nav-snackbar' sx={{...snackbar.sx}}>
+                <Typography startDecorator={snackbar.icon} sx={{color: 'black', ...snackbar.textSX}} level='body-lg' fontWeight='500'>{snackbar.text}</Typography>
+            </Snackbar>
         </SnackbarContext.Provider>
     </Box>
 }
