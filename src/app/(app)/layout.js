@@ -6,7 +6,7 @@ import Footer from "@/app/footer";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import {Snackbar} from "@mui/joy";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DangerousIcon from "@mui/icons-material/Dangerous";
@@ -25,7 +25,7 @@ export default function AppLayout({children}) {
         variant: 'soft'
     })
 
-    const updateSnackbar = (type, options) => {
+    const updateSnackbar = useCallback((type, options) => {
         let update = {
             open: true,
             vertical: 'bottom',
@@ -51,7 +51,7 @@ export default function AppLayout({children}) {
         }
 
         setSnackbar({...update, ...options})
-    }
+    }, [setSnackbar])
 
     return <Box sx={{display: 'flex', flexDirection: 'column', height: '100%'}}>
         <SnackbarContext.Provider value={updateSnackbar}>
