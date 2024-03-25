@@ -12,11 +12,7 @@ export default function JobPicker(props) {
     useEffect(() => {
         postman.get('/jobs?' + new URLSearchParams({status: 'ACTIVE'}))
             .then((response) => {
-                if (response.status === 200) setAllJobs([...response.data].sort())
-                else console.log('hmmm')
-            }).catch((error) => {
-                console.log(error)
-                //todo implement error handling
+                setAllJobs([...response.data].sort())
             })
     }, [])
 
