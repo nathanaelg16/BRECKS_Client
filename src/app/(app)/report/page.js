@@ -87,14 +87,15 @@ export default function Report() {
     }, [reportDate, selectedJobSite, setFormSubmissionDisabled, setError]);
 
     useEffect(() => {
-        const params = new URLSearchParams({job: selectedJobSite, date: reportDate})
-
-        postman.get('/reports/exists?' + params).then((response) => {
-            if (response.data.exists) setDateError('A report has already been submitted for this date.')
-            else setDateError('')
-        }).catch((error) => {
-            setError(`An unexpected error occurred. Code: L96-${error.response ? 'RSP' : 'REQ'}`)
-        })
+        if (Boolean(selectedJobSite)) {
+            const params = new URLSearchParams({job: selectedJobSite, date: reportDate})
+            postman.get('/reports/exists?' + params).then((response) => {
+                if (response.data.exists) setDateError('A report has already been submitted for this date.')
+                else setDateError('')
+            }).catch((error) => {
+                setError(`An unexpected error occurred. Code: L96-${error.response ? 'RSP' : 'REQ'}`)
+            })
+        }
     }, [reportDate, selectedJobSite, setError]);
 
     const submitReport = () => {
