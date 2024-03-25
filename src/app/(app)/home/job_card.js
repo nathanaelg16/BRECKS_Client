@@ -1,9 +1,8 @@
-import {Badge, Card, CardActions, CardContent, Divider, Skeleton, Tooltip} from "@mui/joy";
+import {Badge, Card, CardActions, CardContent, Divider, Skeleton} from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import {Rubik} from "next/font/google";
-import {ErrorOutline} from "@mui/icons-material";
 import Button from "@mui/joy/Button";
 import {useRouter} from "next/navigation";
 import HomeViewStatusChanger from "@/app/(app)/home/status_change";
@@ -21,11 +20,6 @@ export default function JobCard({job}) {
         missingReportDates: []
     })
 
-    const [badgeProps, setBadge] = useState({
-        color: 'primary',
-        badgeContent: 0,
-    })
-
     useEffect(() => {
         postman.get(`/jobs/${job.id}/stats?` + new URLSearchParams({basis: 'week'}))
             .then((response) => {
@@ -39,14 +33,10 @@ export default function JobCard({job}) {
         })
     }, [job.id])
 
-    useEffect(() => {
-        if (stats.missingReportDates.length > 0) setBadge({
-            color: 'warning',
-            badgeContent: <Tooltip title='This job has missing reports.'>
-                <ErrorOutline />
-            </Tooltip>
-        })
-    }, [stats])
+    let badgeProps = {
+        color: 'primary',
+        badgeContent: 0,
+    }
 
     return <>
         <Badge {...badgeProps} size='lg'>
