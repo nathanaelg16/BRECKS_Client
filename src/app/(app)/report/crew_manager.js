@@ -29,12 +29,7 @@ export default function CrewManager({withCrew}) {
 
     useEffect(() => {
         postman.get('/contractors').then((response) => {
-            if (response.status === 200) {
-                setContractors(response.data.sort((a, b) => a.shortName.localeCompare(b.shortName)))
-            }
-        }).catch((error) => {
-            // todo implement error handling
-            console.log(error)
+            setContractors(response.data.sort((a, b) => a.shortName.localeCompare(b.shortName)))
         })
     }, [])
 
