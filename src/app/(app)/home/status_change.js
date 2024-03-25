@@ -13,6 +13,7 @@ import {CheckCircleOutline} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
 
 export default function HomeViewStatusChanger({openState, job}) {
+
     const router = useRouter()
     const [open, setOpen] = openState
     const [selectedStatus, setSelectedStatus] = useState(null)
@@ -31,22 +32,20 @@ export default function HomeViewStatusChanger({openState, job}) {
             status: JOB_STATUS[selectedStatus],
             startDate: effectiveDate
         }).then((response) => {
-            if (response.status === 200) {
+            setTimeout(() => {
+                setLoading(false)
+                setSuccessGlyph(true)
                 setTimeout(() => {
-                    setLoading(false)
-                    setSuccessGlyph(true)
-                    setTimeout(() => {
-                        setSuccessGlyph(false)
-                        setOpen(false)
-                        router.refresh()
-                    }, 1000)
-                }, 1500)
-            } else {
-                // todo perform error handling
-            }
+                    setSuccessGlyph(false)
+                    setOpen(false)
+                    router.refresh()
+                }, 1000)
+            }, 1500)
         }).catch((error) => {
             // todo error handling
             setLoading(false)
+            setOpen(false)
+
         })
     }
 
