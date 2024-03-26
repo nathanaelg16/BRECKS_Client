@@ -1,14 +1,23 @@
 import {Accordion, AccordionDetails, AccordionGroup, AccordionSummary} from "@mui/joy";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import JobScrollView from "@/app/(app)/home/job_scroll_view";
 
 export default function JobAccordion({jobs}) {
     const [expansionState, setExpansionState] = useState({
-        'ACTIVE': true,
-        'ON HOLD': true,
-        'COMPLETED': true,
-        'NOT STARTED': true
+        'ACTIVE': false,
+        'ON HOLD': false,
+        'COMPLETED': false,
+        'NOT STARTED': false
     })
+
+    useEffect(() => {
+        setExpansionState({
+            'ACTIVE': jobs.active?.length > 0,
+            'ON HOLD': jobs.onHold?.length > 0,
+            'COMPLETED': jobs.completed?.length > 0,
+            'NOT STARTED': jobs.notStarted?.length > 0
+        })
+    }, [jobs, setExpansionState])
 
     const accordion = (status, data) => {
         if (data == null) data = []

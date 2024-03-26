@@ -5,14 +5,16 @@ import Typography from "@mui/joy/Typography";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {JOB_STATUS} from "@/app/utils";
 import Button from "@mui/joy/Button";
 import {postman} from "@/resources/config";
 import {CheckCircleOutline} from "@mui/icons-material";
 import {useRouter} from "next/navigation";
+import {SnackbarContext} from "@/app/(app)/context";
 
 export default function HomeViewStatusChanger({openState, job}) {
+    const setSnackbar = useContext(SnackbarContext)
     const router = useRouter()
     const [open, setOpen] = openState
     const [selectedStatus, setSelectedStatus] = useState(null)
@@ -31,22 +33,19 @@ export default function HomeViewStatusChanger({openState, job}) {
             status: JOB_STATUS[selectedStatus],
             startDate: effectiveDate
         }).then((response) => {
-            if (response.status === 200) {
+            setTimeout(() => {
+                setLoading(false)
+                setSuccessGlyph(true)
                 setTimeout(() => {
-                    setLoading(false)
-                    setSuccessGlyph(true)
-                    setTimeout(() => {
-                        setSuccessGlyph(false)
-                        setOpen(false)
-                        router.refresh()
-                    }, 1000)
-                }, 1500)
-            } else {
-                // todo perform error handling
-            }
+                    setSuccessGlyph(false)
+                    setOpen(false)
+                    router.refresh()
+                }, 1000)
+            }, 1500)
         }).catch((error) => {
-            // todo error handling
             setLoading(false)
+            setOpen(false)
+            setSnackbar('error', {text: 'An error occurred while updating the job status.', vertical: 'top', horizontal: 'center'})
         })
     }
 

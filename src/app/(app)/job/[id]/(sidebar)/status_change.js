@@ -10,9 +10,11 @@ import Button from "@mui/joy/Button";
 import {CheckCircleOutline, CloseRounded, KeyboardArrowDown} from "@mui/icons-material";
 import {postman} from "@/resources/config";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {SnackbarContext} from "@/app/(app)/context";
 
 export default function JobViewStatusChanger({sx}) {
     const [job, updateJob] = useContext(JobContext)
+    const setSnackbar = useContext(SnackbarContext)
     const action = useRef(null)
     const [loading, setLoading] = useState(false)
     const [successGlyph, setSuccessGlyph] = useState(false)
@@ -35,20 +37,16 @@ export default function JobViewStatusChanger({sx}) {
             startDate: dateRange.from,
             endDate: dateRange.to
         }).then((response) => {
-            if (response.status === 200) {
+            setTimeout(() => {
+                setLoading(false)
+                setSuccessGlyph(true)
                 setTimeout(() => {
-                    setLoading(false)
-                    setSuccessGlyph(true)
-                    setTimeout(() => {
-                        setSuccessGlyph(false)
-                        updateJob()
-                    }, 1000)
-                }, 1500)
-            } else {
-                // todo perform error handling
-            }
+                    setSuccessGlyph(false)
+                    updateJob()
+                }, 1000)
+            }, 1500)
         }).catch((error) => {
-            // todo error handling
+            setSnackbar('error', {text: 'Unable to update status', vertical: 'top', horizontal: 'right'})
             setLoading(false)
         })
     }

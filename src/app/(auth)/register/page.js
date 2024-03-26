@@ -3,7 +3,7 @@
 import {useRouter, useSearchParams} from "next/navigation";
 import {useCallback, useEffect, useState} from "react";
 import {config} from "@/resources/config";
-import {CircularProgress, FormHelperText, Sheet, Stack} from "@mui/joy";
+import {CircularProgress, FormHelperText, Sheet, Snackbar, Stack} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Image from 'next/image'
 import Typography from "@mui/joy/Typography";
@@ -13,6 +13,7 @@ import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import DangerousIcon from "@mui/icons-material/Dangerous";
 import axios from "axios";
 
 const postman = axios.create({
@@ -32,6 +33,7 @@ export default function Register() {
     const [passwordConf, setPasswordConf] = useState('')
     const [usernameError, setUsernameError] = useState(null)
     const [passwordError, setPasswordError] = useState(false)
+    const [snackbarError, setSnackbarError] = useState('')
 
     const [loading, setLoading] = useState({
         username: false,
@@ -57,12 +59,10 @@ export default function Register() {
             }).then(response => {
                 setUserDetails(response.data)
             }).catch(error => {
-                // todo implement more error handling
                 if (error.response) {
-                    if (error.response.status === 401) {
-                        router.push('/register')
-                    }
-                }
+                    if (error.response.status === 401) router.push('/register')
+                    else if (error.response.status === 500) setSnackbarError('An unexpected server error has occurred.')
+                } else setSnackbarError('An unexpected error has occurred.')
             })
         }
     }, [router, initialAccessKey])
@@ -85,14 +85,9 @@ export default function Register() {
                     'Authorization': 'BearerAccessKey ' + accessKey
                 }
             }).then(response => {
-                if (response.status === 200) {
-                    setUsernameError(!response.data.unique)
-                }
-                else {
-                    // todo implement error handling
-                }
+                setUsernameError(!response.data.unique)
             }).catch(error => {
-                // todo implement error handling
+                setSnackbarError('An error occurred while communicating with the server.')
             }).finally(() => {
                 setLoading({...loading, username: false})
             })
@@ -152,6 +147,9 @@ export default function Register() {
     </>
 
     const registrationView = <>
+        <Snackbar open={Boolean(snackbarError)} anchorOrigin={{vertical: 'top', horizontal: 'center'}} color='danger' variant='solid' startDecorator={<DangerousIcon/>}>
+            <Typography sx={{color: 'white'}} level='title-md'>{snackbarError}</Typography>
+        </Snackbar>
         <Box sx={{display: 'flex', flexDirection: 'column'}}>
             <Box sx={{my: 2, mb: 1, mx: 'auto', cursor: 'pointer'}}>
                 <Image style={{margin: '0 auto'}} alt='BRECKS' src={config.spaces.concat('/logos/BRECKS-v2@2x.png')} width={400} height={133}/>

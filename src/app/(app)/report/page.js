@@ -3,7 +3,7 @@
 import Typography from "@mui/joy/Typography";
 import Box from "@mui/joy/Box";
 import {Chip, CircularProgress, FormHelperText, Option, Select, Sheet, Stack} from "@mui/joy";
-import {useEffect, useState} from "react";
+import {useCallback, useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Button from "@mui/joy/Button";
 import FormControl from "@mui/joy/FormControl";
@@ -12,26 +12,29 @@ import Input from "@mui/joy/Input";
 import {useRouter, useSearchParams} from "next/navigation";
 import CrewManager from "@/app/(app)/report/crew_manager";
 import DescriptionFields from "@/app/(app)/report/description_fields";
+import {SnackbarContext} from "@/app/(app)/context";
 
 const {Map, List} = require('immutable')
-
-// todo implement checking if job active on report date
+const {DateTime, Interval} = require('luxon')
 
 export default function Report() {
+    const setSnackbar = useContext(SnackbarContext)
     const [reportDate, setReportDate] = useState(new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}))
     const [dateError, setDateError] = useState('')
     const [loading, setLoading] = useState(false)
     const [jobSites, setJobSites] = useState([]);
     const [selectedJobSite, setSelectedJobSite] = useState(0);
-    const [error, setError] = useState(false)
     const [weather, setWeather] = useState('')
     const [weatherLoading, setWeatherLoading] = useState(false)
     const [visitors, setVisitors] = useState('')
     const [crew, setCrew] = useState(Map())
     const [workDescriptions, setWorkDescriptions] = useState(List(['']))
     const [materialDescriptions, setMaterialDescriptions] = useState(List(['']))
+    const [formSubmissionDisabled, setFormSubmissionDisabled] = useState(true)
     const router = useRouter()
     const searchParams = useSearchParams()
+
+    const setError = useCallback((message) => setSnackbar('error', {text: message, vertical: 'top', horizontal: 'center', autoHideDuration: null, variant: 'solid', sx: {color: 'white'}, textSX: {color: 'white'}}), [setSnackbar])
 
     useEffect(() => {
         const handleError = (message) => setError('An error occurred fetching the job sites.\n' + message)
@@ -42,8 +45,8 @@ export default function Report() {
                 if (params.has('job')) setSelectedJobSite(parseInt(params.get('job')))
                 if (params.has('date')) setReportDate(new Date(params.get('date')).toLocaleString("en-CA", {timeZone: "UTC", month: '2-digit', day: '2-digit', year: 'numeric'}))
             }
-        }).catch((error) => handleError(error.message)) //todo implement better error handling
-    }, [searchParams])
+        }).catch((error) => handleError(error.message))
+    }, [searchParams, setError])
 
     useEffect(() => {
         const error = new Date() < new Date(reportDate)
@@ -58,31 +61,42 @@ export default function Report() {
 
         const params = new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'}) === reportDate ? new URLSearchParams() : new URLSearchParams({date: reportDate})
         postman.get('/weather?' + params).then((response) => {
-            if (response.status === 200) {
-                setWeather(response.data.summary)
-            }
+            setWeather(response.data.summary)
         }).catch((error) => {
-            // todo implement error handling
-            console.log(error)
+            setWeather('')
         }).finally(() => {
             setWeatherLoading(false)
         })
     }, [reportDate])
 
     useEffect(() => {
-        const params = new URLSearchParams({job: selectedJobSite, date: reportDate})
+        const currentReportDate = DateTime.fromISO(reportDate)
+        if (reportDate && selectedJobSite) {
+            postman.get(`/jobs/${selectedJobSite}/stats?` + new URLSearchParams({
+                basis: 'week',
+                value: currentReportDate.startOf('week').toISODate()
+            }))
+                .then(response => {
+                    const activePeriods = response.data.statusHistory.ACTIVE.map(interval => Interval.fromDateTimes(DateTime.fromISO(interval.startDate), DateTime.fromISO(interval.endDate)))
+                    if (!activePeriods.some((interval) => interval.contains(currentReportDate))) {
+                        setFormSubmissionDisabled(true)
+                        setError('This job site is not listed as active on the date selected.')
+                    } else setFormSubmissionDisabled(false)
+                })
+        }
+    }, [reportDate, selectedJobSite, setFormSubmissionDisabled, setError]);
 
-        postman.get('/reports/exists?' + params).then((response) => {
-            if (response.status === 200) {
+    useEffect(() => {
+        if (Boolean(selectedJobSite)) {
+            const params = new URLSearchParams({job: selectedJobSite, date: reportDate})
+            postman.get('/reports/exists?' + params).then((response) => {
                 if (response.data.exists) setDateError('A report has already been submitted for this date.')
                 else setDateError('')
-            } else {
-                // todo implement error handling
-            }
-        }).catch((error) => {
-            // todo implement error handling
-        })
-    }, [reportDate, selectedJobSite]);
+            }).catch((error) => {
+                setError(`An unexpected error occurred. Code: L96-${error.response ? 'RSP' : 'REQ'}`)
+            })
+        }
+    }, [reportDate, selectedJobSite, setError]);
 
     const submitReport = () => {
         setLoading(true)
@@ -167,7 +181,7 @@ export default function Report() {
                                 </Box>
                             </Sheet>
 
-                            <Button type="submit" loading={loading}>Submit</Button>
+                            <Button disabled={formSubmissionDisabled} type="submit" loading={loading}>Submit</Button>
                         </Stack>
                     </form>
                 </Box>

@@ -13,6 +13,7 @@ export default function JobStats({sx, calendar, statsState}) {
     let [job, _] = useContext(JobContext)
     const [stats, setStats] = statsState
     const [loading, setLoading] = useState(true)
+    const [errorState, setErrorState] = useState(false)
 
     useEffect(() => {
         postman.get(`/jobs/${job?.id}/stats?` + new URLSearchParams({
@@ -20,13 +21,11 @@ export default function JobStats({sx, calendar, statsState}) {
             value: `${calendar.year.toString()}-${(calendar.month + 1).toString().padStart(2, '0')}-01`
         }))
             .then((response) => {
-                if (response.status === 200) {
-                    setStats(response.data)
-                    setLoading(false)
-                } else console.log('error')
+                setStats(response.data)
+                setLoading(false)
+                setErrorState(false)
             }).catch((error) => {
-            console.log(error)
-            // todo implement error handling
+                setErrorState(true)
         }).finally(() => setLoading(false))
     }, [job, calendar, setStats])
 
@@ -40,13 +39,17 @@ export default function JobStats({sx, calendar, statsState}) {
     return <>
         <Divider sx={{mt: 3, '--Divider-thickness': '2px', '--Divider-lineColor': 'black'}}><Typography level='title-lg' className={RedHatFont.className} sx={{color: 'black'}}>{`${MONTHS[calendar.month]} ${calendar.year}`}</Typography></Divider>
         <Stack sx={{...sx, }} spacing={2}>
-            <ReportStats loading={loading} ratio={stats.missingReportDates?.length / 20.0} />
-            <Sheet sx={{p: 1, borderRadius: '15px'}}>
-                <Stack spacing={2}>
-                    {dataRow('Total Man-days', stats.totalManDays)}
-                    {dataRow('Average Daily Manpower', stats.avgDailyManPower)}
-                </Stack>
-            </Sheet>
+            {errorState ? <>
+                <Typography level='title-lg' className={RedHatFont.className}>Unable to load stats</Typography>
+            </> : <>
+                <ReportStats loading={loading} ratio={stats.missingReportDates?.length / 20.0} />
+                <Sheet sx={{p: 1, borderRadius: '15px'}}>
+                    <Stack spacing={2}>
+                        {dataRow('Total Man-days', stats.totalManDays)}
+                        {dataRow('Average Daily Manpower', stats.avgDailyManPower)}
+                    </Stack>
+                </Sheet>
+            </>}
         </Stack>
     </>
 }
