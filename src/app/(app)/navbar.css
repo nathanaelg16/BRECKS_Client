@@ -1,0 +1,23 @@
+@media (width < 975px) {
+    #job-picker-label {
+        display: none;
+    }
+
+    #job-picker-select {
+        margin-right: 0;
+    }
+}
+
+@media (width < 675px) {
+    #job-picker {
+        display: none;
+    }
+
+    .navbar {
+        justify-content: flex-start;
+    }
+
+    .navItem {
+        flex: unset;
+    }
+}

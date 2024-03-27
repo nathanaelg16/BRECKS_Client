@@ -123,7 +123,7 @@ export default function Report() {
 
     return <>
         <Box sx={{display: 'flex'}}>
-            <Sheet sx={{mx: 'auto', width: '800px', display: 'flex', flexDirection: 'column', px: 4, pb: 4}}>
+            <Sheet sx={{mx: 'auto', width: '800px', display: 'flex', flexDirection: 'column', px: {xs: 1, sm: 4}, pb: 4}}>
                 <Typography level={'h1'} sx={{my: 2, mb: 0, mx: 'auto'}}>Daily Job Report</Typography>
                 <Box sx={{my: 2, mb: 0}}>
                     <form autoComplete="off" onSubmit={(event) => {

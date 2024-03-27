@@ -1,0 +1,11 @@
+#quick-actions {
+    scroll-behavior: smooth;
+}
+
+#quick-actions > * {
+    flex-shrink: 0;
+}
+
+.actionButton {
+    text-align: center;
+}
