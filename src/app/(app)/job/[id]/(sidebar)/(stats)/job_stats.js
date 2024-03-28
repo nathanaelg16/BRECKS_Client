@@ -8,6 +8,7 @@ import {Red_Hat_Display} from "next/font/google";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
+const isEmpty = require('lodash.isempty')
 
 export default function JobStats({sx, calendar, statsState}) {
     let [job, _] = useContext(JobContext)
@@ -16,17 +17,19 @@ export default function JobStats({sx, calendar, statsState}) {
     const [errorState, setErrorState] = useState(false)
 
     useEffect(() => {
-        postman.get(`/jobs/${job?.id}/stats?` + new URLSearchParams({
-            basis: 'month',
-            value: `${calendar.year.toString()}-${(calendar.month + 1).toString().padStart(2, '0')}-01`
-        }))
-            .then((response) => {
-                setStats(response.data)
-                setLoading(false)
-                setErrorState(false)
-            }).catch((error) => {
+        if (job && !isEmpty(job)) {
+            postman.get(`/jobs/${job?.id}/stats?` + new URLSearchParams({
+                basis: 'month',
+                value: `${calendar.year.toString()}-${(calendar.month + 1).toString().padStart(2, '0')}-01`
+            }))
+                .then((response) => {
+                    setStats(response.data)
+                    setLoading(false)
+                    setErrorState(false)
+                }).catch((error) => {
                 setErrorState(true)
-        }).finally(() => setLoading(false))
+            }).finally(() => setLoading(false))
+        }
     }, [job, calendar, setStats])
 
     const dataRow = (key, value) => {

@@ -13,6 +13,7 @@ import {SnackbarContext} from "@/app/(app)/context";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 const {DateTime} = require('luxon')
+const isEmpty = require('lodash.isempty')
 
 export default function Calendar({sx, calendarState, stats}) {
     const setSnackbar = useContext(SnackbarContext)
@@ -118,7 +119,7 @@ export default function Calendar({sx, calendarState, stats}) {
     useEffect(() => {
         const formatDate = (date) => date.toFormat('yyyy-MM-dd')
 
-        if (job && today && firstOfMonth && lastOfMonth) {
+        if (job && !isEmpty(job) && today && firstOfMonth && lastOfMonth) {
             postman.get('/reports/summarized?' + new URLSearchParams({
                 job: job.id,
                 startDate: formatDate(firstOfMonth),
