@@ -56,7 +56,7 @@ export default function JobViewStatusChanger({sx}) {
         updateStatus()
     }}>
         <Sheet variant='soft' sx={{...sx, p: 1, borderRadius: '15px'}}>
-            <Stack spacing={2} sx={{}}>
+            <Stack spacing={2} sx={{}} flexWrap='wrap'>
                 <FormControl error={statusError}>
                     <FormLabel sx={{fontWeight: '600', fontSize: '16px'}}>Update status</FormLabel>
                     <Select action={action} required value={selectedStatus} indicator={<KeyboardArrowDown />} placeholder='Select...' onChange={(ev, nv) => setSelectedStatus(nv)} {...(selectedStatus && {
@@ -84,13 +84,13 @@ export default function JobViewStatusChanger({sx}) {
                         {Object.entries(JOB_STATUS).map(([k, v], i) => <Option key={i} value={k}>{v}</Option>)}
                     </Select>
                 </FormControl>
-                <Stack direction='row' spacing={2}>
-                    <FormControl required>
+                <Stack direction='row' spacing={2} flexWrap='wrap' justifyContent='flex-start' alignItems='center' useFlexGap width={1}>
+                    <FormControl required sx={{flex: 1}}>
                         <FormLabel sx={{fontWeight: '600', fontSize: '16px'}}>Start date</FormLabel>
                         <Input required type="date" value={dateRange.from} slotProps={{input: {max: new Date().toLocaleString("en-CA", {timeZone: "America/New_York", month: '2-digit', day: '2-digit', year: 'numeric'})}}}
                                onChange={(e) => setDateRange({...dateRange, from: e.target.value})}/>
                     </FormControl>
-                    <FormControl>
+                    <FormControl sx={{flex: 1}}>
                         <FormLabel sx={{fontWeight: '600', fontSize: '16px'}}>End date</FormLabel>
                         <Input type="date" value={dateRange.to}
                                onChange={(e) => setDateRange({...dateRange, to: e.target.value})}/>

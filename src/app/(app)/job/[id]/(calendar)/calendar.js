@@ -28,6 +28,7 @@ export default function Calendar({sx, calendarState, stats}) {
     const firstOfMonth = useMemo(() => DateTime.local(calendar.year, calendar.month + 1, 1), [calendar])
     const lastOfMonth = useMemo(() => DateTime.local(calendar.year, calendar.month + 1, 1).endOf('month'), [calendar])
     const firstDayOfMonth = useMemo(() => firstOfMonth.weekday % 6, [firstOfMonth])
+    // noinspection JSAnnotator
     const lastOfPreviousMonth = useMemo(() => firstOfMonth.minus({days: 1}), [firstOfMonth])
     const lastDateOfMonth = useMemo(() => lastOfMonth.day, [lastOfMonth])
 

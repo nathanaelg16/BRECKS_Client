@@ -1,6 +1,5 @@
 import {Chip, Stack} from "@mui/joy";
 import Typography from "@mui/joy/Typography";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import {JOB_STATUS, JOB_STATUS_COLORS} from "@/app/utils";
 import Box from "@mui/joy/Box";
 import {Red_Hat_Display} from "next/font/google";
@@ -11,21 +10,17 @@ export default function CalendarDate({data, metadata, sx}) {
     const content = () => {
         if (!data) return <></>;
         else if (data?.currentCalendarMonth) {
-            const isBeforeToday = !metadata.todayIndex || metadata.index < metadata.todayIndex
-            if (data.reportMissing) return (
-                <Box sx={{m: 'auto', width: 1, height: 1, display: 'flex', flexDirection: 'column'}}>
-                    <Typography fontWeight='700' fontSize='lg' className={RedHatFont.className} textAlign='center'
-                                color='primary' textTransform='uppercase' sx={{m: 'auto', }}>
-                        {isBeforeToday ? 'missing report' : 'pending submission'}
-                    </Typography>
-                </Box>
-            )
-            else {
-                let content = ''
-                const sx = {
-                    color: 'black'
-                }
+            let content = ''
 
+            let sx = {
+                color: 'black'
+            }
+
+            const isBeforeToday = !metadata.todayIndex || metadata.index < metadata.todayIndex
+            if (data.reportMissing) {
+                content = isBeforeToday ? 'missing report' : 'pending submission'
+                sx.color = 'var(--joy-palette-primary-500)'
+            } else {
                 if (data.status === 'ACTIVE') {
                     if (!metadata.todayIndex || metadata.index <= metadata.todayIndex) {
                         if (data.report) {
@@ -40,36 +35,39 @@ export default function CalendarDate({data, metadata, sx}) {
                     content = JOB_STATUS[data.status]
                     sx.color = JOB_STATUS_COLORS[data.status] + '60'
                 }
-
-                return (<Typography fontWeight='700' fontSize='xl' className={RedHatFont.className} textAlign='center' sx={{m: 'auto', ...sx}}>
-                    {content}
-                </Typography>)
             }
+
+                return <Typography textTransform='uppercase' fontWeight='700' className={RedHatFont.className} textAlign='center' sx={{width: 1, height: 1, fontSize: 18, ...sx}}>
+                {content}
+            </Typography>
         }
     }
 
     const renderMarkerChips = () => {
-        if (metadata.index === metadata.todayIndex || metadata.index === metadata.startDateIndex) {
-            const title = metadata.todayIndex ? 'Today' : 'Start'
-            const background = metadata.todayIndex ? '#705241' : '#34C172'
-            const color = metadata.todayIndex ? '#FFFFFF' : '#000000'
+        let title, background, color
 
-            return <Chip sx={{background: background}}>
-                <Typography className={RedHatFont.className} sx={{color: color, textTransform: 'uppercase'}}>{title}</Typography>
-            </Chip>
+        if (metadata.index === metadata.todayIndex) {
+            title = 'Today'
+            background = '#705241'
+            color = '#FFFFFF'
+        } else if (metadata.index === metadata.startDateIndex) {
+            title = 'Start'
+            background = '#34C172'
+            color = '#000000'
         } else return null
+
+        return <Chip sx={{background: background, mx: 'auto'}}>
+            <Typography className={RedHatFont.className} sx={{color: color, textTransform: 'uppercase'}}>{title}</Typography>
+        </Chip>
     }
 
-    return <Box onClick={data?.onClick} sx={{...sx, p: 1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, ...data?.sx}}>
-        <Stack spacing={1} direction='row' justifyContent='space-between' alignItems='center' flexWrap='wrap'>
-            <Typography level='title-lg' sx={{...data?.dateSX}}>{data?.date}</Typography>
+    return <Box onClick={data?.onClick} sx={{...sx, p: 1, border: '1px solid black', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'start', position: 'relative', ...data?.sx}}>
+        <Typography level='title-lg' sx={{...data?.dateSX, zIndex: 0}}>{data?.date}</Typography>
+        <Stack sx={{zIndex: 1, position: 'absolute', top: 0, left: 0, right: 0, p: 1}}>
             {renderMarkerChips()}
-            <Stack spacing={1} direction='row' justifyContent='flex-end' alignItems='center' flexWrap='wrap'>
-                {data?.reportMissing && (!metadata.todayIndex || metadata.index < metadata.todayIndex) && <WarningAmberIcon sx={{color: '#FF9C24', fontSize: 28}} />}
-            </Stack>
         </Stack>
-        <Stack spacing={1} sx={{p: 2}}>
+        <Box sx={{display: 'content', mt: 1, flex: 1, width: 1, px: 1}}>
             {content()}
-        </Stack>
+        </Box>
     </Box>
 }
