@@ -18,3 +18,9 @@
 #header.historical .MuiTypography-root {
     color: var(--joy-palette-neutral-100);
 }
+
+.reportInputDatum, .crewInput .MuiInput-input {
+    color: black;
+    opacity: 1;
+    -webkit-text-fill-color: black;
+}
