@@ -26,7 +26,7 @@ export default function Sidebar({sx, calendar, statsState}) {
     </Stack>
 
     const small = <Accordion size='sm' variant='soft' color='neutral' sx={{display: {xs: 'unset', lg: 'none'}}}>
-        <AccordionSummary sx={{py: 2}} indicator={<ExpandCircleDownIcon sx={{fontSize: 28, mr: 5}} />}>
+        <AccordionSummary slotProps={{button: {sx: {py: 2}}, indicator: {sx: {mr: 5}}}} indicator={<ExpandCircleDownIcon sx={{fontSize: 28}} />}>
             {header}
             <JobData sx={{flex: 1, height: 'fit-content', background: 'none'}} />
         </AccordionSummary>

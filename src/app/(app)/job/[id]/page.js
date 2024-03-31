@@ -6,6 +6,8 @@ import Sidebar from "@/app/(app)/job/[id]/(sidebar)/sidebar";
 import Calendar from "@/app/(app)/job/[id]/(calendar)/calendar";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
+const {DateTime} = require('luxon')
+
 export default function Job() {
     let [job, updateJob] = useContext(JobContext)
     const [calendar, setCalendar] = useState((() => {
@@ -22,12 +24,13 @@ export default function Job() {
         let newState = {}
 
         if (update === -1) {
+            if (calendar.month === DateTime.fromISO(job.startDate).month - 1) return
             if (calendar.month === 0) {
                 newState['year'] = calendar.year - 1
                 newState['month'] = 11
             } else newState['month'] = calendar.month - 1
         } else if (update === 1) {
-            if (calendar.today.getMonth() === calendar.month && calendar.today.getFullYear() === calendar.year) return;
+            if (calendar.today.getMonth() === calendar.month && calendar.today.getFullYear() === calendar.year) return
             if (calendar.month === 11) {
                 newState['year'] = calendar.year + 1
                 newState['month'] = 0
