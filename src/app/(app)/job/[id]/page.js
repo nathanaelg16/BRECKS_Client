@@ -6,6 +6,8 @@ import Sidebar from "@/app/(app)/job/[id]/(sidebar)/sidebar";
 import Calendar from "@/app/(app)/job/[id]/(calendar)/calendar";
 import {JobContext} from "@/app/(app)/job/[id]/job_context";
 
+const {DateTime} = require('luxon')
+
 export default function Job() {
     let [job, updateJob] = useContext(JobContext)
     const [calendar, setCalendar] = useState((() => {
@@ -22,12 +24,13 @@ export default function Job() {
         let newState = {}
 
         if (update === -1) {
+            if (calendar.month === DateTime.fromISO(job.startDate).month - 1) return
             if (calendar.month === 0) {
                 newState['year'] = calendar.year - 1
                 newState['month'] = 11
             } else newState['month'] = calendar.month - 1
         } else if (update === 1) {
-            if (calendar.today.getMonth() === calendar.month && calendar.today.getFullYear() === calendar.year) return;
+            if (calendar.today.getMonth() === calendar.month && calendar.today.getFullYear() === calendar.year) return
             if (calendar.month === 11) {
                 newState['year'] = calendar.year + 1
                 newState['month'] = 0
@@ -37,8 +40,8 @@ export default function Job() {
         setCalendar({...calendar, ...newState})
     }
 
-    return <Box sx={{width: '100svw', gridTemplateColumns: '1fr 20svw', gap: '0svw', display: 'grid', height: '100%', border: '2px solid gray', borderTop: '1px solid gray'}}>
-        <Calendar sx={{gridColumn: 1, gridRow: 1}} calendarState={[calendar, updateCalendar]} stats={stats} />
-        <Sidebar sx={{gridColumn: 2, gridRow: 1}} calendar={calendar} statsState={[stats, setStats]} />
+    return <Box sx={{width: '100svw', gridTemplateColumns: {xl: '1fr 375px', lg: '1fr 20%', xs: 'auto'}, gridTemplateRows: 'auto', gap: '0svw', display: 'grid', height: 1, border: '2px solid gray', borderTop: '1px solid gray'}}>
+        <Sidebar sx={{gridColumn: {lg: 2, xs: 1}, gridRow: 1}} calendar={calendar} statsState={[stats, setStats]} />
+        <Calendar sx={{gridColumn: 1, gridRow: {lg: 1, xs: 2}}} calendarState={[calendar, updateCalendar]} stats={stats} />
     </Box>
 }

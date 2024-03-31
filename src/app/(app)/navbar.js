@@ -8,7 +8,8 @@ import Image from "next/image";
 import {config} from "@/resources/config";
 import JobPicker from "@/app/(app)/job_picker";
 import {useRouter} from "next/navigation";
-import QuickActions from "@/app/(app)/(quick_actions)/QuickActions";
+import QuickActions from "@/app/(app)/(quick_actions)/quick_actions";
+import "./navbar.css"
 
 export default function Navbar() {
     const router = useRouter()
@@ -16,7 +17,7 @@ export default function Navbar() {
 
     return <>
         <QuickActions open={isDrawerOpen} onClose={() => setDrawerOpen(false)}/>
-        <Box component='header' sx={{
+        <Box id='navbar' component='header' sx={{
             borderBottom: '1px solid gray',
             display: 'flex',
             justifyContent: 'space-between',
@@ -25,12 +26,12 @@ export default function Navbar() {
             width: '100svw',
             flex: '0 1 auto'
         }}>
-            <Box component='span' sx={{width: '33vw'}}>
+            <Box className='navItem' component='span' sx={{flex: '1 1 0'}}>
                 <Button size='md' onClick={() => setDrawerOpen(true)} variant='outline'>
                     <MenuIcon/>
                 </Button>
             </Box>
-            <Box component="span" sx={{width: '33vw', display: 'flex', cursor: 'pointer'}}
+            <Box className='navItem' component="span" sx={{display: 'flex', cursor: 'pointer', mx: 'auto', flex: '0 0 auto'}}
                  onClick={() => router.push('/home')}>
                 <Image src={config.spaces.concat("/logos/BRECKS-v2@2x.png")}
                        alt="BRECKS"
@@ -39,9 +40,7 @@ export default function Navbar() {
                        style={{margin: 'auto'}}
                 />
             </Box>
-            <Box sx={{width: '33vw', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 3}}>
-                <JobPicker sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1}}/>
-            </Box>
+            <JobPicker className='navItem' sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1, flex: '1 1 0'}} />
         </Box>
     </>
 }

@@ -41,7 +41,7 @@ export default function JobCard({job}) {
 
     return <>
         <Badge {...badgeProps} size='lg'>
-            <Card onClick={() => router.push(`/job/${job.id}`)} color='primary' sx={{cursor: 'pointer', '&:hover': {background: 'var(--joy-palette-neutral-100)'}}}>
+            <Card onClick={() => router.push(`/job/${job.id}`)} color='primary' sx={{cursor: 'pointer', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, mx: {xs: 'auto', sm: 'unset'}, width: {xs: '100%', sm: 'unset'}}}>
                 <Typography level='h4' fontSize='md' textAlign='center'>{job.address}</Typography>
                 <Typography sx={{mt: -1}} level='body-sm' textAlign='center'>{job.identifier && `(${job.identifier})`}</Typography>
                 <CardContent>
@@ -54,7 +54,7 @@ export default function JobCard({job}) {
                         <Typography color={stats.missingReportDates.length > 0 ? 'primary' : ''} level='body-sm' sx={{fontWeight: '600'}}><Skeleton loading={loading} animation='wave'>Missing Reports: <Typography sx={{fontWeight: '200'}}>{stats.missingReportDates.length}</Typography></Skeleton></Typography>
                     </>}
                 </CardContent>
-                <CardActions>
+                <CardActions sx={{mx: 'auto'}}>
                     <Button sx={{background: '#00A550', "&:hover": {background: '#00612F'}}} onClick={(e) => {
                         e.stopPropagation()
                         router.push(`/report?job=${job.id}`)

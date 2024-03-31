@@ -20,16 +20,14 @@ export default function JobPicker(props) {
         return jobs.map((job) => <Option key={job.id} value={job.id}>{job.address}</Option>)
     }
 
-    return <>
-        <Box component="span" sx={{...props.sx}}>
-            <Typography level={'title-md'}>
-                Go to:
-            </Typography>
-            <Select value={''} sx={{marginRight: 1}} placeholder='Select a jobsite...' onChange={(ev, nv) => {
-                if (nv !== null && nv !== '') router.push(`/job/${nv}`)
-            }}>
-                {allJobs.length > 0 ? generateOptions(allJobs) : <Option disabled key={-2} value={-1}>No jobs available</Option>}
-            </Select>
-        </Box>
-    </>
+    return <Box id='job-picker' className={`${props.className}`} component="span" sx={{...props.sx}}>
+        <Typography id='job-picker-label' level={'title-md'}>
+            Go to:
+        </Typography>
+        <Select slotProps={{root: {id: 'job-picker-select'}}} value={''} sx={{marginRight: 1}} placeholder='Select a jobsite...' onChange={(ev, nv) => {
+            if (nv !== null && nv !== '') router.push(`/job/${nv}`)
+        }}>
+            {allJobs.length > 0 ? generateOptions(allJobs) : <Option disabled key={-2} value={-1}>No jobs available</Option>}
+        </Select>
+    </Box>
 }

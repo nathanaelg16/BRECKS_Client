@@ -10,11 +10,11 @@ import {
     Chip,
     ChipDelete,
     createFilterOptions,
+    IconButton,
     ListItemDecorator,
     Stack
 } from "@mui/joy";
 import Input from "@mui/joy/Input";
-import Button from "@mui/joy/Button";
 import {useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import AddIcon from '@mui/icons-material/Add';
@@ -24,7 +24,7 @@ export default function CrewManager({withCrew}) {
     const [crew, setCrew] = withCrew;
     const [contractors, setContractors] = useState([])
     const [selectedContractor, setSelectedContractor] = useState(null)
-    const [selectedCrewSize, setSelectedCrewSize] = useState(undefined)
+    const [selectedCrewSize, setSelectedCrewSize] = useState(0)
     const filter = createFilterOptions();
 
     useEffect(() => {
@@ -44,8 +44,8 @@ export default function CrewManager({withCrew}) {
             {crew.entrySeq().map(([contractor, crewSize]) => <Chip size='md' key={contractor.shortName} endDecorator={<ChipDelete onDelete={() => setCrew(crew.delete(contractor))} />}><strong>{contractor.shortName}:</strong> {crewSize}</Chip>)}
         </Box>
 
-        <Box sx={{display: 'flex', justifyContent: 'flex-start', gap: 3, alignItems: 'end'}}>
-            <FormControl>
+        <Box sx={{display: 'flex', justifyContent: 'flex-start', gap: 3, alignItems: {xs: 'start', sm: 'end'}, flexDirection: {xs: 'column', sm: 'row'}}}>
+            <FormControl sx={{width: {xs: 1, sm: 'unset'}}}>
                 <FormLabel>Contractor</FormLabel>
                 <Autocomplete
                     value={selectedContractor}
@@ -108,14 +108,14 @@ export default function CrewManager({withCrew}) {
                     )}
                 />
             </FormControl>
-            <FormControl sx={{maxWidth: '80px'}}>
+            <FormControl sx={{width: {xs: 1, sm: '80px'}}}>
                 <FormLabel>Crew Size</FormLabel>
                 <Input placeholder={'0'} value={selectedCrewSize} onChange={(e) => {
                     let val = e.target.value ? parseInt(e.target.value) : 0
                     if (!isNaN(val)) setSelectedCrewSize(val)
                 }}/>
             </FormControl>
-            <Button disabled={selectedContractor === null || selectedCrewSize === null} onClick={() => setCrew(crew.set(selectedContractor, selectedCrewSize))}><AddIcon /></Button>
+            <IconButton sx={{background: 'var(--joy-palette-primary-300)', width: {xs: 1, sm: '50px'}}} variant='solid' color='primary' disabled={selectedContractor === null || selectedCrewSize === null} onClick={() => setCrew(crew.set(selectedContractor, selectedCrewSize))}><AddIcon sx={{fontSize: 26}} /></IconButton>
         </Box>
     </Stack>
 }

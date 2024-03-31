@@ -136,12 +136,10 @@ export default function Register() {
 
     const blockedView = <>
         <Box sx={{display: 'flex', flexDirection: 'column', height: '95svh'}}>
-            <Box sx={{display: 'flex', flexDirection: 'column', m: '20svh auto'}}>
-                <Image style={{margin: '5px auto'}} alt='BRECKS' src={config.spaces.concat('/logos/BRECKS-v2@2x.png')} width={500} height={166}/>
-                <Typography sx={{m: '10px auto'}} level='title-lg'>
-                    For access to this page, please use the link provided in your email.<br/>
-                    If you have not yet received a link, please contact your administrator.
-                </Typography>
+            <Box sx={{display: 'flex', flexDirection: 'column', m: '20svh auto', px: {xs: 3, sm: 1}}}>
+                <Image style={{margin: '5px auto', width: '100%', height: 'auto'}} alt='BRECKS' src={config.spaces.concat('/logos/BRECKS-v2@2x.png')} width={500} height={166} sizes='25vw'/>
+                <Typography sx={{my: 1, mx: 'auto'}} level='title-lg'>For access to this page, please use the link provided in your email.</Typography>
+                <Typography sx={{mx: 'auto', my: {xs: 1, sm: 'unset'}}} level='title-lg'>If you have not yet received a link, please contact your administrator.</Typography>
             </Box>
         </Box>
     </>
@@ -150,11 +148,11 @@ export default function Register() {
         <Snackbar open={Boolean(snackbarError)} anchorOrigin={{vertical: 'top', horizontal: 'center'}} color='danger' variant='solid' startDecorator={<DangerousIcon/>}>
             <Typography sx={{color: 'white'}} level='title-md'>{snackbarError}</Typography>
         </Snackbar>
-        <Box sx={{display: 'flex', flexDirection: 'column'}}>
-            <Box sx={{my: 2, mb: 1, mx: 'auto', cursor: 'pointer'}}>
-                <Image style={{margin: '0 auto'}} alt='BRECKS' src={config.spaces.concat('/logos/BRECKS-v2@2x.png')} width={400} height={133}/>
+        <Box sx={{display: 'flex', flexDirection: 'column', width: '100%'}}>
+            <Box sx={{my: 2, mb: 1, mx: 'auto'}}>
+                <Image style={{margin: '0 auto',  width: '100%', height: 'auto'}} alt='BRECKS' src={config.spaces.concat('/logos/BRECKS-v2@2x.png')} width={400} height={133} sizes='(width >= 920px) 30svw, (width < 920px) 276px'/>
             </Box>
-            <Sheet sx={{width: '60vw', m: '0 auto', p: 3, borderRadius: '10px'}}>
+            <Sheet sx={{my: 0, mx: {md: 'calc(0.25 * 100svw)', sm: 'calc(0.15 * 100svw)', xs: 0}, p: 3, borderRadius: {sm: '10px', xs: 0}}}>
                 <Typography level='h3' sx={{mb: 2}}>
                     Registration
                 </Typography>

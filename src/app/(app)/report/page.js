@@ -87,7 +87,7 @@ export default function Report() {
     }, [reportDate, selectedJobSite, setFormSubmissionDisabled, setError]);
 
     useEffect(() => {
-        if (Boolean(selectedJobSite)) {
+        if (Boolean(selectedJobSite) && new Date() >= new Date(reportDate)) {
             const params = new URLSearchParams({job: selectedJobSite, date: reportDate})
             postman.get('/reports/exists?' + params).then((response) => {
                 if (response.data.exists) setDateError('A report has already been submitted for this date.')
@@ -104,7 +104,7 @@ export default function Report() {
         const handleError = (message) => setError('An error occurred submitting the report.\n' + message)
         postman.post('/reports', {
             jobID: selectedJobSite,
-            reportDate: reportDate,
+            date: reportDate,
             weather: weather,
             crew: crew.mapKeys((k) => k.shortName),
             visitors: visitors,
@@ -123,7 +123,7 @@ export default function Report() {
 
     return <>
         <Box sx={{display: 'flex'}}>
-            <Sheet sx={{mx: 'auto', width: '800px', display: 'flex', flexDirection: 'column', px: 4, pb: 4}}>
+            <Sheet sx={{mx: 'auto', width: '800px', display: 'flex', flexDirection: 'column', px: {xs: 1, sm: 4}, pb: 4}}>
                 <Typography level={'h1'} sx={{my: 2, mb: 0, mx: 'auto'}}>Daily Job Report</Typography>
                 <Box sx={{my: 2, mb: 0}}>
                     <form autoComplete="off" onSubmit={(event) => {
