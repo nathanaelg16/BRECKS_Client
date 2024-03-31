@@ -26,12 +26,14 @@ export default function Sidebar({sx, calendar, statsState}) {
     </Stack>
 
     const small = <Accordion size='sm' variant='soft' color='neutral' sx={{display: {xs: 'unset', lg: 'none'}}}>
-        <AccordionSummary slotProps={{button: {sx: {py: 2}}, indicator: {sx: {mr: 5}}}} indicator={<ExpandCircleDownIcon sx={{fontSize: 28}} />}>
-            {header}
-            <JobData sx={{flex: 1, height: 'fit-content', background: 'none'}} />
+        <AccordionSummary slotProps={{button: {sx: {py: 2}}, indicator: {sx: {mr: {xs: 2, sm: 5}}}}} indicator={<ExpandCircleDownIcon sx={{fontSize: 28}} />}>
+            <Stack flexDirection={{xs: 'column', sm: 'row'}} justifyContent='center'  alignItems='center' spacing={3} width={1}>
+                {header}
+                <JobData sx={{flex: 1, height: 'fit-content', background: 'none'}} />
+            </Stack>
         </AccordionSummary>
         <AccordionDetails variant='plain' sx={{background: 'white', border: '1px solid black'}}>
-            <Stack sx={{py: 2}} flexDirection='row' justifyContent='center' alignItems='start' spacing={3} useFlexGap>
+            <Stack sx={{py: 2}} flexDirection={{xs: 'column', sm: 'row'}} justifyContent='center' alignItems={{xs: 'center', sm: 'start'}} spacing={3} useFlexGap>
                 <JobViewStatusChanger sx={{flex: 1}} />
                 <JobStats sx={{flex: 1}} calendar={calendar} statsState={statsState} />
             </Stack>
@@ -50,5 +52,3 @@ export default function Sidebar({sx, calendar, statsState}) {
         {medium}
     </>
 }
-
-//1095px

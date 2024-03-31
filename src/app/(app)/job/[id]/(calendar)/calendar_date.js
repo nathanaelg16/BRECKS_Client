@@ -120,7 +120,7 @@ export default function CalendarDate({data, metadata, sx, size}) {
         }
 
         return <Box onClick={data?.onClick} sx={{...sx, pb: 1, border: '2px solid var(--joy-palette-neutral-800)', '&:hover': {background: 'var(--joy-palette-neutral-100)'}, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'start', position: 'relative', mx: 1, ...data?.sx}}>
-            <Stack width={1} spacing={3} flexDirection='row' justifyContent='flex-start' alignItems='center' sx={{background: 'var(--joy-palette-primary-700)', p: 1}} useFlexGap>
+            <Stack width={1} spacing={3} flexDirection='row' justifyContent='flex-start' alignItems='center' sx={{background: 'var(--joy-palette-primary-700)', p: 1}} useFlexGap flexWrap='wrap'>
                 <Typography level='title-lg' sx={{...data?.dateSX, color: 'white'}}>
                     {DAYS[metadata.dayOfWeek]}, {MONTHS[metadata.calendar.month]} {data?.date}, {metadata.calendar.year}
                 </Typography>
