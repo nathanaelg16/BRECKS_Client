@@ -24,11 +24,11 @@ export default function CrewViewer({withCrew, editing}) {
     }, [])
 
     const renderInputComponents = (contractor) => function renderComponent(props) {
-        return <Input className={RedHatFont.className}
-                      startDecorator={<Typography sx={{color: '#333333'}} className={RedHatFont.className} fontWeight='800'>{contractor}:</Typography>}
+        return <Input startDecorator={<Typography sx={{color: '#333333'}} className={RedHatFont.className} fontWeight='800'>{contractor}:</Typography>}
                       variant='plain'
                       sx={{borderRadius: '20px', '.Mui-disabled': {color: 'black'}, color: 'black'}}
                       {...props}
+                      className={`${RedHatFont.className} ${props.className} crewInput`}
                       endDecorator={<Stack direction='row' useFlexGap justifyContent='flex-end' alignItems='center'>
                           {props.endDecorator}
                           {!props.disabled && <Tool name='Remove' icon={<CloseIcon />} onClick={props.onDelete} sx={{'--IconButton-size': '28px', background: 'transparent', '&:hover': {background: 'transparent', color: 'var(--joy-palette-danger-500)'}}} props={{variant: 'plain'}}  />}

@@ -7,8 +7,6 @@ export default function Printer({children, print = false}) {
     const id = useId()
     const ref = useRef()
 
-    console.log(`Printer ${id}: ${print ? '' : 'NOT '}ACTIVE`)
-
     useLayoutEffect(() => {
         let printerRoot = document.getElementById(`printerRoot-${id}`)
 

@@ -32,10 +32,10 @@ export default function Sidebar({sx, calendar, statsState}) {
                 <JobData sx={{flex: 1, height: 'fit-content', background: 'none'}} />
             </Stack>
         </AccordionSummary>
-        <AccordionDetails variant='plain' sx={{background: 'white', border: '1px solid black'}}>
-            <Stack sx={{py: 2}} flexDirection={{xs: 'column', sm: 'row'}} justifyContent='center' alignItems={{xs: 'center', sm: 'start'}} spacing={3} useFlexGap>
-                <JobViewStatusChanger sx={{flex: 1}} />
-                <JobStats sx={{flex: 1}} calendar={calendar} statsState={statsState} />
+        <AccordionDetails variant='plain' sx={{background: 'white', border: '1px solid black', borderBottom: '2px solid black'}}>
+            <Stack sx={{py: 2, px: 4}} flexDirection={{xs: 'column', sm: 'row'}} justifyContent='center' alignItems={{xs: 'center', sm: 'start'}} spacing={3} useFlexGap>
+                <JobViewStatusChanger sx={{flex: 1, width: 1}} />
+                <JobStats sx={{flex: 1, width: 1}} calendar={calendar} statsState={statsState} />
             </Stack>
         </AccordionDetails>
     </Accordion>

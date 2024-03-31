@@ -137,7 +137,7 @@ export default function ReportViewer({open, onClose, date}) {
 
         const report = {
             id: reportRef.current.id,
-            reportDate: date,
+            date: date,
             jobID: job.id,
             weather: weather,
             crew: crew,
@@ -203,14 +203,15 @@ export default function ReportViewer({open, onClose, date}) {
     </Grid>
 
     const createInputDatum = (key, [value, setValue], inputSX = {}, sx = {}) => {
-        const renderComponent = (props) => <Textarea placeholder='N/A' minRows={1} sx={{color: 'black', '.Mui-disabled': {color: 'black'}, ...inputSX}} size='lg' className={RedHatFont.className} {...props} />
+        const renderComponent = (props) => <Textarea placeholder='N/A' minRows={1} sx={{color: 'black', ...inputSX}} size='lg' {...props} className={`${RedHatFont.className} ${props.className} reportInputDatum`} />
         return createDatum(key, <EditableComponent editing={editing} value={value} onEdit={setValue} renderComponent={renderComponent} />, sx)
     }
 
     const createInputListDatum = (key, [value, setValue], listSX = {}, sx = {}) => {
         const renderInputComponent = (props) => <Textarea minRows={1}
-              className={RedHatFont.className} size='lg'
+              size='lg'
               {...props}
+              className={`${RedHatFont.className} ${props.className} reportInputDatum`}
               endDecorator={<Stack sx={{ml: 'auto'}} direction='row' useFlexGap justifyContent='flex-end' alignItems='center'>
                   {props.endDecorator}
                   {!props.disabled &&
