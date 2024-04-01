@@ -39,7 +39,7 @@ export default function HomeViewStatusChanger({openState, job}) {
                 setTimeout(() => {
                     setSuccessGlyph(false)
                     setOpen(false)
-                    router.refresh()
+                    router.replace('/home')
                 }, 1000)
             }, 1500)
         }).catch((error) => {
