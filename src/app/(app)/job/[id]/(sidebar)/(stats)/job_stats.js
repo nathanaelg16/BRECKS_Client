@@ -52,7 +52,7 @@ export default function JobStats({sx, calendar, statsState}) {
                 <Sheet sx={{p: 1, borderRadius: '15px'}}>
                     <Box sx={{display: 'grid', gridTemplateColumns: '70% 30%', width: 1, height: 1, columnGap: 2, rowGap: 2}}>
                         {dataRow('Total Man-days', stats.totalManDays, 1)}
-                        {dataRow('Average Daily Manpower', stats.avgDailyManPower, 2)}
+                        {dataRow('Average Daily Manpower', +stats.avgDailyManPower.toFixed(2), 2)}
                     </Box>
                 </Sheet>
             </>}
