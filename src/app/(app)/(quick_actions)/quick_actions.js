@@ -6,14 +6,15 @@ import Button from "@mui/joy/Button";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import EngineeringIcon from "@mui/icons-material/Engineering";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Box from "@mui/joy/Box";
 import NewContractorForm from "@/app/(app)/(quick_actions)/new_contractor_form";
 import "./quick_actions.css"
 import ModalClose from "@mui/joy/ModalClose";
 
-function Action({title, props}) {
+function Action({title, props, typographyProps}) {
     return <Button className='actionButton' component='a' href='#action' variant="outlined" size="lg" sx={{width: 1, py: 2, height: '75px'}} {...props}>
-        <Typography color="primary" level="h4">{title}</Typography>
+        <Typography color="primary" level="h4" {...typographyProps}>{title}</Typography>
     </Button>
 }
 
@@ -39,6 +40,10 @@ export default function QuickActions(props) {
             <Action title='Submit a new report' props={{href: "/report", endDecorator: <AssignmentIcon/>}} />
             <Action title='Create a new job' props={{onClick: () => setAction('new_job'), endDecorator: <ConstructionIcon/>}} />
             <Action title='Register a new contractor' props={{onClick: () => setAction('new_contractor'), endDecorator: <EngineeringIcon />}} />
+            <Action title='Sign out' props={{onClick: () => {
+                sessionStorage.removeItem('token')
+                window.location.href = '/'
+            }, endDecorator: <ExitToAppIcon />, variant: 'solid'}} typographyProps={{sx: {color: 'white'}}}/>
             {Boolean(action) &&
                 <Box id='action' sx={{width: 1, border: '1px solid var(--joy-palette-neutral-600)', borderRadius: 8, p: 1}}>
                     {actionComponent}
