@@ -165,7 +165,7 @@ export default function Calendar({sx, calendarState, stats}) {
         const startDateIndex = findDateIndex(DateTime.fromISO(job.startDate))
 
         return <Box sx={{width: 1, display: 'grid', gap: 2}}>
-            {[...monthDays].slice(startDateIndex ? startDateIndex : 0).map((data, i) => <CalendarDate key={`sm-${i}`} size='sm' sx={{gridRow: i + 1, gridColumn: 1, height: 'fit-content'}} data={data} metadata={{index: i, todayIndex: todayIndex, startDateIndex: startDateIndex, dayOfWeek: findDayOfWeek(data.date), calendar: calendar}} />)}
+            {[...monthDays].slice(startDateIndex ? startDateIndex : 0).map((data, i) => <CalendarDate key={`sm-${i}`} size='sm' sx={{gridRow: i + 1, gridColumn: 1, height: 'fit-content'}} data={data} metadata={{index: i, todayIndex: todayIndex ? todayIndex - startDateIndex : null, startDateIndex: startDateIndex ? 0 : null, dayOfWeek: findDayOfWeek(data.date), calendar: calendar}} />)}
         </Box>
     }
 
