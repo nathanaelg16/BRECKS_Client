@@ -3,6 +3,7 @@ import './globals.css'
 import {theme} from "@/resources/config";
 import {CssVarsProvider} from "@mui/joy/styles";
 import CssBaseline from "@mui/joy/CssBaseline";
+import {Suspense} from "react";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,7 +26,9 @@ export default function RootLayout({children}) {
               <link rel='icon' href='/favicon.png'/>
             </head>
             <body className={inter.className} style={{height: '100svh'}}>
+            <Suspense>
               {children}
+            </Suspense>
             </body>
           </html>
       </CssVarsProvider>
