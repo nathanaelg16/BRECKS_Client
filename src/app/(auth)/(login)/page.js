@@ -5,17 +5,19 @@ import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
-import Checkbox from '@mui/joy/Checkbox';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel, {formLabelClasses} from '@mui/joy/FormLabel';
-import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
-import {Alert} from "@mui/joy";
+import {Alert, Chip, Stack, Tooltip} from "@mui/joy";
 import {config, postman} from "@/resources/config";
+import {InfoOutlined} from "@mui/icons-material";
+import {Roboto_Mono} from "next/font/google";
+
+const RobotoMono = Roboto_Mono({weight: '500', subsets: ['latin']})
 
 export default function SignIn() {
     const router = useRouter()
@@ -37,7 +39,6 @@ export default function SignIn() {
             username: data.username,
             password: data.password
         }).then((response) => {
-            if (data.persistent) localStorage.setItem('username', data.username)
             sessionStorage.setItem('token', response.data.token);
             const redirect = sessionStorage.getItem('redirect')
             sessionStorage.removeItem('redirect')
@@ -106,6 +107,14 @@ export default function SignIn() {
                     </Box>
                 </Box>
                 {signedOut && <Alert sx={{zIndex: 2, justifyContent: 'center', position: 'relative'}} color="danger" size="md">You have been signed out due to inactivity. Please sign in again.</Alert>}
+                <Stack direction='row' justifyContent='start' sx={{width: 1}}>
+                    <Tooltip title={<Typography sx={{color: 'white'}}>
+                        <Typography fontWeight='700'>Username:</Typography> <Typography className={RobotoMono.className}>brecksdemo</Typography><br/>
+                        <Typography fontWeight='700'>Password:</Typography> <Typography className={RobotoMono.className}>Password123$</Typography><br/>
+                    </Typography>} sx={{background: 'black', color: 'white'}}>
+                        <Chip size='lg' startDecorator={<InfoOutlined />} sx={{mx: 'auto', background: '#50C878', color: 'black', py: 1, px: 2, cursor: 'pointer'}}>Are you a recruiter?</Chip>
+                    </Tooltip>
+                </Stack>
                 <Box
                     component="main"
                     sx={{
@@ -143,7 +152,6 @@ export default function SignIn() {
                             const data = {
                                 username: formElements.username.value,
                                 password: formElements.password.value,
-                                persistent: formElements.persistent.checked,
                             };
                             handleSignIn(data);
                         }}
@@ -156,16 +164,6 @@ export default function SignIn() {
                             <FormLabel>Password</FormLabel>
                             <Input type="password" name="password"/>
                         </FormControl>
-                        <Box
-                            sx={{
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                            }}
-                        >
-                            <Checkbox size="sm" label="Remember me" name="persistent"/>
-                            <Link fontSize="sm" href="/" fontWeight="lg">
-                                Forgot your password?
-                            </Link>
-                        </Box>
                         <Button sx={{my: 4}} loading={loading} type="submit" fullWidth>
                             Sign in
                         </Button>
