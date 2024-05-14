@@ -14,8 +14,12 @@ import Typography from '@mui/joy/Typography';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
-import {Alert} from "@mui/joy";
+import {Alert, Chip, Stack, Tooltip} from "@mui/joy";
 import {config, postman} from "@/resources/config";
+import {InfoOutlined} from "@mui/icons-material";
+import {Roboto_Mono} from "next/font/google";
+
+const RobotoMono = Roboto_Mono({weight: '500', subsets: ['latin']})
 
 export default function SignIn() {
     const router = useRouter()
@@ -106,6 +110,14 @@ export default function SignIn() {
                     </Box>
                 </Box>
                 {signedOut && <Alert sx={{zIndex: 2, justifyContent: 'center', position: 'relative'}} color="danger" size="md">You have been signed out due to inactivity. Please sign in again.</Alert>}
+                <Stack direction='row' justifyContent='start' sx={{width: 1}}>
+                    <Tooltip title={<Typography sx={{color: 'white'}}>
+                        <Typography fontWeight='700'>Username:</Typography> <Typography className={RobotoMono.className}>brecksdemo</Typography><br/>
+                        <Typography fontWeight='700'>Password:</Typography> <Typography className={RobotoMono.className}>Password123$</Typography><br/>
+                    </Typography>} sx={{background: 'black', color: 'white'}}>
+                        <Chip size='lg' startDecorator={<InfoOutlined />} sx={{mx: 'auto', background: '#50C878', color: 'black', py: 1, px: 2, cursor: 'pointer'}}>Are you a recruiter?</Chip>
+                    </Tooltip>
+                </Stack>
                 <Box
                     component="main"
                     sx={{
