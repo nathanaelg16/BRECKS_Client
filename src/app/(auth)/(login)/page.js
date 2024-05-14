@@ -5,10 +5,8 @@ import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
-import Checkbox from '@mui/joy/Checkbox';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel, {formLabelClasses} from '@mui/joy/FormLabel';
-import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Image from "next/image";
@@ -41,7 +39,6 @@ export default function SignIn() {
             username: data.username,
             password: data.password
         }).then((response) => {
-            if (data.persistent) localStorage.setItem('username', data.username)
             sessionStorage.setItem('token', response.data.token);
             const redirect = sessionStorage.getItem('redirect')
             sessionStorage.removeItem('redirect')
@@ -155,7 +152,6 @@ export default function SignIn() {
                             const data = {
                                 username: formElements.username.value,
                                 password: formElements.password.value,
-                                persistent: formElements.persistent.checked,
                             };
                             handleSignIn(data);
                         }}
@@ -168,16 +164,6 @@ export default function SignIn() {
                             <FormLabel>Password</FormLabel>
                             <Input type="password" name="password"/>
                         </FormControl>
-                        <Box
-                            sx={{
-                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                            }}
-                        >
-                            <Checkbox size="sm" label="Remember me" name="persistent"/>
-                            <Link fontSize="sm" href="/" fontWeight="lg">
-                                Forgot your password?
-                            </Link>
-                        </Box>
                         <Button sx={{my: 4}} loading={loading} type="submit" fullWidth>
                             Sign in
                         </Button>
