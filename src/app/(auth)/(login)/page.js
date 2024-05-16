@@ -107,14 +107,6 @@ export default function SignIn() {
                     </Box>
                 </Box>
                 {signedOut && <Alert sx={{zIndex: 2, justifyContent: 'center', position: 'relative'}} color="danger" size="md">You have been signed out due to inactivity. Please sign in again.</Alert>}
-                <Stack direction='row' justifyContent='start' sx={{width: 1}}>
-                    <Tooltip title={<Typography sx={{color: 'white'}}>
-                        <Typography fontWeight='700'>Username:</Typography> <Typography className={RobotoMono.className}>brecksdemo</Typography><br/>
-                        <Typography fontWeight='700'>Password:</Typography> <Typography className={RobotoMono.className}>Password123$</Typography><br/>
-                    </Typography>} sx={{background: 'black', color: 'white'}}>
-                        <Chip size='lg' startDecorator={<InfoOutlined />} sx={{mx: 'auto', background: '#50C878', color: 'black', py: 1, px: 2, cursor: 'pointer'}}>Are you a recruiter?</Chip>
-                    </Tooltip>
-                </Stack>
                 <Box
                     component="main"
                     sx={{
@@ -164,9 +156,10 @@ export default function SignIn() {
                             <FormLabel>Password</FormLabel>
                             <Input type="password" name="password"/>
                         </FormControl>
-                        <Button sx={{my: 4}} loading={loading} type="submit" fullWidth>
-                            Sign in
-                        </Button>
+                        <Stack sx={{my: 2}} spacing={2} direction='row'>
+                            <Button loading={loading} type="submit" fullWidth>Sign in</Button>
+                            <Button onClick={() => router.push('/register')} sx={{background: '#4D5D53', color: 'white', '&:hover': {background: '#2F4F4F'}}} fullWidth>Register</Button>
+                        </Stack>
                     </form>
                     {error && <Typography color="danger"
                                           level="body-sm"
