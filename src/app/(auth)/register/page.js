@@ -40,33 +40,6 @@ export default function Register() {
         submit: false
     })
 
-    const [userDetails, setUserDetails] = useState({
-        email: '',
-        firstName: '',
-        lastName: '',
-        role: ''
-    })
-
-    const initialAccessKey = searchParams.get('q')
-
-    useEffect(() => {
-        if (initialAccessKey !== null) {
-            setAccessKey(initialAccessKey)
-            postman.get('/registration/details', {
-                headers: {
-                    'Authorization': 'BearerAccessKey ' + initialAccessKey
-                }
-            }).then(response => {
-                setUserDetails(response.data)
-            }).catch(error => {
-                if (error.response) {
-                    if (error.response.status === 401) router.push('/register')
-                    else if (error.response.status === 500) setSnackbarError('An unexpected server error has occurred.')
-                } else setSnackbarError('An unexpected error has occurred.')
-            })
-        }
-    }, [router, initialAccessKey])
-
     const debounce = (callback, delay) => {
         let timeout;
         return function(...args) {
@@ -107,13 +80,10 @@ export default function Register() {
 
     const handleRegistration = (data) => {
         postman.post('/register', {
-            displayName: data.displayName,
+            firstName: data.firstName,
+            lastName: data.lastName,
             username: data.username,
             password: data.password
-        }, {
-            headers: {
-                'Authorization': 'BearerAccessKey ' + accessKey
-            }
         }).then(response => {
             if (response.status === 200) {
                 sessionStorage.setItem('token', response.data.token)
@@ -122,29 +92,14 @@ export default function Register() {
                 setError(response.data.message)
             }
         }).catch(error => {
-            if (error.response) {
-                if (error.response.status === 400) {
-                    setError(error.response.data.message)
-                    return;
-                }
-            }
-            setError("Something's not working right now. Please try again later.")
+            if (error.response && error.response.status === 400) setError(error.response.data.message)
+            else setError("Something's not working right now. Please try again later.")
         }).finally(() => {
             setLoading({...loading, submit: false});
         })
     }
 
-    const blockedView = <>
-        <Box sx={{display: 'flex', flexDirection: 'column', height: '95svh'}}>
-            <Box sx={{display: 'flex', flexDirection: 'column', m: '20svh auto', px: {xs: 3, sm: 1}}}>
-                <Image style={{margin: '5px auto', width: '100%', height: 'auto'}} alt='BRECKS' src={config.spaces.concat('/logos/BRECKS-v2@2x.png')} width={500} height={166} sizes='25vw'/>
-                <Typography sx={{my: 1, mx: 'auto'}} level='title-lg'>For access to this page, please use the link provided in your email.</Typography>
-                <Typography sx={{mx: 'auto', my: {xs: 1, sm: 'unset'}}} level='title-lg'>If you have not yet received a link, please contact your administrator.</Typography>
-            </Box>
-        </Box>
-    </>
-
-    const registrationView = <>
+    return <>
         <Snackbar open={Boolean(snackbarError)} anchorOrigin={{vertical: 'top', horizontal: 'center'}} color='danger' variant='solid' startDecorator={<DangerousIcon/>}>
             <Typography sx={{color: 'white'}} level='title-md'>{snackbarError}</Typography>
         </Snackbar>
@@ -169,7 +124,8 @@ export default function Register() {
                     setLoading({...loading, submit: true})
                     const formElements = event.currentTarget.elements
                     const data = {
-                        displayName: formElements.displayName.value,
+                        firstName: formElements.firstName.value,
+                        lastName: formElements.lastName.value,
                         username: formElements.username.value,
                         password: formElements.password.value,
                         passwordConf: formElements.passwordConf.value
@@ -177,26 +133,16 @@ export default function Register() {
                     handleRegistration(data)
                 }}>
                     <Stack direction="column" spacing={2}>
-                        <FormControl disabled>
-                            <FormLabel>E-mail</FormLabel>
-                            <Input type="email" name="email" value={userDetails.email}/>
-                        </FormControl>
-                        <FormControl disabled>
+                        <FormControl required>
                             <FormLabel>First Name</FormLabel>
-                            <Input type="text" name="firstName" value={userDetails.firstName}/>
-                        </FormControl>
-                        <FormControl disabled>
-                            <FormLabel>Last Name</FormLabel>
-                            <Input type="text" name="lastName" value={userDetails.lastName}/>
+                            <Input type="text" name="firstName"/>
                         </FormControl>
                         <FormControl required>
-                            <FormLabel>Display Name</FormLabel>
-                            <FormHelperText>What would you like other users to know you as?</FormHelperText>
-                            <Input type="text" name="displayName" defaultValue={userDetails.firstName}/>
+                            <FormLabel>Last Name</FormLabel>
+                            <Input type="text" name="lastName"/>
                         </FormControl>
                         <FormControl error={usernameError} required>
                             <FormLabel>Username</FormLabel>
-                            <FormHelperText>What would you like to sign in as?</FormHelperText>
                             <Input type="text"
                                    name="username"
                                    onChange={(e) => {
@@ -228,9 +174,5 @@ export default function Register() {
                 </Box>
             </Sheet>
         </Box>
-    </>
-
-    return <>
-        {initialAccessKey === null ? blockedView : registrationView}
     </>
 }
