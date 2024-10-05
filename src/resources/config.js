@@ -4,7 +4,6 @@ import {extendTheme} from "@mui/joy";
 import axios from "axios";
 
 export const config = {
-    spaces: process.env.NEXT_PUBLIC_SPACES,
     server: process.env.NEXT_PUBLIC_SERVER
 }
 

@@ -12,9 +12,8 @@ import Typography from '@mui/joy/Typography';
 import Image from "next/image";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
-import {Alert, Chip, Stack, Tooltip} from "@mui/joy";
-import {config, postman} from "@/resources/config";
-import {InfoOutlined} from "@mui/icons-material";
+import {Alert, Stack} from "@mui/joy";
+import {postman} from "@/resources/config";
 import {Roboto_Mono} from "next/font/google";
 
 const RobotoMono = Roboto_Mono({weight: '500', subsets: ['latin']})
@@ -99,7 +98,7 @@ export default function SignIn() {
                             height: 111,
                             margin: 'auto'
                         }}>
-                        <Image src={config.spaces.concat("/logos/BRECKS-v2@2x.png")}
+                        <Image src={'/BRECKS-v2@2x.png'}
                                alt="BRECKS"
                                width="333"
                                height="111"

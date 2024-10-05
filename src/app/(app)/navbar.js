@@ -5,7 +5,6 @@ import {useState} from "react";
 import Button from "@mui/joy/Button";
 import MenuIcon from '@mui/icons-material/Menu';
 import Image from "next/image";
-import {config} from "@/resources/config";
 import JobPicker from "@/app/(app)/job_picker";
 import {useRouter} from "next/navigation";
 import QuickActions from "@/app/(app)/(quick_actions)/quick_actions";
@@ -33,7 +32,7 @@ export default function Navbar() {
             </Box>
             <Box className='navItem' component="span" sx={{display: 'flex', cursor: 'pointer', mx: 'auto', flex: '0 0 auto'}}
                  onClick={() => router.push('/home')}>
-                <Image src={config.spaces.concat("/logos/BRECKS-v2@2x.png")}
+                <Image src={'/BRECKS-v2@2x.png'}
                        alt="BRECKS"
                        width="177"
                        height="59"
