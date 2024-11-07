@@ -1,14 +1,14 @@
 import Box from "@mui/joy/Box";
-import CalendarControl from "@/app/(app)/job/[id]/(calendar)/calendar_control";
+import CalendarControl from "@/app/(app)/jobs/(calendar)/calendar_control";
 import {Red_Hat_Display} from "next/font/google";
 import {useContext, useEffect, useMemo, useState} from "react";
 import Typography from "@mui/joy/Typography";
 import {Range} from "immutable"
-import CalendarDate from "@/app/(app)/job/[id]/(calendar)/calendar_date";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import CalendarDate from "@/app/(app)/jobs/(calendar)/calendar_date";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 import {postman} from "@/resources/config";
 import {useRouter} from "next/navigation";
-import ReportViewer from "@/app/(app)/job/[id]/(report)/report_viewer";
+import ReportViewer from "@/app/(app)/jobs/(report)/report_viewer";
 import {SnackbarContext} from "@/app/(app)/context";
 import useMediaQuery from '@mui/material/useMediaQuery';
 

@@ -6,7 +6,7 @@ import {Stack} from "@mui/joy";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {useContext} from "react";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
 

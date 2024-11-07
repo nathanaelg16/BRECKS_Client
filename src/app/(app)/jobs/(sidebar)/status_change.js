@@ -9,7 +9,7 @@ import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
 import {CheckCircleOutline, CloseRounded, KeyboardArrowDown} from "@mui/icons-material";
 import {postman} from "@/resources/config";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 import {SnackbarContext} from "@/app/(app)/context";
 
 export default function JobViewStatusChanger({sx}) {

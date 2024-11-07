@@ -5,7 +5,7 @@ import Typography from "@mui/joy/Typography";
 import {Red_Hat_Display} from "next/font/google";
 import {Stack} from "@mui/joy";
 import RestoreIcon from "@mui/icons-material/Restore";
-import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
+import Tool from "@/app/(app)/jobs/(report)/(tools)/tool";
 import {Collection as ImmutableCollection} from "immutable";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['400']})

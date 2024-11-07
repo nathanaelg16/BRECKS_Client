@@ -1,13 +1,13 @@
 'use client'
 
 import {Divider, Sheet, Stack} from "@mui/joy";
-import ReportStats from "@/app/(app)/job/[id]/(sidebar)/(stats)/reports";
+import ReportStats from "@/app/(app)/jobs/(sidebar)/(stats)/reports";
 import {useContext, useEffect, useState} from "react";
 import {postman} from "@/resources/config";
 import Typography from "@mui/joy/Typography";
 import {MONTHS} from "@/app/utils";
 import {Red_Hat_Display} from "next/font/google";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 import Box from "@mui/joy/Box";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})

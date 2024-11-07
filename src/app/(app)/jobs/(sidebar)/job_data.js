@@ -4,7 +4,7 @@ import {Sheet} from "@mui/joy";
 import Typography from "@mui/joy/Typography";
 import {Red_Hat_Display} from "next/font/google";
 import {useContext} from "react";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 import Box from "@mui/joy/Box";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})

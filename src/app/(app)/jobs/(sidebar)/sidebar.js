@@ -2,12 +2,12 @@ import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import {Accordion, AccordionDetails, AccordionSummary, Chip, Stack} from "@mui/joy";
 import {Red_Hat_Display} from "next/font/google";
-import JobViewStatusChanger from "@/app/(app)/job/[id]/(sidebar)/status_change";
+import JobViewStatusChanger from "@/app/(app)/jobs/(sidebar)/status_change";
 import {JOB_STATUS} from "@/app/utils";
-import JobData from "@/app/(app)/job/[id]/(sidebar)/job_data";
-import JobStats from "@/app/(app)/job/[id]/(sidebar)/(stats)/job_stats";
+import JobData from "@/app/(app)/jobs/(sidebar)/job_data";
+import JobStats from "@/app/(app)/jobs/(sidebar)/(stats)/job_stats";
 import {useContext} from "react";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['300', '400', '500', '600', '700', '800']})
