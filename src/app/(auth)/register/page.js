@@ -105,7 +105,7 @@ export default function Register() {
         </Snackbar>
         <Box sx={{display: 'flex', flexDirection: 'column', width: '100%'}}>
             <Box sx={{my: 2, mb: 1, mx: 'auto'}}>
-                <Image style={{margin: '0 auto',  width: '100%', height: 'auto'}} alt='BRECKS' src={'BRECKS-v2@2x.png'} width={400} height={133} sizes='(width >= 920px) 30svw, (width < 920px) 276px'/>
+                <Image style={{margin: '0 auto', height: 'auto'}} alt='BRECKS' src={'BRECKS-v2@2x.png'} width={400} height={133} sizes='(width >= 920px) 30svw, (width < 920px) 276px'/>
             </Box>
             <Sheet sx={{my: 0, mx: {md: 'calc(0.25 * 100svw)', sm: 'calc(0.15 * 100svw)', xs: 0}, p: 3, borderRadius: {sm: '10px', xs: 0}}}>
                 <Typography level='h3' sx={{mb: 2}}>
