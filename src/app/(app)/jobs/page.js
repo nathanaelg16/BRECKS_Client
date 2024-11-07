@@ -2,9 +2,9 @@
 
 import Box from "@mui/joy/Box";
 import {useContext, useState} from "react";
-import Sidebar from "@/app/(app)/job/[id]/(sidebar)/sidebar";
-import Calendar from "@/app/(app)/job/[id]/(calendar)/calendar";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import Sidebar from "@/app/(app)/jobs/(sidebar)/sidebar";
+import Calendar from "@/app/(app)/jobs/(calendar)/calendar";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 
 const {DateTime} = require('luxon')
 

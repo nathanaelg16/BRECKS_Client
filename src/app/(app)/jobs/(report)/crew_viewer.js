@@ -5,11 +5,11 @@ import {Divider, Stack} from "@mui/joy";
 import {Red_Hat_Display} from "next/font/google";
 import Typography from "@mui/joy/Typography";
 import Input from "@mui/joy/Input";
-import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
+import EditableComponent from "@/app/(app)/jobs/(report)/editable_component";
 import CloseIcon from "@mui/icons-material/Close";
-import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
+import Tool from "@/app/(app)/jobs/(report)/(tools)/tool";
 import AddIcon from "@mui/icons-material/Add";
-import ContractorSelector from "@/app/(app)/job/[id]/(report)/contractor_selector";
+import ContractorSelector from "@/app/(app)/jobs/(report)/contractor_selector";
 
 const RedHatFont = Red_Hat_Display({subsets: ['latin'], weight: ['500', '800']})
 

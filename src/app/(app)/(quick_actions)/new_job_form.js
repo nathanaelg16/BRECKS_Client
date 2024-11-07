@@ -35,7 +35,7 @@ export default function NewJobForm({onClose}) {
                 .then(response => {
                     if (response.status === 200) {
                         setSnackbar('success', {text: 'Job created successfully!'})
-                        router.push(`/job/${response.data}`)
+                        router.push(`/jobs?id=${response.data}`)
                     } else throw new Error(`Response status code: ${response.status}`)
                 }).catch(() => setSnackbar('error', {text: 'Job creation failed due to an error.'}))
                 .finally(() => {

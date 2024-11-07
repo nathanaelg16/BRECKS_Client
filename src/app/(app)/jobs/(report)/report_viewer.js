@@ -5,7 +5,7 @@ import {Red_Hat_Display} from "next/font/google";
 import {Alert, Divider, Grid, IconButton, LinearProgress, Modal, ModalDialog, Stack} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 import {postman} from "@/resources/config";
 import {DAYS, MONTHS} from "@/app/utils";
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,12 +19,12 @@ import ReportIcon from '@mui/icons-material/Report'
 import HistoryToggleOffIcon from '@mui/icons-material/HistoryToggleOff';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import UnarchiveIcon from '@mui/icons-material/Unarchive';
-import Tool from "@/app/(app)/job/[id]/(report)/(tools)/tool";
-import EditableComponent from "@/app/(app)/job/[id]/(report)/editable_component";
-import Toolbar from "@/app/(app)/job/[id]/(report)/(tools)/toolbar";
-import CrewViewer from "@/app/(app)/job/[id]/(report)/crew_viewer";
-import {CustomTextArea as Textarea} from "@/app/(app)/job/[id]/(report)/custom_text_area"
-import HistoryPopper from "@/app/(app)/job/[id]/(report)/(tools)/history_popper";
+import Tool from "@/app/(app)/jobs/(report)/(tools)/tool";
+import EditableComponent from "@/app/(app)/jobs/(report)/editable_component";
+import Toolbar from "@/app/(app)/jobs/(report)/(tools)/toolbar";
+import CrewViewer from "@/app/(app)/jobs/(report)/crew_viewer";
+import {CustomTextArea as Textarea} from "@/app/(app)/jobs/(report)/custom_text_area"
+import HistoryPopper from "@/app/(app)/jobs/(report)/(tools)/history_popper";
 import {DateTime} from "luxon";
 import "./report_viewer.css"
 import Printer from "@/app/(components)/(printer)/printer";

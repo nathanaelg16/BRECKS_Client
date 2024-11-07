@@ -1,7 +1,7 @@
 import Popper from "@/app/(components)/(popper)/popper";
 import {Divider, List, ListItem, ListItemButton} from "@mui/joy";
 import {useCallback, useContext, useEffect, useState} from "react";
-import {JobContext} from "@/app/(app)/job/[id]/job_context";
+import {JobContext} from "@/app/(app)/jobs/job_context";
 import {postman} from "@/resources/config";
 import Typography from "@mui/joy/Typography";
 import {Red_Hat_Display} from "next/font/google";

@@ -28,7 +28,7 @@ export default function JobPicker(props) {
         </Typography>
         <ClickAwayListener onClickAway={() => setOpen(false)}>
             <Select listboxOpen={open} onListboxOpenChange={(isOpen) => setOpen(isOpen)} slotProps={{root: {id: 'job-picker-select'}}} value={''} sx={{marginRight: 1}} placeholder='Select a jobsite...' onChange={(ev, nv) => {
-                if (nv !== null && nv !== '') router.push(`/job/${nv}`)
+                if (nv !== null && nv !== '') router.push(`/jobs?id=${nv}`)
             }}>
                 {allJobs.length > 0 ? generateOptions(allJobs) : <Option disabled key={-2} value={-1}>No jobs available</Option>}
             </Select>
