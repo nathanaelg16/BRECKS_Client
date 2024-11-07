@@ -32,7 +32,7 @@ export default function Navbar() {
             </Box>
             <Box className='navItem' component="span" sx={{display: 'flex', cursor: 'pointer', mx: 'auto', flex: '0 0 auto'}}
                  onClick={() => router.push('/home')}>
-                <Image src={'/BRECKS-v2@2x.png'}
+                <Image src={'BRECKS-v2@2x.png'}
                        alt="BRECKS"
                        width="177"
                        height="59"

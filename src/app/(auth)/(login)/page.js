@@ -98,7 +98,7 @@ export default function SignIn() {
                             height: 111,
                             margin: 'auto'
                         }}>
-                        <Image src={'/BRECKS-v2@2x.png'}
+                        <Image src={'BRECKS-v2@2x.png'}
                                alt="BRECKS"
                                width="333"
                                height="111"
